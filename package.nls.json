@@ -1,0 +1,9 @@
+{
+  "everything.server_host": "Host address Everything listens on for HTTP protocol. (default: 127.0.0.1)",
+  "everything.server_port": "Port number Everything listens on for HTTP protocol. (default: 3380)",
+  "property.everything.search.description": "Set up a search for everything",
+  "everything.exclude.enabled.description": "Determines whether to use the search exclusion list for everything",
+  "everything.exclude.text.description": "Set a search exclusion list under Everything",
+  "property.findsuite.description": "Configuration FindSuite",
+  "welcome.title": "Welcome"
+}

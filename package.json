@@ -1,0 +1,281 @@
+{
+  "name": "findsuite",
+  "displayName": "FindSuite",
+  "description": "This VS Code extension provides powerful file search capabilities right within your editor. With two main functions, it allows users to quickly find files on their computer using file names, file paths, and regular expressions. Additionally, it leverages ripgrep to efficiently locate files containing specific strings",
+  "author": "utocode",
+  "publisher": "utocode",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codesuiteapp/findsuite"
+  },
+  "license": "GNU General Public License v2.0",
+  "keywords": [
+    "everything",
+    "fast find",
+    "search",
+    "find",
+    "ripgrep",
+    "rg",
+    "grep",
+    "fuzzy",
+    "fuzzy search",
+    "fuzzy find",
+    "fuzzy grep"
+  ],
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.49.0"
+  },
+  "categories": [
+    "Language Packs",
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "l10n": "./l10n",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "FindSuite",
+      "properties": {
+        "findsuite.host": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "%everything.server_host%"
+        },
+        "findsuite.port": {
+          "type": "integer",
+          "default": 3380,
+          "description": "%everything.server_port%"
+        },
+        "findsuite.everythingConfig": {
+          "type": "object",
+          "description": "%property.everything.search.description%",
+          "patternProperties": {
+            ".+": {
+              "type": "object",
+              "required": [
+                "enabled",
+                "query",
+                "regex",
+                "fullpath",
+                "inWorkspace",
+                "description"
+              ],
+              "properties": {
+                "enabled": {
+                  "description": "Enabled Search Filter",
+                  "type": "boolean"
+                },
+                "query": {
+                  "description": "query",
+                  "type": "string"
+                },
+                "regex": {
+                  "description": "regex",
+                  "type": "boolean"
+                },
+                "fullpath": {
+                  "description": "fullpath",
+                  "type": "boolean"
+                },
+                "description": {
+                  "description": "description",
+                  "type": "string"
+                },
+                "sort": {
+                  "description": "sort",
+                  "type": "string"
+                },
+                "ascending": {
+                  "description": "ascending",
+                  "type": "string"
+                },
+                "inWorkspace": {
+                  "description": "inWorkspace",
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "default": {
+            "filter1": {
+              "enabled": true,
+              "query": "ext:c;chm;cpp;csv;cxx;doc;docm;docx;dot;dotm;dotx;h;hpp;htm;html;hxx;ini;java;lua;mht;mhtml;odt;pdf;potx;potm;ppam;ppsm;ppsx;pps;ppt;pptm;pptx;rtf;sldm;sldx;thmx;txt;vsd;wpd;wps;wri;xlam;xls;xlsb;xlsm;xlsx;xltm;xltx;xml",
+              "regex": false,
+              "fullpath": false,
+              "inWorkspace": false,
+              "sort": "name",
+              "description": "Many extension for Text"
+            },
+            "filter2": {
+              "enabled": true,
+              "query": "path:c:\\DevTools\\workspace",
+              "regex": false,
+              "fullpath": true,
+              "inWorkspace": false,
+              "sort": "path",
+              "description": "Full Path [workspace]"
+            },
+            "filter3": {
+              "enabled": true,
+              "query": "ext:java;xml;properties;md;sh;jsp;htm;html;yml;yaml;tpl;txt",
+              "regex": false,
+              "fullpath": false,
+              "inWorkspace": false,
+              "sort": "name",
+              "description": "Many extension for Java"
+            },
+            "filter4": {
+              "enabled": true,
+              "query": "",
+              "regex": true,
+              "fullpath": false,
+              "inWorkspace": false,
+              "sort": "name",
+              "description": "Regex"
+            },
+            "filter5": {
+              "enabled": true,
+              "query": "",
+              "regex": false,
+              "fullpath": false,
+              "inWorkspace": false,
+              "sort": "name",
+              "description": "Many extension for Text"
+            }
+          }
+        },
+        "findsuite.everything.exclude.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "%everything.exclude.enabled.description%"
+        },
+        "findsuite.everything.exclude.text": {
+          "type": "string",
+          "default": ".git;.plugins;",
+          "description": "%everything.exclude.text.description%"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "utocode.ripgrep",
+        "title": "Search",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter1",
+        "title": "Search #1 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter2",
+        "title": "Search #2 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter3",
+        "title": "Search #3 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter4",
+        "title": "Search #4 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter5",
+        "title": "Search #5 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter6",
+        "title": "Search #6 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.search#filter7",
+        "title": "Search #7 in Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.spring.mappings",
+        "title": "Spring Mapping",
+        "category": "findsuite"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "utocode.ripgrep",
+        "key": "ctrl+alt+9"
+      },
+      {
+        "command": "utocode.search#filter1",
+        "key": "ctrl+alt+2"
+      },
+      {
+        "command": "utocode.search#filter2",
+        "key": "ctrl+alt+3"
+      },
+      {
+        "command": "utocode.search#filter3",
+        "key": "ctrl+alt+4"
+      },
+      {
+        "command": "utocode.search#filter4",
+        "key": "ctrl+alt+5"
+      },
+      {
+        "command": "utocode.search#filter5",
+        "key": "ctrl+alt+6"
+      },
+      {
+        "command": "utocode.search#filter6",
+        "key": "ctrl+alt+7"
+      },
+      {
+        "command": "utocode.search#filter7",
+        "key": "ctrl+alt+8"
+      },
+      {
+        "command": "utocode.spring.mappings",
+        "key": "ctrl+alt+m"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "vscode:prepublish": "webpack --mode production",
+    "compile2": "tsc -p ./",
+    "watch2": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.202",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/shell-quote": "^1.7.5",
+    "@types/vscode": "^1.49.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.1",
+    "@typescript-eslint/parser": "^6.19.1",
+    "@vscode/test-cli": "^0.0.4",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.2",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "lodash": "^4.17.21",
+    "shell-quote": "^1.8.1"
+  }
+}
