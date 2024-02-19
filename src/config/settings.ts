@@ -122,6 +122,51 @@ export default class FindSuiteSettings {
             3380;
     }
 
+    public static get defaultOption(): string {
+        const key = 'rg.defaultOption';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get custom1(): string {
+        const key = 'rg.custom1';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get custom2(): string {
+        const key = 'rg.custom2';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get custom3(): string {
+        const key = 'rg.custom3';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get custom4(): string {
+        const key = 'rg.custom4';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
     public static get everythingConfig(): Map<string, EverythingConfig> {
         const key = 'everythingConfig';
         let evConfig = this.config<{ [name: string]: EverythingConfigProperty }>(key);

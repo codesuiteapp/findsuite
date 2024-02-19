@@ -1,4 +1,4 @@
-# FindSuite (Everything, RipGrep)
+# FindSuite (RipGrep, Everything [Windows])
 
 ## Overview
 

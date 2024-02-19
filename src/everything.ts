@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from './config/settings';
+import logger from './utils/logger';
+import { notifyMessageWithTimeout, showConfirmMessage } from './utils/vsc';
 
 export class EverythingSearcher {
 
@@ -13,7 +15,8 @@ export class EverythingSearcher {
     try {
       const quickPick = vscode.window.createQuickPick();
       let option: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
-      quickPick.title = `Everything :: ${option?.description ?? ''}`;
+      quickPick.title = `Everything :: ${option?.query ?? ''}`;
+      quickPick.placeholder = `${option?.description ?? 'Please enter filename to search'}`;
       quickPick.ignoreFocusOut = true;
       quickPick.matchOnDescription = true;
       quickPick.matchOnDetail = true;
@@ -24,13 +27,11 @@ export class EverythingSearcher {
         }
         let option: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
         if (!option) {
+          const mesg = `There is no configuration file.Please set "everythingConfig.${filterType}"`;
+          logger.error(mesg);
+          notifyMessageWithTimeout(mesg);
           return;
         }
-
-        quickPick.placeholder = 'Type ' +
-          (option.fullpath ? 'full path' : 'file') + ' name to search' +
-          (option.regex ? ', support regular expression' : '') +
-          (option.inWorkspace ? ', workspace files only' : '');
 
         quickPick.items = await this.searchInEverything(option, item);
         quickPick.title = `Everything <${item} (${option.description})> Results <${quickPick.items.length}>`;
@@ -43,12 +44,12 @@ export class EverythingSearcher {
           return;
         }
 
-        await this.openFile(item, false);
+        await this.openFile(item);
         quickPick.dispose();
       });
       quickPick.show();
     } catch (error: any) {
-      vscode.window.showErrorMessage(`Error: ${error.message}`);
+      vscode.window.showErrorMessage(`Error: ${error.message} `);
     }
   }
 
@@ -58,7 +59,7 @@ export class EverythingSearcher {
       port: FindSuiteSettings.port,
       path: encodeURI('/?' + [
         'json=1&path_column=1',
-        `q=${this.buildSearchQuery(option, str)}`,
+        `q=${this.buildSearchQuery(option, str)} `,
         'path=' + (option.fullpath ? 1 : 0),
         'sort=' + option.sort,
         'ascending=' + (option.ascending ? 1 : 0),
@@ -83,11 +84,10 @@ export class EverythingSearcher {
             files.forEach(f => {
               f.label = f.name;
               f.detail = f.path;
-              f.description = f.type;
+              f.description = `${f.type} ${path.join(f.path, f.name)}`;
             });
             resolve(files);
           } catch (e) {
-            // Handle Everything response decoding error
             reject(new Error(`Failed to decode Everything response as JSON, body data: ${body}`));
           }
         });
@@ -103,7 +103,7 @@ export class EverythingSearcher {
       query = option.query.length > 0 ? option.query + '+' : '';
     }
     if (!option.inWorkspace) {
-      return query + str.trim().replace(/\s/g, '+');
+      return (query + str.trim().replace(/\s/g, '+')).trim();
     } else {
       let ws = vscode.workspace.workspaceFolders;
 
@@ -122,7 +122,7 @@ export class EverythingSearcher {
     }
   }
 
-  private async openFile(file: any, flag: boolean) {
+  private async openFile(file: any) {
     if (!file) {
       return;
     }
@@ -136,8 +136,12 @@ export class EverythingSearcher {
       //   this.activeEditor = undefined;
       // }
       await vscode.window.showTextDocument(fileUri, { viewColumn: ViewColumn.Active, preserveFocus: true, preview: true });
-    } else if (flag && file.type === 'folder') {
-      vscode.commands.executeCommand('vscode.openFolder', fileUri);
+    } else if (file.type === 'folder') {
+      const isOpen = await showConfirmMessage(`Do you open Folder (${fullname})`);
+      if (isOpen) {
+        console.log(`open folder <${fullname}>`);
+        vscode.commands.executeCommand('vscode.openFolder', fileUri);
+      }
     }
   }
 }

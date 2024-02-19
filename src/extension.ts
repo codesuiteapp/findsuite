@@ -1,17 +1,29 @@
 import * as vscode from "vscode";
+import FindSuiteSettings from "./config/settings";
 import { EverythingSearcher } from "./everything";
-import { QuickPickItemWithLine, fetchGrepItems, getRgPath, registerRipgrep } from "./ripgrep";
+import { RipgrepSearch } from "./ripgrep";
 
 export function activate(context: vscode.ExtensionContext) {
-  const rgPath = getRgPath(context.extensionUri.fsPath);
-
-  let query: string[];
-  const scrollBack: QuickPickItemWithLine[] = [];
+  // let query: string[];
+  // const scrollBack: QuickPickItemWithLine[] = [];
+  const rg = new RipgrepSearch(context);
   const evtSearcher = new EverythingSearcher();
 
   context.subscriptions.push(
     vscode.commands.registerCommand('utocode.ripgrep', async () => {
-      registerRipgrep(rgPath, query, scrollBack);
+      rg.execute('');
+    })
+    , vscode.commands.registerCommand('utocode.ripgrep1', async () => {
+      rg.execute(FindSuiteSettings.custom1, false);
+    })
+    , vscode.commands.registerCommand('utocode.ripgrep2', async () => {
+      rg.execute(FindSuiteSettings.custom2, false);
+    })
+    , vscode.commands.registerCommand('utocode.ripgrep3', async () => {
+      rg.execute(FindSuiteSettings.custom3, true, true);
+    })
+    , vscode.commands.registerCommand('utocode.ripgrep4', async () => {
+      rg.execute(FindSuiteSettings.custom4, true, true);
     })
     , vscode.commands.registerCommand('utocode.search#filter1', () => {
       evtSearcher.searchAndOpen("filter1");

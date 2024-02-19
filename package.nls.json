@@ -4,6 +4,10 @@
   "property.everything.search.description": "Set up a search for everything",
   "everything.exclude.enabled.description": "Determines whether to use the search exclusion list for everything",
   "everything.exclude.text.description": "Set a search exclusion list under Everything",
+  "everything.rg.custom1.description": "Please provide the custom1 configuration for ripgrep.",
+  "everything.rg.custom2.description": "Please provide the custom2 configuration for ripgrep.",
+  "everything.rg.custom3.description": "Please provide the custom3 configuration for ripgrep.",
+  "everything.rg.custom4.description": "Please provide the custom4 configuration for ripgrep.",
   "property.findsuite.description": "Configuration FindSuite",
   "welcome.title": "Welcome"
 }

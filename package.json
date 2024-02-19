@@ -11,19 +11,19 @@
   },
   "license": "GNU General Public License v2.0",
   "keywords": [
-    "everything",
-    "fast find",
-    "search",
     "find",
+    "fast find",
     "ripgrep",
-    "rg",
     "grep",
+    "rg",
+    "everything",
+    "search",
     "fuzzy",
-    "fuzzy search",
     "fuzzy find",
+    "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -103,7 +103,7 @@
           "default": {
             "filter1": {
               "enabled": true,
-              "query": "ext:c;chm;cpp;csv;cxx;doc;docm;docx;dot;dotm;dotx;h;hpp;htm;html;hxx;ini;java;lua;mht;mhtml;odt;pdf;potx;potm;ppam;ppsm;ppsx;pps;ppt;pptm;pptx;rtf;sldm;sldx;thmx;txt;vsd;wpd;wps;wri;xlam;xls;xlsb;xlsm;xlsx;xltm;xltx;xml",
+              "query": "ext:c;chm;cpp;csv;cxx;docm;dot;dotm;dotx;h;hpp;htm;html;hxx;ini;java;lua;mht;mhtml;odt;pdf;potx;potm;ppam;ppsm;ppsx;pps;pptm;rtf;sldm;sldx;thmx;txt;vsd;wpd;wri;xlam;xlsb;xlsm;xltm;xltx;xml",
               "regex": false,
               "fullpath": false,
               "inWorkspace": false,
@@ -121,7 +121,7 @@
             },
             "filter3": {
               "enabled": true,
-              "query": "ext:java;xml;properties;md;sh;jsp;htm;html;yml;yaml;tpl;txt",
+              "query": "ext:java;xml;properties;groovy;md;sh;jsp;json;htm;html;yml;yaml;tpl;txt",
               "regex": false,
               "fullpath": false,
               "inWorkspace": false,
@@ -157,13 +157,58 @@
           "type": "string",
           "default": ".git;.plugins;",
           "description": "%everything.exclude.text.description%"
+        },
+        "findsuite.rg.defaultOption": {
+          "type": "string",
+          "default": "-n -s",
+          "description": "%rg.default.option.description%"
+        },
+        "findsuite.rg.custom1": {
+          "type": "string",
+          "default": "-g \"*.java\" -g \"*.xml\" -g \"*.properties\" -g \"*.yaml\" -g \"*.yml\"",
+          "description": "%everything.rg.custom1.description%"
+        },
+        "findsuite.rg.custom2": {
+          "type": "string",
+          "default": "-g \"*.sql\"",
+          "description": "%everything.rg.custom2.description%"
+        },
+        "findsuite.rg.custom3": {
+          "type": "string",
+          "default": "@*Mapping",
+          "description": "%everything.rg.custom3.description%"
+        },
+        "findsuite.rg.custom4": {
+          "type": "string",
+          "default": "@*Mapper",
+          "description": "%everything.rg.custom4.description%"
         }
       }
     },
     "commands": [
       {
         "command": "utocode.ripgrep",
-        "title": "Search",
+        "title": "Search ",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.ripgrep1",
+        "title": "Search Custom #1",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.ripgrep2",
+        "title": "Search Custom #2",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.ripgrep3",
+        "title": "Search Custom #3",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.ripgrep4",
+        "title": "Search Custom #4",
         "category": "findsuite"
       },
       {
@@ -210,6 +255,14 @@
     "keybindings": [
       {
         "command": "utocode.ripgrep",
+        "key": "ctrl+alt+0"
+      },
+      {
+        "command": "utocode.ripgrep1",
+        "key": "ctrl+alt+8"
+      },
+      {
+        "command": "utocode.ripgrep3",
         "key": "ctrl+alt+9"
       },
       {
@@ -235,10 +288,6 @@
       {
         "command": "utocode.search#filter6",
         "key": "ctrl+alt+7"
-      },
-      {
-        "command": "utocode.search#filter7",
-        "key": "ctrl+alt+8"
       },
       {
         "command": "utocode.spring.mappings",
