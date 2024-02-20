@@ -1,13 +1,16 @@
 {
-  "everything.server_host": "Host address Everything listens on for HTTP protocol. (default: 127.0.0.1)",
-  "everything.server_port": "Port number Everything listens on for HTTP protocol. (default: 3380)",
+  "everything.server_host.description": "Host address Everything listens on for HTTP protocol. (default: 127.0.0.1)",
+  "everything.server_port.description": "Port number Everything listens on for HTTP protocol. (default: 3380)",
+  "everything.count.description": "Search Count for Everything (default: 150)",
   "property.everything.search.description": "Set up a search for everything",
   "everything.exclude.enabled.description": "Determines whether to use the search exclusion list for everything",
   "everything.exclude.text.description": "Set a search exclusion list under Everything",
-  "everything.rg.custom1.description": "Please provide the custom1 configuration for ripgrep.",
-  "everything.rg.custom2.description": "Please provide the custom2 configuration for ripgrep.",
-  "everything.rg.custom3.description": "Please provide the custom3 configuration for ripgrep.",
-  "everything.rg.custom4.description": "Please provide the custom4 configuration for ripgrep.",
+  "rg.count.description": "Search Count for RipGrep (default: 150)",
+  "rg.custom1.description": "Please provide the custom1 configuration for ripgrep.",
+  "rg.custom2.description": "Please provide the custom2 configuration for ripgrep.",
+  "rg.custom3.description": "Please provide the custom3 configuration for ripgrep.",
+  "rg.custom4.description": "Please provide the custom4 configuration for ripgrep.",
+  "rg.custom5.description": "Please provide the custom5 configuration for ripgrep.",
   "property.findsuite.description": "Configuration FindSuite",
   "welcome.title": "Welcome"
 }

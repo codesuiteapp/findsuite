@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from './config/settings';
+import { getSelectionText } from './utils/editor';
 import logger from './utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from './utils/vsc';
 
@@ -20,6 +21,10 @@ export class EverythingSearcher {
       quickPick.ignoreFocusOut = true;
       quickPick.matchOnDescription = true;
       quickPick.matchOnDetail = true;
+      const txt = getSelectionText();
+      if (txt) {
+        quickPick.value = txt;
+      }
 
       quickPick.onDidChangeValue(async (item) => {
         if (!item || item === "") {
@@ -49,7 +54,7 @@ export class EverythingSearcher {
       });
       quickPick.show();
     } catch (error: any) {
-      vscode.window.showErrorMessage(`Error: ${error.message} `);
+      vscode.window.showErrorMessage(`Error: ${error.message}`);
     }
   }
 
@@ -59,11 +64,12 @@ export class EverythingSearcher {
       port: FindSuiteSettings.port,
       path: encodeURI('/?' + [
         'json=1&path_column=1',
-        `q=${this.buildSearchQuery(option, str)} `,
+        `q=${this.buildSearchQuery(option, str)}`,
         'path=' + (option.fullpath ? 1 : 0),
         'sort=' + option.sort,
         'ascending=' + (option.ascending ? 1 : 0),
         'regex=' + (option.regex ? 1 : 0),
+        'count=' + FindSuiteSettings.count,
       ].join('&'))
     };
     console.log(`name <${option.name}> path <${http_options.path}>`);

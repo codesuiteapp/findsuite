@@ -122,6 +122,24 @@ export default class FindSuiteSettings {
             3380;
     }
 
+    public static get count(): number {
+        const key = 'count';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<number>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
+            ??
+            150;
+    }
+
+    public static get rgCount(): number {
+        const key = 'rg.count';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<number>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
+            ??
+            150;
+    }
+
     public static get defaultOption(): string {
         const key = 'rg.defaultOption';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
@@ -160,6 +178,15 @@ export default class FindSuiteSettings {
 
     public static get custom4(): string {
         const key = 'rg.custom4';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get custom5(): string {
+        const key = 'rg.custom5';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue

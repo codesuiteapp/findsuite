@@ -32,8 +32,9 @@ The following shortcut keys are available for quick access to various search fun
 - **Ctrl + Alt + 5**: Search file names through regular expressions through Everything
 - **Ctrl + Alt + 6**: Search file name through Everything
 - **Ctrl + Alt + 8**: Search for strings in files through Ripgrep [custom1]
-- **Ctrl + Alt + 9**: Search for strings in files through Ripgrep [custom2]
-- **Ctrl + Alt + 0**: Search for strings in files through Ripgrep
+- **Ctrl + Alt + 9**: Search for text patterns in files within the current directory using Ripgrep
+- **Ctrl + Alt + 0**: Search for text patterns in current file using Ripgrep
+- **Ctrl + Alt + F9**: Search for text patterns in project folder using Ripgrep (Max: 200)
 
 ## Usage
 
