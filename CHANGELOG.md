@@ -1,9 +1,9 @@
 # Change Log
 
-All notable changes to the "findsuite" extension will be documented in this file.
+### [0.0.2] - 2024-02-21
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- A few bug fixes
 
-## [Unreleased]
+### [0.0.1] - 2024-02-18
 
-- Initial release
+- Initial Release

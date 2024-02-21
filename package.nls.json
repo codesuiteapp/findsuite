@@ -1,16 +1,16 @@
 {
-  "everything.server_host.description": "Host address Everything listens on for HTTP protocol. (default: 127.0.0.1)",
-  "everything.server_port.description": "Port number Everything listens on for HTTP protocol. (default: 3380)",
-  "everything.count.description": "Search Count for Everything (default: 150)",
-  "property.everything.search.description": "Set up a search for everything",
-  "everything.exclude.enabled.description": "Determines whether to use the search exclusion list for everything",
-  "everything.exclude.text.description": "Set a search exclusion list under Everything",
-  "rg.count.description": "Search Count for RipGrep (default: 150)",
+  "everything.server_host.description": "Address of Everything Http Server (default: 127.0.0.1)",
+  "everything.server_port.description": "Port of Everything Http Server (default: 3380)",
+  "everything.count.description": "Number of results received from Everything (default: 500)",
+  "everything.limitOpenFile.description": "Number of files that can be opened at once from results received from Everything (default: 30)",
+  "everything.search.description": "Everything search settings",
+  "everything.exclude.enabled.description": "Whether to exclude files when searching with Everything",
+  "everything.exclude.text.description": "List of files to exclude when searching with Everything",
+  "rg.count.description": "Number of results received from Ripgrep (default: 200)",
   "rg.custom1.description": "Please provide the custom1 configuration for ripgrep.",
   "rg.custom2.description": "Please provide the custom2 configuration for ripgrep.",
   "rg.custom3.description": "Please provide the custom3 configuration for ripgrep.",
   "rg.custom4.description": "Please provide the custom4 configuration for ripgrep.",
   "rg.custom5.description": "Please provide the custom5 configuration for ripgrep.",
-  "property.findsuite.description": "Configuration FindSuite",
-  "welcome.title": "Welcome"
+  "findsuite.description": "Configuration FindSuite"
 }

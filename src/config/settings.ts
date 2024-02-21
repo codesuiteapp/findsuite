@@ -105,7 +105,7 @@ export default class FindSuiteSettings {
     }
 
     public static get host(): string {
-        const key = 'host';
+        const key = 'everything.host';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
@@ -114,7 +114,7 @@ export default class FindSuiteSettings {
     }
 
     public static get port(): number {
-        const key = 'port';
+        const key = 'everything.port';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<number>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
@@ -123,12 +123,21 @@ export default class FindSuiteSettings {
     }
 
     public static get count(): number {
-        const key = 'count';
+        const key = 'everything.count';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<number>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
             ??
             150;
+    }
+
+    public static get limitOpenFile(): number {
+        const key = 'everything.limitOpenFile';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<number>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
+            ??
+            30;
     }
 
     public static get rgCount(): number {

@@ -16,10 +16,11 @@ export function getSelectionText() {
     let content: string = '';
     if (e) {
         const selection: vscode.Selection = e.selection;
-        if (selection.isEmpty) {
-            content = e.document.getText();
-        } else {
+        if (!selection.isEmpty) {
             content = e.document.getText(selection);
+        } else if (selection.active) {
+            let wordRange = e.document.getWordRangeAtPosition(selection.active);
+            content = wordRange ? e.document.getText(wordRange) : '';
         }
     }
     return content;

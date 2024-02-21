@@ -4,6 +4,10 @@
 
 This VS Code extension provides powerful file search capabilities right within your editor. With two main functions, it allows users to quickly find files on their computer using file names, file paths, and regular expressions. Additionally, it leverages ripgrep to efficiently locate files containing specific strings.
 
+To search, press the shortcut key (e.g., Ctrl+F8 or Ctrl+F10) in the blank space or on the word you want to search. If you want to search for a folder name, press the shortcut key (Ctrl+Alt+4).
+
+[Korean_한국어](README_KO.md)
+
 ## Prerequisites
 
 Before using this extension, ensure that you have the following prerequisites installed:
@@ -11,6 +15,10 @@ Before using this extension, ensure that you have the following prerequisites in
 - **Everything program**: The extension relies on the Everything program for fast file searches. Make sure it is installed on your system.
 
 ![Everything](images/everything1.png)
+
+- **VSCode Settings**: Please enter the Host and Port configured in the Everything program. Also, configure the Everything Config.
+
+![Setting](images/setting.png)
 
 ## Features
 
@@ -22,19 +30,17 @@ The first function, powered by the FindSuite program, enables users to swiftly l
 
 The extension seamlessly integrates with ripgrep, allowing users to search for files containing specific strings efficiently.
 
-### Shortcut Keys
+## Shortcuts
 
-The following shortcut keys are available for quick access to various search functionalities:
+- **Ctrl + F7**: Search for strings within the current file's folder using ripgrep.
+- **Ctrl + F8**: Search for strings within the files in the current workspace using ripgrep.
+- **Ctrl + Alt + 0**: Search for strings within the currently open file using ripgrep.
 
-- **Ctrl + Alt + 2**: Search file names through extension through Everything
-- **Ctrl + Alt + 3**: Search for file names under a specific directory through Everything
-- **Ctrl + Alt + 4**: Search file names through Java-related extensions (.java, .xml, .yml, etc.) through Everything
-- **Ctrl + Alt + 5**: Search file names through regular expressions through Everything
-- **Ctrl + Alt + 6**: Search file name through Everything
-- **Ctrl + Alt + 8**: Search for strings in files through Ripgrep [custom1]
-- **Ctrl + Alt + 9**: Search for text patterns in files within the current directory using Ripgrep
-- **Ctrl + Alt + 0**: Search for text patterns in current file using Ripgrep
-- **Ctrl + Alt + F9**: Search for text patterns in project folder using Ripgrep (Max: 200)
+### Shortcut Keys (Requires Everything)
+
+- **Ctrl + F10**: Search for files using Everything and then search within the selected file(s).
+- **Ctrl + Alt + 4**: Search using Everything and open the selected folder(s).
+- **Ctrl + Alt + F9**: Search for files using Everything.
 
 ## Usage
 
@@ -44,3 +50,15 @@ The following shortcut keys are available for quick access to various search fun
    - Use the provided commands, shortcuts, or the VS Code command palette to initiate file searches.
    - Enter the desired search criteria such as file name, file path, or regular expression.
    - View search results directly within VS Code.
+
+## Issues
+
+Please let me know of any bugs via the issues page
+
+## Release Notes
+
+See [CHANGELOG.md](CHANGELOG.md)
+
+## License
+
+See [LICENSE](LICENSE) for more information.

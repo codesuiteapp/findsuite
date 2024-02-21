@@ -6,6 +6,7 @@ export interface RgQuery {
     srchPath: string | undefined;
     replaceQuery: boolean;
     skipQuote: boolean;
+    isMany: boolean;
 }
 
 export interface RipgrepResult {

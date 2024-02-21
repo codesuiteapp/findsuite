@@ -13,11 +13,14 @@
   "keywords": [
     "find",
     "fast find",
+    "find jump",
     "ripgrep",
     "grep",
     "rg",
     "everything",
+    "everything find",
     "search",
+    "quick search",
     "fuzzy",
     "fuzzy find",
     "fuzzy search",
@@ -40,24 +43,29 @@
       "type": "object",
       "title": "FindSuite",
       "properties": {
-        "findsuite.host": {
+        "findsuite.everything.host": {
           "type": "string",
           "default": "127.0.0.1",
           "description": "%everything.server_host.description%"
         },
-        "findsuite.port": {
+        "findsuite.everything.port": {
           "type": "integer",
           "default": 3380,
           "description": "%everything.server_port.description%"
         },
-        "findsuite.count": {
+        "findsuite.everything.count": {
           "type": "integer",
-          "default": 150,
+          "default": 500,
           "description": "%everything.count.description%"
+        },
+        "findsuite.everything.limitOpenFile": {
+          "type": "integer",
+          "default": 30,
+          "description": "%everything.limitOpenFile.description%"
         },
         "findsuite.everythingConfig": {
           "type": "object",
-          "description": "%property.everything.search.description%",
+          "description": "%everything.search.description%",
           "patternProperties": {
             ".+": {
               "type": "object",
@@ -106,7 +114,7 @@
             }
           },
           "default": {
-            "filter0": {
+            "defFilter": {
               "enabled": true,
               "query": "",
               "regex": false,
@@ -126,7 +134,7 @@
             },
             "filter2": {
               "enabled": true,
-              "query": "path:c:\\DevTools\\workspace",
+              "query": "folders:",
               "regex": false,
               "fullpath": true,
               "inWorkspace": false,
@@ -144,7 +152,7 @@
             },
             "filter4": {
               "enabled": true,
-              "query": "",
+              "query": "path:c:\\workspace",
               "regex": true,
               "fullpath": false,
               "inWorkspace": false,
@@ -162,16 +170,6 @@
             }
           }
         },
-        "findsuite.everything.exclude.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "%everything.exclude.enabled.description%"
-        },
-        "findsuite.everything.exclude.text": {
-          "type": "string",
-          "default": ".git;.plugins;",
-          "description": "%everything.exclude.text.description%"
-        },
         "findsuite.rg.count": {
           "type": "integer",
           "default": 200,
@@ -179,7 +177,7 @@
         },
         "findsuite.rg.defaultOption": {
           "type": "string",
-          "default": "-n -s",
+          "default": "-s",
           "description": "%rg.default.option.description%"
         },
         "findsuite.rg.custom1": {
@@ -211,88 +209,103 @@
     },
     "commands": [
       {
-        "command": "utocode.ripgrep",
-        "title": "Search RipGrep",
+        "command": "utocode.rg",
+        "title": "Ripgrep",
         "category": "findsuite"
       },
       {
-        "command": "utocode.ripgrepFile",
-        "title": "Search in Current File",
+        "command": "utocode.rgFile",
+        "title": "Ripgrep File",
         "category": "findsuite"
       },
       {
-        "command": "utocode.ripgrepFolder",
-        "title": "Search in Current Folder",
+        "command": "utocode.rgws",
+        "title": "Ripgrep Current Workspace",
         "category": "findsuite"
       },
       {
-        "command": "utocode.ripgrep1",
-        "title": "Search Custom #1",
+        "command": "utocode.rgFolder",
+        "title": "Ripgrep Folder",
         "category": "findsuite"
       },
       {
-        "command": "utocode.ripgrep2",
-        "title": "Search Custom #2",
+        "command": "utocode.rg1",
+        "title": "Ripgrep #1",
         "category": "findsuite"
       },
       {
-        "command": "utocode.ripgrep3",
-        "title": "Search Custom #3",
+        "command": "utocode.rg2",
+        "title": "Ripgrep #2",
         "category": "findsuite"
       },
       {
-        "command": "utocode.ripgrep4",
-        "title": "Search Custom #4",
+        "command": "utocode.rg3",
+        "title": "Ripgrep #3",
         "category": "findsuite"
       },
       {
-        "command": "utocode.search#all",
-        "title": "Search in Everything",
+        "command": "utocode.rg4",
+        "title": "Ripgrep #4",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.rgThruEverything",
+        "title": "Ripgrep with Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.everything",
+        "title": "Everything",
+        "category": "findsuite"
+      },
+      {
+        "command": "utocode.everything#folder",
+        "title": "Everything Folder",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter1",
-        "title": "Search #1 in Everything",
+        "title": "Everything #1",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter2",
-        "title": "Search #2 in Everything",
+        "title": "Everything #2",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter3",
-        "title": "Search #3 in Everything",
+        "title": "Everything #3",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter4",
-        "title": "Search #4 in Everything",
+        "title": "Everything #4",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter5",
-        "title": "Search #5 in Everything",
+        "title": "Everything #5",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter6",
-        "title": "Search #6 in Everything",
+        "title": "Everything #6",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter7",
-        "title": "Search #7 in Everything",
+        "title": "Everything #7",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter8",
-        "title": "Search #8 in Everything",
+        "title": "Everything #8",
         "category": "findsuite"
       },
       {
         "command": "utocode.search#filter9",
-        "title": "Search #9 in Everything",
+        "title": "Everything #9",
         "category": "findsuite"
       },
       {
@@ -303,52 +316,69 @@
     ],
     "keybindings": [
       {
-        "command": "utocode.search#all",
-        "key": "ctrl+alt+f10"
+        "command": "utocode.rgFolder",
+        "key": "ctrl+f7",
+        "mac": "cmd+f7"
+      },
+      {
+        "command": "utocode.rgws",
+        "key": "ctrl+f8",
+        "mac": "cmd+f8"
+      },
+      {
+        "command": "utocode.rgFile",
+        "key": "ctrl+alt+0",
+        "mac": "cmd+option+0"
+      },
+      {
+        "command": "utocode.rg",
+        "key": "ctrl+alt+f10",
+        "mac": "cmd+option+f10"
+      },
+      {
+        "command": "utocode.rg1",
+        "key": "ctrl+alt+7",
+        "mac": "cmd+option+7"
+      },
+      {
+        "command": "utocode.rg2",
+        "key": "ctrl+alt+8",
+        "mac": "cmd+option+8"
+      },
+      {
+        "command": "utocode.everything",
+        "key": "ctrl+alt+f9",
+        "mac": "cmd+option+f9"
+      },
+      {
+        "command": "utocode.everything#folder",
+        "key": "ctrl+alt+4",
+        "mac": "cmd+option+4"
+      },
+      {
+        "command": "utocode.rgThruEverythingWs",
+        "key": "ctrl+alt+shift+f10",
+        "mac": "cmd+option+shift+f10"
+      },
+      {
+        "command": "utocode.rgThruEverything",
+        "key": "ctrl+f10",
+        "mac": "cmd+f10"
       },
       {
         "command": "utocode.search#filter1",
-        "key": "ctrl+alt+2"
+        "key": "ctrl+alt+2",
+        "mac": "cmd+option+2"
       },
       {
         "command": "utocode.search#filter2",
-        "key": "ctrl+alt+3"
-      },
-      {
-        "command": "utocode.search#filter3",
-        "key": "ctrl+alt+4"
-      },
-      {
-        "command": "utocode.search#filter4",
-        "key": "ctrl+alt+5"
-      },
-      {
-        "command": "utocode.search#filter5",
-        "key": "ctrl+alt+6"
-      },
-      {
-        "command": "utocode.ripgrep1",
-        "key": "ctrl+alt+7"
-      },
-      {
-        "command": "utocode.ripgrep2",
-        "key": "ctrl+alt+8"
-      },
-      {
-        "command": "utocode.ripgrepFolder",
-        "key": "ctrl+alt+9"
-      },
-      {
-        "command": "utocode.ripgrepFile",
-        "key": "ctrl+alt+0"
-      },
-      {
-        "command": "utocode.ripgrep",
-        "key": "ctrl+alt+f9"
+        "key": "ctrl+alt+3",
+        "mac": "cmd+option+3"
       },
       {
         "command": "utocode.spring.mappings",
-        "key": "ctrl+alt+m"
+        "key": "ctrl+alt+m",
+        "mac": "cmd+option+m"
       }
     ]
   },
