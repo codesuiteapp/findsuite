@@ -60,7 +60,7 @@
         },
         "findsuite.everything.limitOpenFile": {
           "type": "integer",
-          "default": 30,
+          "default": 100,
           "description": "%everything.limitOpenFile.description%"
         },
         "findsuite.everythingConfig": {
@@ -170,9 +170,29 @@
             }
           }
         },
+        "findsuite.rg.internal.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "%rg.internal.enabled.description%"
+        },
+        "findsuite.rg.win32.program": {
+          "type": "string",
+          "default": "rg.exe",
+          "description": "%rg.win32.program.description%"
+        },
+        "findsuite.rg.darwin.program": {
+          "type": "string",
+          "default": "rg",
+          "description": "%rg.darwin.program.description%"
+        },
+        "findsuite.rg.linux.program": {
+          "type": "string",
+          "default": "rg",
+          "description": "%rg.linux.program.description%"
+        },
         "findsuite.rg.count": {
           "type": "integer",
-          "default": 200,
+          "default": 300,
           "description": "%rg.count.description%"
         },
         "findsuite.rg.defaultOption": {
@@ -264,6 +284,11 @@
         "category": "findsuite"
       },
       {
+        "command": "utocode.everything#folderFiles",
+        "title": "Get All Files after Everything Folder",
+        "category": "findsuite"
+      },
+      {
         "command": "utocode.search#filter1",
         "title": "Everything #1",
         "category": "findsuite"
@@ -331,11 +356,6 @@
         "mac": "cmd+option+0"
       },
       {
-        "command": "utocode.rg",
-        "key": "ctrl+alt+f10",
-        "mac": "cmd+option+f10"
-      },
-      {
         "command": "utocode.rg1",
         "key": "ctrl+alt+7",
         "mac": "cmd+option+7"
@@ -354,6 +374,11 @@
         "command": "utocode.everything#folder",
         "key": "ctrl+alt+4",
         "mac": "cmd+option+4"
+      },
+      {
+        "command": "utocode.everything#folderFiles",
+        "key": "ctrl+alt+shift+4",
+        "mac": "cmd+option+shift+4"
       },
       {
         "command": "utocode.rgThruEverythingWs",

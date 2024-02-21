@@ -26,6 +26,12 @@ export function activate(context: vscode.ExtensionContext) {
     , vscode.commands.registerCommand('utocode.everything#folder', async () => {
       await evtSearcher.execute("folder");
     })
+    , vscode.commands.registerCommand('utocode.everything#folderFiles', async () => {
+      const result = await evtSearcher.execute("folder", false);
+      if (result && !Array.isArray(result)) {
+        await evtSearcher.execute("defFilter", true, result.detail);
+      }
+    })
     , vscode.commands.registerCommand('utocode.rgThruEverything', async () => {
       const results = await evtSearcher.execute('defFilter', false);
       if (results) {
@@ -43,9 +49,10 @@ export function activate(context: vscode.ExtensionContext) {
           notifyMessageWithTimeout(mesg);
           return;
         }
+
         const rgQuery: RgQuery = {
           ...initialRgQuery,
-          srchPath: `"${results.map(item => item.detail).join(' ')}"`
+          srchPath: `"${Array.isArray(results) ? results.map(item => item.detail).join(' ') : results}"`
         };
         await rg.execute(rgQuery, query);
       }

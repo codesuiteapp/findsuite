@@ -21,7 +21,7 @@ export class RipgrepSearch {
     private _workspaceFolders: string[];
 
     private projectRoot: string;
-    private rgPath;
+    private rgProgram;
     private query: string[] = [];
     private scrollBack: QuickPickItemRgData[] = [];
     private rgDefOption: string;
@@ -29,8 +29,20 @@ export class RipgrepSearch {
     constructor(private context: vscode.ExtensionContext) {
         this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
         this.projectRoot = this.workspaceFolders[0] || ".";
-        this.rgPath = this.getRgPath(context.extensionUri.fsPath);
         this.rgDefOption = FindSuiteSettings.defaultOption;
+        const internalRg = FindSuiteSettings.internalEnabled;
+        if (internalRg) {
+            this.rgProgram = this.getRgPath(context.extensionUri.fsPath);
+        } else {
+            switch (platform) {
+                case "win32": this.rgProgram = FindSuiteSettings.rgWin32Program;
+                    return;
+                case "darwin": this.rgProgram = FindSuiteSettings.rgMacProgram;
+                    return;
+                default: this.rgProgram = FindSuiteSettings.rgLinuxProgram;
+                    return;
+            }
+        }
     }
 
     public get workspaceFolders(): string[] {
@@ -84,9 +96,9 @@ export class RipgrepSearch {
                 }
                 let result: QuickPickItemResults;
                 if (rgQuery.skipQuote) {
-                    result = await this.fetchGrepItems([this.rgPath, this.rgDefOption, ...this.query].join(' '), rgQuery);
+                    result = await this.fetchGrepItems([this.rgProgram, this.rgDefOption, ...this.query].join(' '), rgQuery);
                 } else {
-                    result = await this.fetchGrepItems([this.rgPath, this.rgDefOption, quote([...this.query])].join(' '), rgQuery);
+                    result = await this.fetchGrepItems([this.rgProgram, this.rgDefOption, quote([...this.query])].join(' '), rgQuery);
                 }
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
@@ -120,7 +132,7 @@ export class RipgrepSearch {
 
             if (item.description === "History") {
                 const history = item.label.split(/\s/);
-                const result = await this.fetchGrepItems([this.rgPath, item.option, history, rgQuery.srchPath].join(' '), rgQuery);
+                const result = await this.fetchGrepItems([this.rgProgram, item.option, history, rgQuery.srchPath].join(' '), rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', this.projectRoot);
                 quickPick.title = `RipGrep: Text <${item.label}> :: Results <${quickPick.items.length} / ${result.total}>`;
@@ -151,7 +163,7 @@ export class RipgrepSearch {
             return;
         }
 
-        const result = await this.fetchGrepItems([this.rgPath, `"${txt}"`].join(' '), rgQuery);
+        const result = await this.fetchGrepItems([this.rgProgram, `"${txt}"`].join(' '), rgQuery);
         if (rgQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
                 title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.items.length} / ${result.total}>`,

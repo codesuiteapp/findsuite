@@ -128,7 +128,7 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
             ??
-            150;
+            500;
     }
 
     public static get limitOpenFile(): number {
@@ -137,7 +137,7 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
             ??
-            30;
+            100;
     }
 
     public static get rgCount(): number {
@@ -146,7 +146,43 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
             ??
-            150;
+            300;
+    }
+
+    public static get internalEnabled(): boolean {
+        const key = 'rg.internal.enabled';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<boolean>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<boolean>(key)?.defaultValue
+            ??
+            true;
+    }
+
+    public static get rgWin32Program(): string {
+        const key = 'rg.win32.program';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            'rg.exe';
+    }
+
+    public static get rgMacProgram(): string {
+        const key = 'rg.mac.program';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            'rg';
+    }
+
+    public static get rgLinuxProgram(): string {
+        const key = 'rg.linux.program';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            'rg';
     }
 
     public static get defaultOption(): string {

@@ -128,7 +128,7 @@ export class EverythingSearcher {
     }
   }
 
-  public async execute(filterType: string, isOpen: boolean = true) {
+  public async execute(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
     let option: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
     if (!option) {
       if (filterType === 'folder') {
@@ -145,7 +145,7 @@ export class EverythingSearcher {
       }
     }
 
-    let txt = getSelectionText();
+    let txt = query ?? getSelectionText();
     if (!txt) {
       txt = await vscode.window.showInputBox({
         title: `Everything:: Enter filename to search`,
@@ -157,20 +157,24 @@ export class EverythingSearcher {
     }
 
     const limit = FindSuiteSettings.limitOpenFile;
-    const items = await this.searchInEverything(option, txt);
+    const items: QuickPickItem[] = await this.searchInEverything(option, txt);
 
     if (filterType === 'folder') {
-      await vscode.window.showQuickPick(items, {
+      const item = await vscode.window.showQuickPick(items, {
         title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"} `,
         placeHolder: txt,
         canPickMany: false,
         matchOnDetail: true,
         matchOnDescription: true
-      }).then(async (item) => {
-        if (item) {
-          await this.openFile(item);
-        }
+      }).then(selectedItem => {
+        return selectedItem;
       });
+
+      if (item && isOpen) {
+        await this.openFile(item);
+      } else {
+        return item;
+      }
     } else {
       let results = await vscode.window.showQuickPick(items, {
         title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"} `,
@@ -180,24 +184,40 @@ export class EverythingSearcher {
         matchOnDescription: true
       });
 
-      if (results) {
-        if (results && results.length > limit) {
-          results = results.slice(0, limit);
-        } else {
-          results = results;
-        }
+      return await this.openMultiFiles(results, isOpen, limit);
+    }
 
-        if (isOpen) {
-          results?.forEach(async (item) => {
-            await this.openFile(item);
-          });
-        } else {
-          return results;
-        }
+    return undefined;
+  }
+
+  public async openMultiFiles(results: QuickPickItem[] | undefined, isOpen: boolean = true, limit: number = FindSuiteSettings.limitOpenFile) {
+    if (results) {
+      if (results && results.length > limit) {
+        results = results.slice(0, limit);
+      } else {
+        results = results;
+      }
+
+      if (isOpen) {
+        results?.forEach(async (item) => {
+          await this.openFile(item);
+        });
+      } else {
+        return results;
       }
     }
 
     return undefined;
+  }
+
+  public resizeItems(results: QuickPickItem[], limit: number = FindSuiteSettings.limitOpenFile) {
+    if (results && results.length > limit) {
+      results = results.slice(0, limit);
+    } else {
+      results = results;
+    }
+
+    return results;
   }
 
   private async openFile(file: any) {
@@ -220,9 +240,11 @@ export class EverythingSearcher {
 }
 
 interface EverythingResponse {
-  results: {
-    name: string;
-    path: string;
-    type: string;
-  }[];
+  results: EverythingResult[];
+}
+
+export interface EverythingResult {
+  name: string;
+  path: string;
+  type: string;
 }
