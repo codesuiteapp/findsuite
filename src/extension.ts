@@ -32,6 +32,13 @@ export function activate(context: vscode.ExtensionContext) {
         await evtSearcher.execute("defFilter", true, result.detail);
       }
     })
+    , vscode.commands.registerCommand('utocode.everything#workspace', async () => {
+      const result = await evtSearcher.execute("code-workspace", false);
+      if (result && !Array.isArray(result)) {
+        let uri = vscode.Uri.file(result.detail!);
+        await vscode.commands.executeCommand('vscode.openFolder', uri, true);
+      }
+    })
     , vscode.commands.registerCommand('utocode.rgThruEverything', async () => {
       const results = await evtSearcher.execute('defFilter', false);
       if (results) {

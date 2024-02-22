@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.0.3] - 2024-02-22
+
+- Add Function: Everything Workspace from file
+
 ### [0.0.2] - 2024-02-21
 
 - A few bug fixes

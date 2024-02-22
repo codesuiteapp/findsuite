@@ -94,7 +94,7 @@ export class EverythingSearcher {
             });
             resolve(files);
           } catch (e) {
-            reject(new Error(`Failed to decode Everything response as JSON, body data: ${body} `));
+            reject(new Error(`Failed to decode Everything response as JSON, body data: ${body}`));
           }
         });
       });
@@ -137,12 +137,32 @@ export class EverythingSearcher {
           sort: 'date_modified',
           query: 'folder:'
         };
+      } else if (filterType === 'code-workspace') {
+        option = {
+          ...FindSuiteSettings.everythingConfig.get('defFilter')!,
+          sort: 'name',
+          query: 'ext:code-workspace'
+        };
       } else {
-        const mesg = `There is no configuration file.Please set "everythingConfig.${filterType}"`;
+        const mesg = `There is no configuration file. Please set "everythingConfig.${filterType}"`;
         logger.error(mesg);
         notifyMessageWithTimeout(mesg);
         return;
       }
+    }
+
+    option.filterType = filterType;
+    return this.executeConfig(option, isOpen, query);
+  }
+
+
+  public async executeConfig(option: EverythingConfig | undefined, isOpen: boolean = true, query: string | undefined = undefined) {
+    if (!option) {
+      option = {
+        ...FindSuiteSettings.everythingConfig.get('defFilter')!,
+        sort: 'name',
+        query: ''
+      };
     }
 
     let txt = query ?? getSelectionText();
@@ -159,9 +179,9 @@ export class EverythingSearcher {
     const limit = FindSuiteSettings.limitOpenFile;
     const items: QuickPickItem[] = await this.searchInEverything(option, txt);
 
-    if (filterType === 'folder') {
+    if (option.filterType === 'folder' || option.filterType === 'code-workspace') {
       const item = await vscode.window.showQuickPick(items, {
-        title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"} `,
+        title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"}`,
         placeHolder: txt,
         canPickMany: false,
         matchOnDetail: true,
@@ -177,7 +197,7 @@ export class EverythingSearcher {
       }
     } else {
       let results = await vscode.window.showQuickPick(items, {
-        title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"} `,
+        title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"}`,
         placeHolder: txt,
         canPickMany: true,
         matchOnDetail: true,

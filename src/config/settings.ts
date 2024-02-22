@@ -18,6 +18,7 @@ export interface EverythingConfigProperty {
 
 export interface EverythingConfig extends EverythingConfigProperty {
     name: string;
+    filterType: string;
 }
 
 export type FindSuitePropertyType = "everythingConfig";

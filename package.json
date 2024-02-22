@@ -1,7 +1,7 @@
 {
   "name": "findsuite",
   "displayName": "FindSuite",
-  "description": "This VS Code extension provides powerful file search capabilities right within your editor. With two main functions, it allows users to quickly find files on their computer using file names, file paths, and regular expressions. Additionally, it leverages ripgrep to efficiently locate files containing specific strings",
+  "description": "Ripgrep (aka rg) is a powerful command-line search tool primarily used for finding text in files. Everything is a powerful and lightning-fast desktop search tool. Combining these two programs provides great power and convenience in manipulating files and strings on your computer without leaving vs code.",
   "author": "utocode",
   "publisher": "utocode",
   "icon": "images/icon.png",
@@ -26,7 +26,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -104,7 +104,7 @@
                 },
                 "ascending": {
                   "description": "ascending",
-                  "type": "string"
+                  "type": "boolean"
                 },
                 "inWorkspace": {
                   "description": "inWorkspace",
@@ -121,6 +121,7 @@
               "fullpath": false,
               "inWorkspace": false,
               "sort": "name",
+              "ascending": true,
               "description": "Search All"
             },
             "filter1": {
@@ -130,6 +131,7 @@
               "fullpath": false,
               "inWorkspace": false,
               "sort": "name",
+              "ascending": true,
               "description": "Many extension for Text"
             },
             "filter2": {
@@ -139,6 +141,7 @@
               "fullpath": true,
               "inWorkspace": false,
               "sort": "path",
+              "ascending": false,
               "description": "Full Path [workspace]"
             },
             "filter3": {
@@ -147,7 +150,8 @@
               "regex": false,
               "fullpath": false,
               "inWorkspace": false,
-              "sort": "name",
+              "sort": "date_modified",
+              "ascending": false,
               "description": "Many extension for Java"
             },
             "filter4": {
@@ -156,7 +160,8 @@
               "regex": true,
               "fullpath": false,
               "inWorkspace": false,
-              "sort": "name",
+              "sort": "date_modified",
+              "ascending": false,
               "description": "Regex"
             },
             "filter5": {
@@ -166,7 +171,8 @@
               "fullpath": false,
               "inWorkspace": false,
               "sort": "name",
-              "description": "Many extension for Text"
+              "ascending": true,
+              "description": ""
             }
           }
         },
@@ -289,6 +295,11 @@
         "category": "findsuite"
       },
       {
+        "command": "utocode.everything#workspace",
+        "title": "Everything Workspace from file",
+        "category": "findsuite"
+      },
+      {
         "command": "utocode.search#filter1",
         "title": "Everything #1",
         "category": "findsuite"
@@ -332,11 +343,6 @@
         "command": "utocode.search#filter9",
         "title": "Everything #9",
         "category": "findsuite"
-      },
-      {
-        "command": "utocode.spring.mappings",
-        "title": "Spring Mapping",
-        "category": "findsuite"
       }
     ],
     "keybindings": [
@@ -379,6 +385,11 @@
         "command": "utocode.everything#folderFiles",
         "key": "ctrl+alt+shift+4",
         "mac": "cmd+option+shift+4"
+      },
+      {
+        "command": "utocode.everything#workspace",
+        "key": "ctrl+alt+shift+w",
+        "mac": "cmd+option+shift+w"
       },
       {
         "command": "utocode.rgThruEverythingWs",
