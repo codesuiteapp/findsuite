@@ -58,21 +58,21 @@ export class EverythingSearcher {
     }
   }
 
-  private async searchInEverything(option: EverythingConfig, str: string, cnt: number = FindSuiteSettings.count): Promise<QuickPickItem[]> {
+  private async searchInEverything(config: EverythingConfig, query: string, cnt: number = FindSuiteSettings.count): Promise<QuickPickItem[]> {
     let http_options: http.RequestOptions = {
       hostname: FindSuiteSettings.host,
       port: FindSuiteSettings.port,
       path: encodeURI('/?' + [
         'json=1&path_column=1',
-        `q=${this.buildSearchQuery(option, str)}`,
-        'path=' + (option.fullpath ? 1 : 0),
-        'sort=' + option.sort,
-        'ascending=' + (option.ascending ? 1 : 0),
-        'regex=' + (option.regex ? 1 : 0),
+        `q=${this.buildSearchQuery(config, query)}`,
+        'path=' + (config.fullpath ? 1 : 0),
+        'sort=' + config.sort,
+        'ascending=' + (config.ascending ? 1 : 0),
+        'regex=' + (config.regex ? 1 : 0),
         'count=' + cnt,
       ].join('&'))
     };
-    console.log(`name <${option.name}> path <${http_options.path}>`);
+    console.log(`name <${config.name}> path <${http_options.path}>`);
 
     return new Promise((resolve, reject) => {
       const request = http.get(http_options, (response) => {
@@ -103,21 +103,22 @@ export class EverythingSearcher {
     });
   }
 
-  private buildSearchQuery(option: EverythingConfig, str: string): string {
+  private buildSearchQuery(config: EverythingConfig, extraQuery: string): string {
     let query = '';
-    if (option && option.enabled) {
-      query = option.query.length > 0 ? option.query + '+' : '';
+    if (config && config.enabled) {
+      query = config.query.length > 0 ? config.query + '+' : '';
     }
-    if (!option.inWorkspace) {
-      return (query + str.trim().replace(/\s/g, '+')).trim();
+
+    if (!config.inWorkspace) {
+      return (query + extraQuery.trim().replace(/\s/g, '+')).trim();
     } else {
       let ws = vscode.workspace.workspaceFolders;
 
       if (ws === undefined) {
-        return str;
+        return extraQuery;
       } else {
         let patterns: string[] = [];
-        let userPattern: string = '\\*' + str + '*';
+        let userPattern: string = '\\*' + extraQuery + '*';
 
         ws.forEach((element: vscode.WorkspaceFolder) => {
           patterns.push(element.uri.fsPath + userPattern);
@@ -128,21 +129,56 @@ export class EverythingSearcher {
     }
   }
 
+  private makeEverythingConfig(filterType: string, extraConfig: { title: string, sort: string, query: string }) {
+    let defConfig: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
+    let config: EverythingConfig | undefined;
+    if (defConfig) {
+      config = {
+        ...defConfig,
+        ...extraConfig
+      };
+    }
+
+    return config;
+  }
+
   public async execute(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
-    let option: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
-    if (!option) {
-      if (filterType === 'folder') {
-        option = {
-          ...FindSuiteSettings.everythingConfig.get('defFilter')!,
+    let config: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
+    if (!config) {
+      if (filterType === 'files') {
+        config = this.makeEverythingConfig('defFilter', {
           sort: 'date_modified',
+          title: 'Open Folder',
+          query: 'files:'
+        });
+      } else if (filterType === 'folder') {
+        config = this.makeEverythingConfig('defFilter', {
+          sort: 'date_modified',
+          title: 'Open Folder',
           query: 'folder:'
-        };
+        });
+      } else if (filterType === 'folderFiles') {
+        config = this.makeEverythingConfig('defFilter', {
+          sort: 'date_modified',
+          title: 'Open multi files in Folder',
+          query: 'folder:'
+        });
       } else if (filterType === 'code-workspace') {
-        option = {
-          ...FindSuiteSettings.everythingConfig.get('defFilter')!,
+        config = this.makeEverythingConfig('defFilter', {
           sort: 'name',
+          title: 'Open new window with workspace',
           query: 'ext:code-workspace'
-        };
+        });
+        query = '__EMPTY__';
+      } else if (filterType === 'path') {
+        config = this.makeEverythingConfig('defFilter', {
+          sort: 'name',
+          title: 'Open Folder',
+          query: 'path:' + (query ?? '')
+        });
+        if (query) {
+          query = '__EMPTY__';
+        }
       } else {
         const mesg = `There is no configuration file. Please set "everythingConfig.${filterType}"`;
         logger.error(mesg);
@@ -151,37 +187,34 @@ export class EverythingSearcher {
       }
     }
 
-    option.filterType = filterType;
-    return this.executeConfig(option, isOpen, query);
-  }
-
-
-  public async executeConfig(option: EverythingConfig | undefined, isOpen: boolean = true, query: string | undefined = undefined) {
-    if (!option) {
-      option = {
-        ...FindSuiteSettings.everythingConfig.get('defFilter')!,
-        sort: 'name',
-        query: ''
-      };
+    if (!config) {
+      return;
     }
 
-    let txt = query ?? getSelectionText();
-    if (!txt) {
+    config.filterType = filterType;
+    return this.executeConfig(config, isOpen, query);
+  }
+
+  public async executeConfig(config: EverythingConfig, isOpen: boolean = true, inQuery: string | undefined = undefined) {
+    let txt = inQuery ?? getSelectionText();
+    if (txt === '__EMPTY__') {
+      txt = '';
+    } else if (!txt) {
       txt = await vscode.window.showInputBox({
-        title: `Everything:: Enter filename to search`,
-        prompt: `Usage: ${option?.query ?? ''}`,
-        placeHolder: `${option?.description ?? 'Please enter filename to search'}`
+        title: `Everything:: ${config.title ?? 'Enter filename to search'}`,
+        prompt: `Usage: ${config?.description ?? ''}`,
+        placeHolder: `${config?.description ?? 'Please enter filename to search'}`
       }).then(res => {
         return res ?? '';
       });
     }
 
+    const items: QuickPickItem[] = await this.searchInEverything(config, txt);
     const limit = FindSuiteSettings.limitOpenFile;
-    const items: QuickPickItem[] = await this.searchInEverything(option, txt);
 
-    if (option.filterType === 'folder' || option.filterType === 'code-workspace') {
+    if (config.filterType === 'folder' || config.filterType === 'folderFiles' || config.filterType === 'code-workspace') {
       const item = await vscode.window.showQuickPick(items, {
-        title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"}`,
+        title: `Everything <${txt}> :: Results <${items.length}> :: Open`,
         placeHolder: txt,
         canPickMany: false,
         matchOnDetail: true,

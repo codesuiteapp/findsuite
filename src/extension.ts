@@ -21,15 +21,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand('utocode.everything', async () => {
-      await evtSearcher.execute('defFilter');
+      await evtSearcher.execute('files');
     })
     , vscode.commands.registerCommand('utocode.everything#folder', async () => {
       await evtSearcher.execute("folder");
     })
+    , vscode.commands.registerCommand('utocode.everything#path', async () => {
+      await evtSearcher.execute("path");
+    })
     , vscode.commands.registerCommand('utocode.everything#folderFiles', async () => {
-      const result = await evtSearcher.execute("folder", false);
+      const result = await evtSearcher.execute("folderFiles", false);
       if (result && !Array.isArray(result)) {
-        await evtSearcher.execute("defFilter", true, result.detail);
+        await evtSearcher.execute("path", true, result.detail + ' files:');
       }
     })
     , vscode.commands.registerCommand('utocode.everything#workspace', async () => {

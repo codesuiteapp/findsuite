@@ -19,6 +19,7 @@ export interface EverythingConfigProperty {
 export interface EverythingConfig extends EverythingConfigProperty {
     name: string;
     filterType: string;
+    title: string;
 }
 
 export type FindSuitePropertyType = "everythingConfig";
@@ -160,7 +161,7 @@ export default class FindSuiteSettings {
     }
 
     public static get rgWin32Program(): string {
-        const key = 'rg.win32.program';
+        const key = 'rg.program.win32';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
@@ -169,7 +170,7 @@ export default class FindSuiteSettings {
     }
 
     public static get rgMacProgram(): string {
-        const key = 'rg.mac.program';
+        const key = 'rg.program.mac';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
@@ -178,7 +179,7 @@ export default class FindSuiteSettings {
     }
 
     public static get rgLinuxProgram(): string {
-        const key = 'rg.linux.program';
+        const key = 'rg.program.linux';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue

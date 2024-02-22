@@ -43,9 +43,10 @@ Ultra-fast file search by indexing every file and folder on your system. Works w
 ## Shortcut Keys (Requires Everything)
 
 - **Ctrl + F10**: Search for files using Everything and then search within the selected file(s).
+- **Ctrl + Alt + F9**: Search for files using Everything.
+- **Ctrl + Alt + m**: Open multiple files within a directory searched using Everything.
 - **Ctrl + Alt + 4**: Search using Everything and open the selected folder(s).
 - **Ctrl + Alt + Shift + w**: Use Everything to search for code-workspace files and open Workspace.
-- **Ctrl + Alt + F9**: Search for files using Everything.
 
 ## Usage
 

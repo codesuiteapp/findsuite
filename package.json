@@ -55,7 +55,7 @@
         },
         "findsuite.everything.count": {
           "type": "integer",
-          "default": 500,
+          "default": 1000,
           "description": "%everything.count.description%"
         },
         "findsuite.everything.limitOpenFile": {
@@ -181,24 +181,24 @@
           "default": true,
           "description": "%rg.internal.enabled.description%"
         },
-        "findsuite.rg.win32.program": {
+        "findsuite.rg.program.win32": {
           "type": "string",
           "default": "rg.exe",
-          "description": "%rg.win32.program.description%"
+          "description": "%rg.program.win32.description%"
         },
-        "findsuite.rg.darwin.program": {
+        "findsuite.rg.program.darwin": {
           "type": "string",
           "default": "rg",
-          "description": "%rg.darwin.program.description%"
+          "description": "%rg.program.darwin.description%"
         },
-        "findsuite.rg.linux.program": {
+        "findsuite.rg.program.linux": {
           "type": "string",
           "default": "rg",
-          "description": "%rg.linux.program.description%"
+          "description": "%rg.program.linux.description%"
         },
         "findsuite.rg.count": {
           "type": "integer",
-          "default": 300,
+          "default": 500,
           "description": "%rg.count.description%"
         },
         "findsuite.rg.defaultOption": {
@@ -300,6 +300,11 @@
         "category": "findsuite"
       },
       {
+        "command": "utocode.everything#path",
+        "title": "Everything file with path",
+        "category": "findsuite"
+      },
+      {
         "command": "utocode.search#filter1",
         "title": "Everything #1",
         "category": "findsuite"
@@ -377,19 +382,24 @@
         "mac": "cmd+option+f9"
       },
       {
+        "command": "utocode.everything#folderFiles",
+        "key": "ctrl+alt+m",
+        "mac": "cmd+ctrl+m"
+      },
+      {
         "command": "utocode.everything#folder",
         "key": "ctrl+alt+4",
         "mac": "cmd+option+4"
       },
       {
-        "command": "utocode.everything#folderFiles",
-        "key": "ctrl+alt+shift+4",
-        "mac": "cmd+option+shift+4"
-      },
-      {
         "command": "utocode.everything#workspace",
         "key": "ctrl+alt+shift+w",
         "mac": "cmd+option+shift+w"
+      },
+      {
+        "command": "utocode.everything#path",
+        "key": "ctrl+alt+shift+f9",
+        "mac": "cmd+option+shift+f9"
       },
       {
         "command": "utocode.rgThruEverythingWs",
@@ -410,11 +420,6 @@
         "command": "utocode.search#filter2",
         "key": "ctrl+alt+3",
         "mac": "cmd+option+3"
-      },
-      {
-        "command": "utocode.spring.mappings",
-        "key": "ctrl+alt+m",
-        "mac": "cmd+option+m"
       }
     ]
   },
