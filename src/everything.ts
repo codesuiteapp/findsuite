@@ -153,52 +153,41 @@ export class EverythingSearcher {
   }
 
   public async execute(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
-    let config: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
-    if (!config) {
-      if (filterType === 'files') {
-        config = this.makeEverythingConfig({
-          sort: 'date_modified',
-          title: 'Open Folder',
-          query: 'files:'
-        });
-      } else if (filterType === 'folder') {
-        config = this.makeEverythingConfig({
-          sort: 'date_modified',
-          title: 'Open Folder',
-          query: 'folder:'
-        });
-      } else if (filterType === 'folderFiles') {
-        config = this.makeEverythingConfig({
-          sort: 'date_modified',
-          title: 'Open multi files in Folder',
-          query: 'folder:'
-        });
-      } else if (filterType === 'code-workspace') {
-        config = this.makeEverythingConfig({
-          sort: 'name',
-          title: 'Open new window with workspace',
-          query: 'ext:code-workspace'
-        });
+    let config = defEverythingConfig;
+    if (filterType === 'files') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Open Files',
+        query: 'files:'
+      });
+    } else if (filterType === 'folder') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Open Folder',
+        query: 'folder:'
+      });
+    } else if (filterType === 'folderFiles') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Open multi files in Folder',
+        query: 'folder:'
+      });
+    } else if (filterType === 'code-workspace') {
+      config = this.makeEverythingConfig({
+        sort: 'name',
+        title: 'Open new window with workspace',
+        query: 'ext:code-workspace'
+      });
+      query = '__EMPTY__';
+    } else if (filterType === 'path') {
+      config = this.makeEverythingConfig({
+        sort: 'name',
+        title: 'Open Folder',
+        query: 'path:' + (query ?? '')
+      });
+      if (query) {
         query = '__EMPTY__';
-      } else if (filterType === 'path') {
-        config = this.makeEverythingConfig({
-          sort: 'name',
-          title: 'Open Folder',
-          query: 'path:' + (query ?? '')
-        });
-        if (query) {
-          query = '__EMPTY__';
-        }
-      } else {
-        const mesg = `There is no configuration file. Please set "everythingConfig.${filterType}"`;
-        logger.error(mesg);
-        notifyMessageWithTimeout(mesg);
-        return;
       }
-    }
-
-    if (!config) {
-      return;
     }
 
     config.filterType = filterType;

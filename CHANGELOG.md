@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.0.6] - 2024-02-23
+
+- A few bug fixes
+
 ### [0.0.5] - 2024-02-23
 
 - Add Color for Ripgrep
