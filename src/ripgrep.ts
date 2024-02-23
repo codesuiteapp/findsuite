@@ -26,23 +26,21 @@ export class RipgrepSearch {
     private scrollBack: QuickPickItemRgData[] = [];
     private rgDefOption: string;
 
+    private _currentDecoration: vscode.TextEditorDecorationType | null = null;
+
+    public get currentDecoration(): vscode.TextEditorDecorationType | null {
+        return this._currentDecoration;
+    }
+
+    public set currentDecoration(value: vscode.TextEditorDecorationType | null) {
+        this._currentDecoration = value;
+    }
+
     constructor(private context: vscode.ExtensionContext) {
         this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
         this.projectRoot = this.workspaceFolders[0] || ".";
         this.rgDefOption = FindSuiteSettings.defaultOption;
-        const internalRg = FindSuiteSettings.internalEnabled;
-        if (internalRg) {
-            this.rgProgram = this.getRgPath(context.extensionUri.fsPath);
-        } else {
-            switch (platform) {
-                case "win32": this.rgProgram = FindSuiteSettings.rgWin32Program;
-                    return;
-                case "darwin": this.rgProgram = FindSuiteSettings.rgMacProgram;
-                    return;
-                default: this.rgProgram = FindSuiteSettings.rgLinuxProgram;
-                    return;
-            }
-        }
+        this.rgProgram = this.getRipgrep(context.extensionUri.fsPath);
     }
 
     public get workspaceFolders(): string[] {
@@ -179,14 +177,20 @@ export class RipgrepSearch {
                 });
             }
         } else {
-            await vscode.window.showQuickPick(result.items, {
+            await vscode.window.showQuickPick<QuickPickItemRgData>(result.items, {
                 title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.items.length} / ${result.total}>`,
                 placeHolder: txt,
+                ignoreFocusOut: true,
                 matchOnDetail: true,
-                matchOnDescription: true
+                matchOnDescription: true,
+                onDidSelectItem: async (item: QuickPickItemRgData) => {
+                    await this.openChoiceFile(item, { preserveFocus: true, preview: true });
+                }
             }).then(async (item) => {
                 if (item) {
                     await this.openChoiceFile(item);
+                } else if (vscode.window.activeTextEditor) {
+                    this.clearDecoration(vscode.window.activeTextEditor);
                 }
             });
         }
@@ -197,7 +201,7 @@ export class RipgrepSearch {
             rgQuery.opt = this.rgDefOption;
         }
         const cmd = `${command} -n ${rgQuery.opt} "${rgQuery.srchPath ?? this.projectRoot}" --json`;
-        console.log(`command <${command}> opt <${rgQuery.opt}>`);
+        // console.log(`command <${command}> opt <${rgQuery.opt}>`);
         console.log(`cmd <${cmd}>`);
         logger.debug(`cmd <${cmd}>`);
 
@@ -230,7 +234,7 @@ export class RipgrepSearch {
                     return {
                         label: `${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
                         description: data.path.text.replace(/\\/g, '/'),
-                        detail: `${data.lines.text.trim()} `,
+                        detail: data.lines.text.trim(),
                         start: data.submatches[0].start,
                         end: data.submatches[0].end,
                         line_number: Number(data.line_number),
@@ -254,9 +258,17 @@ export class RipgrepSearch {
         });
     }
 
-    private async openChoiceFile(item: QuickPickItemRgData) {
+    private clearDecoration(editor: vscode.TextEditor) {
+        if (editor && this.currentDecoration) {
+            editor.setDecorations(this.currentDecoration, []);
+        }
+    }
+
+    private async openChoiceFile(item: QuickPickItemRgData, options?: vscode.TextDocumentShowOptions) {
         const doc = await vscode.workspace.openTextDocument(item.description!);
-        const editor = await vscode.window.showTextDocument(doc);
+        const editor = await vscode.window.showTextDocument(doc, options);
+        this.clearDecoration(editor);
+
         if (!vscode.window.activeTextEditor) {
             vscode.window.showErrorMessage("No active editor");
             return;
@@ -266,24 +278,40 @@ export class RipgrepSearch {
         const selection = new vscode.Selection(~~line, item.start, ~~line, item.start);
         editor.selection = selection;
         editor.revealRange(selection, vscode.TextEditorRevealType.InCenter);
+
+        if (options) {
+            this.currentDecoration = vscode.window.createTextEditorDecorationType({
+                backgroundColor: 'yellow'
+            });
+            const range = new vscode.Range(line, item.start, line, item.end);
+            editor.setDecorations(this.currentDecoration, [range]);
+        }
     }
 
-    private getRgPath(rgExtPath: string) {
-        const rgVer = "14_1_0";
-        const basePath = `${rgExtPath}/bin/${rgVer}`;
-        switch (platform) {
-            case "win32":
-                return `${rgExtPath}\\bin\\${rgVer}\\${platform}\\rg.exe`;
-            case "darwin":
-                return `${basePath}/${platform}/rg`;
-            case "linux":
-                if (arch === "arm" || arch === "arm64") {
-                    return `${basePath}/${platform}-armv7/rg`;
-                } else {
+    private getRipgrep(rgExtPath: string) {
+        if (FindSuiteSettings.internalEnabled) {
+            const rgVer = "14_1_0";
+            const basePath = `${rgExtPath}/bin/${rgVer}`;
+            switch (platform) {
+                case "win32":
+                    return `${rgExtPath}\\bin\\${rgVer}\\${platform}\\rg.exe`;
+                case "darwin":
                     return `${basePath}/${platform}/rg`;
-                }
-            default:
-                return "rg";
+                case "linux":
+                    if (arch === "arm" || arch === "arm64") {
+                        return `${basePath}/${platform}-armv7/rg`;
+                    } else {
+                        return `${basePath}/${platform}/rg`;
+                    }
+                default:
+                    return "rg";
+            }
+        } else {
+            switch (platform) {
+                case "win32": return FindSuiteSettings.rgWin32Program;
+                case "darwin": return FindSuiteSettings.rgMacProgram;
+                default: return FindSuiteSettings.rgLinuxProgram;
+            }
         }
     }
 

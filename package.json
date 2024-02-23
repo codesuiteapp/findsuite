@@ -17,16 +17,18 @@
     "ripgrep",
     "grep",
     "rg",
+    "fd",
     "everything",
     "everything find",
     "search",
     "quick search",
     "fuzzy",
+    "fuzzy fd",
     "fuzzy find",
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.0.3",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -114,16 +116,6 @@
             }
           },
           "default": {
-            "defFilter": {
-              "enabled": true,
-              "query": "",
-              "regex": false,
-              "fullpath": false,
-              "inWorkspace": false,
-              "sort": "name",
-              "ascending": true,
-              "description": "Search All"
-            },
             "filter1": {
               "enabled": true,
               "query": "ext:c;chm;cpp;csv;cxx;docm;dot;dotm;dotx;h;hpp;htm;html;hxx;ini;java;lua;mht;mhtml;odt;pdf;potx;potm;ppam;ppsm;ppsx;pps;pptm;rtf;sldm;sldx;thmx;txt;vsd;wpd;wri;xlam;xlsb;xlsm;xltm;xltx;xml",
@@ -379,37 +371,37 @@
       {
         "command": "utocode.everything",
         "key": "ctrl+alt+f9",
-        "mac": "cmd+option+f9"
+        "when": "isWindows"
       },
       {
         "command": "utocode.everything#folderFiles",
         "key": "ctrl+alt+m",
-        "mac": "cmd+ctrl+m"
+        "when": "isWindows"
       },
       {
         "command": "utocode.everything#folder",
         "key": "ctrl+alt+4",
-        "mac": "cmd+option+4"
+        "when": "isWindows"
       },
       {
         "command": "utocode.everything#workspace",
         "key": "ctrl+alt+shift+w",
-        "mac": "cmd+option+shift+w"
+        "when": "isWindows"
       },
       {
         "command": "utocode.everything#path",
         "key": "ctrl+alt+shift+f9",
-        "mac": "cmd+option+shift+f9"
+        "when": "isWindows"
       },
       {
         "command": "utocode.rgThruEverythingWs",
         "key": "ctrl+alt+shift+f10",
-        "mac": "cmd+option+shift+f10"
+        "when": "isWindows"
       },
       {
         "command": "utocode.rgThruEverything",
         "key": "ctrl+f10",
-        "mac": "cmd+f10"
+        "when": "isWindows"
       },
       {
         "command": "utocode.search#filter1",

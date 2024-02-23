@@ -8,10 +8,10 @@ export interface EverythingConfigProperty {
     [key: string]: any;
     enabled: boolean;
     query: string;
-    filepath: boolean;
+    fullpath: boolean;
     regex: boolean;
     sort: string;
-    ascending?: string;
+    ascending?: boolean;
     description: string;
     inWorkspace: boolean;
 }

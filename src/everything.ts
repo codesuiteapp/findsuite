@@ -7,6 +7,20 @@ import { getSelectionText } from './utils/editor';
 import logger from './utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from './utils/vsc';
 
+const defEverythingConfig: EverythingConfig = {
+  enabled: true,
+  query: "",
+  regex: false,
+  fullpath: false,
+  inWorkspace: false,
+  sort: "name",
+  ascending: true,
+  description: "Search All",
+  name: "default-filter",
+  filterType: "default-filter",
+  title: ""
+};
+
 export class EverythingSearcher {
 
   constructor() {
@@ -129,15 +143,11 @@ export class EverythingSearcher {
     }
   }
 
-  private makeEverythingConfig(filterType: string, extraConfig: { title: string, sort: string, query: string }) {
-    let defConfig: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
-    let config: EverythingConfig | undefined;
-    if (defConfig) {
-      config = {
-        ...defConfig,
-        ...extraConfig
-      };
-    }
+  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string }) {
+    let config: EverythingConfig | undefined = {
+      ...defEverythingConfig,
+      ...extraConfig
+    };
 
     return config;
   }
@@ -146,32 +156,32 @@ export class EverythingSearcher {
     let config: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
     if (!config) {
       if (filterType === 'files') {
-        config = this.makeEverythingConfig('defFilter', {
+        config = this.makeEverythingConfig({
           sort: 'date_modified',
           title: 'Open Folder',
           query: 'files:'
         });
       } else if (filterType === 'folder') {
-        config = this.makeEverythingConfig('defFilter', {
+        config = this.makeEverythingConfig({
           sort: 'date_modified',
           title: 'Open Folder',
           query: 'folder:'
         });
       } else if (filterType === 'folderFiles') {
-        config = this.makeEverythingConfig('defFilter', {
+        config = this.makeEverythingConfig({
           sort: 'date_modified',
           title: 'Open multi files in Folder',
           query: 'folder:'
         });
       } else if (filterType === 'code-workspace') {
-        config = this.makeEverythingConfig('defFilter', {
+        config = this.makeEverythingConfig({
           sort: 'name',
           title: 'Open new window with workspace',
           query: 'ext:code-workspace'
         });
         query = '__EMPTY__';
       } else if (filterType === 'path') {
-        config = this.makeEverythingConfig('defFilter', {
+        config = this.makeEverythingConfig({
           sort: 'name',
           title: 'Open Folder',
           query: 'path:' + (query ?? '')

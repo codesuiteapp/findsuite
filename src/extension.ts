@@ -161,9 +161,6 @@ export function activate(context: vscode.ExtensionContext) {
     , vscode.commands.registerCommand('utocode.search#filter9', async () => {
       await evtSearcher.searchAndOpen("filter9");
     })
-    , vscode.commands.registerCommand('utocode.spring.mappings', () => {
-      vscode.commands.executeCommand('spring.mappings.find');
-    })
     , vscode.workspace.onDidChangeConfiguration(() => {
       // config = vscode.workspace.getConfiguration('findsuite');
     })

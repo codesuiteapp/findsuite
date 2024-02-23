@@ -1,5 +1,9 @@
 # FindSuite
 
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/utocode.findsuite?style=for-the-badge&label=VS%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=utocode.findsuite)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/utocode.findsuite?style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=utocode.findsuite)
+[![License](https://img.shields.io/github/license/codesuiteapp/findsuite?style=for-the-badge&logo=)](https://github.com/codesuiteapp/findsuite/blob/master/LICENSE)
+
 ## Overview
 
 Ripgrep(일명 rg)는 주로 파일에서 텍스트를 찾는 데 사용되는 강력한 명령줄 검색 도구입니다. Everything는 강력하고 빠른 윈도우용 데스크톱 검색 도구입니다.
