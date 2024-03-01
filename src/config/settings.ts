@@ -106,6 +106,60 @@ export default class FindSuiteSettings {
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key);
     }
 
+    public static get fdInternalEnabled(): boolean {
+        const key = 'fd.internal.enabled';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<boolean>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<boolean>(key)?.defaultValue
+            ??
+            true;
+    }
+
+    public static get fdWin32Program(): string {
+        const key = 'fd.program.win32';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            'fd.exe';
+    }
+
+    public static get fdMacProgram(): string {
+        const key = 'fd.program.mac';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            'fd';
+    }
+
+    public static get fdLinuxProgram(): string {
+        const key = 'fd.program.linux';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            'fd';
+    }
+
+    public static get fdDefaultOption(): string {
+        const key = 'fd.defaultOption';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '-H -s';
+    }
+
+    public static get fdPath(): string[] {
+        const key = 'fd.path';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
+            ??
+            [];
+    }
+
     public static get host(): string {
         const key = 'everything.host';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
@@ -148,7 +202,7 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
             ??
-            300;
+            500;
     }
 
     public static get internalEnabled(): boolean {
@@ -193,7 +247,7 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
             ??
-            '';
+            '--hidden -S';
     }
 
     public static get custom1(): string {

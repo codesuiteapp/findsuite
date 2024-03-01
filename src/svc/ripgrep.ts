@@ -3,11 +3,11 @@ import { arch, platform } from "node:process";
 import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
-import FindSuiteSettings from "./config/settings";
-import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData } from "./model/ripgrep";
-import { getSelectionText } from "./utils/editor";
-import logger from "./utils/logger";
-import { notifyMessageWithTimeout } from "./utils/vsc";
+import FindSuiteSettings from "../config/settings";
+import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData } from "../model/ripgrep";
+import { getSelectionText } from "../utils/editor";
+import logger from "../utils/logger";
+import { notifyMessageWithTimeout } from "../utils/vsc";
 
 const MAX_BUF_SIZE = 200000 * 1024;
 
@@ -196,11 +196,40 @@ export class RipgrepSearch {
         }
     }
 
+    public async executeAfterFind(results: vscode.QuickPickItem[]) {
+        if (results) {
+            const query = await vscode.window.showInputBox({
+                title: `Ripgrep :: Enter text to search Files <${results.length}>`,
+                prompt: 'Please enter filename to search',
+                value: getSelectionText()
+            }).then(res => {
+                return res ?? '';
+            });
+
+            if (!query) {
+                const mesg = 'Ripgrep: Query is empty';
+                console.log(mesg);
+                notifyMessageWithTimeout(mesg);
+                return;
+            }
+
+            const rgQuery: RgQuery = {
+                title: 'text',
+                opt: '',
+                srchPath: `${results.map(item => '"' + item.detail + '"').join(' ')}`,
+                replaceQuery: false,
+                skipQuote: true,
+                isMany: true
+            };
+            await this.execute(rgQuery, query);
+        }
+    }
+
     private async fetchGrepItems(command: string, rgQuery: RgQuery): Promise<QuickPickItemResults> {
         if (!rgQuery.opt) {
             rgQuery.opt = this.rgDefOption;
         }
-        const cmd = `${command} -n ${rgQuery.opt} "${rgQuery.srchPath ?? this.projectRoot}" --json`;
+        const cmd = `${command} -n ${rgQuery.opt} ${rgQuery.srchPath ?? this.projectRoot} --json`;
         // console.log(`command <${command}> opt <${rgQuery.opt}>`);
         console.log(`cmd <${cmd}>`);
         logger.debug(`cmd <${cmd}>`);

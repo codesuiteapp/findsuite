@@ -1,6 +1,6 @@
 {
   "name": "findsuite",
-  "displayName": "FindSuite",
+  "displayName": "FindSuite (Beyond Find)",
   "description": "Ripgrep (aka rg) is a powerful command-line search tool primarily used for finding text in files. Everything is a powerful and lightning-fast desktop search tool. Combining these two programs provides great power and convenience in manipulating files and strings on your computer without leaving vs code.",
   "author": "utocode",
   "publisher": "utocode",
@@ -18,6 +18,7 @@
     "grep",
     "rg",
     "fd",
+    "super fd",
     "everything",
     "everything find",
     "search",
@@ -28,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.0.6",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -43,8 +44,38 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "FindSuite",
+      "title": "Find Suite",
       "properties": {
+        "findsuite.fd.internal.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "%fd.internal.enabled.description%"
+        },
+        "findsuite.fd.program.win32": {
+          "type": "string",
+          "default": "fd.exe",
+          "description": "%fd.program.win32.description%"
+        },
+        "findsuite.fd.program.darwin": {
+          "type": "string",
+          "default": "fd",
+          "description": "%fd.program.darwin.description%"
+        },
+        "findsuite.fd.program.linux": {
+          "type": "string",
+          "default": "fd",
+          "description": "%fd.program.linux.description%"
+        },
+        "findsuite.fd.path": {
+          "type": "string",
+          "default": "",
+          "description": "%fd.path.description%"
+        },
+        "findsuite.fd.defaultOption": {
+          "type": "string",
+          "default": "-H -s",
+          "description": "%fd.default.option.description%"
+        },
         "findsuite.everything.host": {
           "type": "string",
           "default": "127.0.0.1",
@@ -195,7 +226,7 @@
         },
         "findsuite.rg.defaultOption": {
           "type": "string",
-          "default": "-s",
+          "default": "--hidden -S",
           "description": "%rg.default.option.description%"
         },
         "findsuite.rg.custom1": {
@@ -227,122 +258,167 @@
     },
     "commands": [
       {
+        "command": "utocode.fd",
+        "title": "Fd Find",
+        "category": "FindSuite"
+      },
+      {
+        "command": "utocode.fdFile",
+        "title": "Fd File Find",
+        "category": "FindSuite"
+      },
+      {
+        "command": "utocode.fdFolder",
+        "title": "Fd Folder",
+        "category": "FindSuite"
+      },
+      {
+        "command": "utocode.rgThruFd",
+        "title": "Ripgrep with Fd",
+        "category": "FindSuite"
+      },
+      {
         "command": "utocode.rg",
         "title": "Ripgrep",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rgFile",
         "title": "Ripgrep File",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rgws",
         "title": "Ripgrep Current Workspace",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rgFolder",
         "title": "Ripgrep Folder",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rg1",
         "title": "Ripgrep #1",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rg2",
         "title": "Ripgrep #2",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rg3",
         "title": "Ripgrep #3",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rg4",
         "title": "Ripgrep #4",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.rgThruEverything",
         "title": "Ripgrep with Everything",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.everything",
         "title": "Everything",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.everything#folder",
         "title": "Everything Folder",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.everything#folderFiles",
         "title": "Get All Files after Everything Folder",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.everything#workspace",
         "title": "Everything Workspace from file",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.everything#path",
         "title": "Everything file with path",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter1",
         "title": "Everything #1",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter2",
         "title": "Everything #2",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter3",
         "title": "Everything #3",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter4",
         "title": "Everything #4",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter5",
         "title": "Everything #5",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter6",
         "title": "Everything #6",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter7",
         "title": "Everything #7",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter8",
         "title": "Everything #8",
-        "category": "findsuite"
+        "category": "FindSuite"
       },
       {
         "command": "utocode.search#filter9",
         "title": "Everything #9",
-        "category": "findsuite"
+        "category": "FindSuite"
       }
     ],
     "keybindings": [
+      {
+        "command": "utocode.fd",
+        "key": "ctrl+alt+f7",
+        "mac": "cmd+option+f7"
+      },
+      {
+        "command": "utocode.fdFile",
+        "key": "ctrl+alt+f8",
+        "mac": "cmd+option+f8"
+      },
+      {
+        "command": "utocode.fdFolder",
+        "key": "ctrl+alt+f9",
+        "mac": "cmd+option+f9"
+      },
+      {
+        "command": "utocode.rgThruFd",
+        "key": "ctrl+alt+f10",
+        "mac": "cmd+ctrl+f10"
+      },
+      {
+        "command": "utocode.rgws",
+        "key": "ctrl+f8",
+        "mac": "cmd+f8"
+      },
       {
         "command": "utocode.rgFolder",
         "key": "ctrl+f7",

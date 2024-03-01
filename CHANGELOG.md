@@ -1,5 +1,10 @@
 # Change Log
 
+### [0.1.0] - 2024-03-01
+
+- Add fd
+- A few bug fixes
+
 ### [0.0.6] - 2024-02-23
 
 - A few bug fixes

@@ -41,6 +41,15 @@ The extension seamlessly integrates with ripgrep, allowing users to search for f
 - **Ctrl + F8**: Search for strings within the files in the current workspace using ripgrep.
 - **Ctrl + Alt + 0**: Search for strings within the currently open file using ripgrep.
 
+### Fd Integration
+
+The extension seamlessly integrates with fd, allowing users to search for specific filename efficiently.
+
+## Shortcuts
+
+- **Ctrl + Alt + F7**: Search for files in both the directory designated as default and the directory of the current project
+- **Ctrl + Alt + F10**: Search for files using Fd and then search within the selected file(s).
+
 ### Everything integration
 
 Ultra-fast file search by indexing every file and folder on your system. Works with Everything to handle large numbers of files quickly and easily in VS Code.

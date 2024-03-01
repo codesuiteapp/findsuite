@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 import FindSuiteSettings from "./config/settings";
-import { EverythingSearcher } from "./everything";
+import { FdQuery } from "./model/fd";
 import { RgQuery } from "./model/ripgrep";
-import { RipgrepSearch } from "./ripgrep";
-import { getEditorFsPath, getSelectionText } from "./utils/editor";
+import { EverythingSearcher } from "./svc/everything";
+import { FdFind } from "./svc/fd";
+import { RipgrepSearch } from "./svc/ripgrep";
+import { getEditorFsPath } from "./utils/editor";
 import { notifyMessageWithTimeout } from "./utils/vsc";
 
-const initialRgQuery: RgQuery = {
+const rgInitQuery: RgQuery = {
   title: 'text',
   opt: '',
   srchPath: undefined,
@@ -15,7 +17,16 @@ const initialRgQuery: RgQuery = {
   isMany: true
 };
 
+const fdInitQuery: FdQuery = {
+  title: 'file',
+  opt: '',
+  fileType: 'file',
+  srchPath: undefined,
+  isMany: true
+};
+
 export function activate(context: vscode.ExtensionContext) {
+  const fd = new FdFind(context);
   const rg = new RipgrepSearch(context);
   const evtSearcher = new EverythingSearcher();
 
@@ -42,40 +53,39 @@ export function activate(context: vscode.ExtensionContext) {
         await vscode.commands.executeCommand('vscode.openFolder', uri, true);
       }
     })
+    , vscode.commands.registerCommand('utocode.fd', async () => {
+      await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } });
+    })
+    , vscode.commands.registerCommand('utocode.fdFile', async () => {
+      await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } });
+    })
+    , vscode.commands.registerCommand('utocode.fdFolder', async () => {
+      const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t d', fileType: 'dir', isMany: false } });
+      if (result) {
+        await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', srchPath: Array.isArray(result) ? result[0].detail! : result.detail } });
+      }
+    })
+    , vscode.commands.registerCommand('utocode.rgThruFd', async () => {
+      const results = await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } }, false);
+      if (results) {
+        await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+      }
+    })
     , vscode.commands.registerCommand('utocode.rgThruEverything', async () => {
       const results = await evtSearcher.execute('defFilter', false);
       if (results) {
-        const query = await vscode.window.showInputBox({
-          title: `Ripgrep :: Enter text to search`,
-          prompt: 'Please enter filename to search',
-          value: getSelectionText()
-        }).then(res => {
-          return res ?? '';
-        });
-
-        if (!query) {
-          const mesg = 'Ripgrep: Query is empty';
-          console.log(mesg);
-          notifyMessageWithTimeout(mesg);
-          return;
-        }
-
-        const rgQuery: RgQuery = {
-          ...initialRgQuery,
-          srchPath: `"${Array.isArray(results) ? results.map(item => item.detail).join(' ') : results}"`
-        };
-        await rg.execute(rgQuery, query);
+        await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
       }
     })
     , vscode.commands.registerCommand('utocode.rgThruEverythingWs', async () => {
       return;
     })
     , vscode.commands.registerCommand('utocode.rg', async () => {
-      await rg.execute(initialRgQuery);
+      await rg.execute(rgInitQuery);
     })
     , vscode.commands.registerCommand('utocode.rgws', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         title: 'Workspace',
         srchPath: `"${rg.workspaceFolders.join(' ')}"`
       };
@@ -83,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
     , vscode.commands.registerCommand('utocode.rgFile', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         isMany: false,
         title: 'Current File',
         srchPath: getEditorFsPath()
@@ -92,7 +102,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
     , vscode.commands.registerCommand('utocode.rgFolder', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         isMany: false,
         title: 'Current Folder',
         srchPath: getEditorFsPath(true)
@@ -101,35 +111,35 @@ export function activate(context: vscode.ExtensionContext) {
     })
     , vscode.commands.registerCommand('utocode.rg1', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         opt: FindSuiteSettings.custom1
       };
       await rg.execInteract(rgQuery);
     })
     , vscode.commands.registerCommand('utocode.rg2', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         opt: FindSuiteSettings.custom2
       };
       await rg.execInteract(rgQuery);
     })
     , vscode.commands.registerCommand('utocode.rg3', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         opt: FindSuiteSettings.custom3
       };
       await rg.execInteract(rgQuery);
     })
     , vscode.commands.registerCommand('utocode.rg4', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         opt: FindSuiteSettings.custom4
       };
       await rg.execInteract(rgQuery);
     })
     , vscode.commands.registerCommand('utocode.rg5', async () => {
       const rgQuery: RgQuery = {
-        ...initialRgQuery,
+        ...rgInitQuery,
         opt: FindSuiteSettings.custom5
       };
       await rg.execInteract(rgQuery);

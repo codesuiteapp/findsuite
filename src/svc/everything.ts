@@ -2,10 +2,10 @@ import * as http from 'http';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
-import FindSuiteSettings, { EverythingConfig } from './config/settings';
-import { getSelectionText } from './utils/editor';
-import logger from './utils/logger';
-import { notifyMessageWithTimeout, showConfirmMessage } from './utils/vsc';
+import FindSuiteSettings, { EverythingConfig } from '../config/settings';
+import { getSelectionText } from '../utils/editor';
+import logger from '../utils/logger';
+import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
 
 const defEverythingConfig: EverythingConfig = {
   enabled: true,
