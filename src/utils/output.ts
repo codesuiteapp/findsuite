@@ -1,12 +1,10 @@
 import * as vscode from 'vscode';
 import { Constants } from '../svc/constants';
-import StatusBarItem from './statusbar-item';
 
+const outputChannel = vscode.window.createOutputChannel(Constants.EXTENSION_NAME);
 let isShow = false;
-const outputChannel = vscode.window.createOutputChannel(Constants.VIEW_EXTENSION_NAME);
 
 export function show() {
-    // app.sftpBarItem.updateStatus(StatusBarItem.Status.ok);
     outputChannel.show();
     isShow = true;
 }
@@ -37,8 +35,7 @@ export function print(...args: any) {
         }
 
         return arg;
-    })
-        .join(' ');
+    }).join(' ');
 
     outputChannel.appendLine(msg);
 }

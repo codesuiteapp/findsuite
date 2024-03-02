@@ -1,4 +1,5 @@
 import * as cp from "child_process";
+import * as fs from 'fs';
 import { arch, platform } from "node:process";
 import path from "path";
 import { quote } from "shell-quote";
@@ -25,6 +26,8 @@ export class RipgrepSearch {
     private query: string[] = [];
     private scrollBack: QuickPickItemRgData[] = [];
     private rgDefOption: string;
+
+    private _checked: boolean = false;
 
     private _currentDecoration: vscode.TextEditorDecorationType | null = null;
 
@@ -63,7 +66,7 @@ export class RipgrepSearch {
             quickPick.value = rgQuery.opt;
             rgQuery.opt = '';
         } else {
-            const txt = getSelectionText();
+            const txt = getSelectionText(true);
             if (txt) {
                 quickPick.value = txt;
             }
@@ -145,7 +148,14 @@ export class RipgrepSearch {
     }
 
     public async execute(rgQuery: RgQuery, query: string | undefined = undefined) {
-        let txt = query ?? getSelectionText();
+        try {
+            this.checkingProgram();
+        } catch (error: any) {
+            notifyMessageWithTimeout(error.message);
+            return;
+        }
+
+        let txt = query ?? getSelectionText(true);
         if (!txt) {
             txt = await vscode.window.showInputBox({
                 title: `RipGrep: Text to search`,
@@ -201,7 +211,7 @@ export class RipgrepSearch {
             const query = await vscode.window.showInputBox({
                 title: `Ripgrep :: Enter text to search Files <${results.length}>`,
                 prompt: 'Please enter filename to search',
-                value: getSelectionText()
+                value: getSelectionText(true)
             }).then(res => {
                 return res ?? '';
             });
@@ -318,7 +328,7 @@ export class RipgrepSearch {
     }
 
     private getRipgrep(rgExtPath: string) {
-        if (FindSuiteSettings.internalEnabled) {
+        if (FindSuiteSettings.rgInternalEnabled) {
             const rgVer = "14_1_0";
             const basePath = `${rgExtPath}/bin/${rgVer}`;
             switch (platform) {
@@ -342,6 +352,40 @@ export class RipgrepSearch {
                 default: return FindSuiteSettings.rgLinuxProgram;
             }
         }
+    }
+
+    private checkingProgram() {
+        if (this._checked) {
+            return;
+        }
+
+        const programName = this.rgProgram;
+        if (platform !== 'win32') {
+            cp.exec(`which ${programName}`, (error, stdout, stderr) => {
+                if (error) {
+                    throw new Error(`Error checking for ${programName}: ${error.message}`);
+                }
+                if (stderr) {
+                    throw new Error(`Error checking for ${programName}: ${stderr}`);
+                }
+                const programPath = stdout.trim();
+                if (!programPath) {
+                    throw new Error(`${programName} is not installed.`);
+                }
+                console.log(`${programName} is installed at:`, programPath);
+            });
+        }
+
+        if (FindSuiteSettings.rgInternalEnabled && platform !== 'win32') {
+            fs.chmod(programName, '755', (err: any) => {
+                if (err) {
+                    console.error('Error adding execute permission:', err);
+                    return;
+                }
+                console.log(programName + ' permission added successfully.');
+            });
+        }
+        this._checked = true;
     }
 
 }

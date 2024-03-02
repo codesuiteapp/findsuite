@@ -2,7 +2,6 @@ import path from 'path';
 import * as vscode from 'vscode';
 import { Constants } from '../svc/constants';
 import { showInfoMessageWithTimeout } from '../ui/ui';
-import { vscExtension } from '../vsc-ns';
 
 export function getMessageL10n(mesg: string, ...args: Array<string | number | boolean>) {
     let message = vscode.l10n.t(mesg);
@@ -36,7 +35,7 @@ export function showMessageWithTimeout(message: string, timeout: number = 2200) 
 }
 
 export function openSettings(kind?: string) {
-    vscode.commands.executeCommand("workbench.action.openSettings", kind ? `clipsuite.${kind} ` : "clipsuite");
+    vscode.commands.executeCommand("workbench.action.openSettings", kind ? `findsuite.${kind} ` : "findsuite");
 }
 
 export function getExtensionSetting() {
@@ -102,7 +101,7 @@ export function promptForPassword(prompt: string): Promise<string | undefined> {
     }) as Promise<string | undefined>;
 }
 
-export function setContextValue(key: string, value: any, extName: string = 'clipsuite') {
+export function setContextValue(key: string, value: any, extName: string = 'findsuite') {
     executeCommand('setContext', extName + '.' + key, value);
 }
 

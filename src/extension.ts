@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
       await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } });
     })
     , vscode.commands.registerCommand('utocode.fdFolder', async () => {
-      const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t d', fileType: 'dir', isMany: false } });
+      const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t d', fileType: 'dir', isMany: false } }, false);
       if (result) {
         await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', srchPath: Array.isArray(result) ? result[0].detail! : result.detail } });
       }

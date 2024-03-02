@@ -29,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -66,10 +66,20 @@
           "default": "fd",
           "description": "%fd.program.linux.description%"
         },
-        "findsuite.fd.path": {
+        "findsuite.fd.path.win32": {
           "type": "string",
           "default": "",
-          "description": "%fd.path.description%"
+          "description": "%fd.path.win32.description%"
+        },
+        "findsuite.fd.path.linux": {
+          "type": "string",
+          "default": "",
+          "description": "%fd.path.linux.description%"
+        },
+        "findsuite.fd.path.darwin": {
+          "type": "string",
+          "default": "",
+          "description": "%fd.path.darwin.description%"
         },
         "findsuite.fd.defaultOption": {
           "type": "string",
@@ -176,26 +186,6 @@
               "sort": "date_modified",
               "ascending": false,
               "description": "Many extension for Java"
-            },
-            "filter4": {
-              "enabled": true,
-              "query": "path:c:\\workspace",
-              "regex": true,
-              "fullpath": false,
-              "inWorkspace": false,
-              "sort": "date_modified",
-              "ascending": false,
-              "description": "Regex"
-            },
-            "filter5": {
-              "enabled": true,
-              "query": "",
-              "regex": false,
-              "fullpath": false,
-              "inWorkspace": false,
-              "sort": "name",
-              "ascending": true,
-              "description": ""
             }
           }
         },
@@ -256,6 +246,46 @@
         }
       }
     },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "utocode.rgThruEverything",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.everything#folderFiles",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.everything#folder",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.everything#workspace",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.everything#path",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.search#filter1",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.search#filter2",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.search#filter3",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.everything",
+          "when": "isWindows"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "utocode.fd",
@@ -264,12 +294,12 @@
       },
       {
         "command": "utocode.fdFile",
-        "title": "Fd File Find",
+        "title": "Fd File",
         "category": "FindSuite"
       },
       {
         "command": "utocode.fdFolder",
-        "title": "Fd Folder",
+        "title": "Fd Directory",
         "category": "FindSuite"
       },
       {
@@ -289,12 +319,12 @@
       },
       {
         "command": "utocode.rgws",
-        "title": "Ripgrep Current Workspace",
+        "title": "Ripgrep Workspace",
         "category": "FindSuite"
       },
       {
         "command": "utocode.rgFolder",
-        "title": "Ripgrep Folder",
+        "title": "Ripgrep Directory",
         "category": "FindSuite"
       },
       {
@@ -361,36 +391,6 @@
         "command": "utocode.search#filter3",
         "title": "Everything #3",
         "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter4",
-        "title": "Everything #4",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter5",
-        "title": "Everything #5",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter6",
-        "title": "Everything #6",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter7",
-        "title": "Everything #7",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter8",
-        "title": "Everything #8",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter9",
-        "title": "Everything #9",
-        "category": "FindSuite"
       }
     ],
     "keybindings": [
@@ -432,7 +432,7 @@
       {
         "command": "utocode.rgFile",
         "key": "ctrl+alt+0",
-        "mac": "cmd+option+0"
+        "mac": "cmd+ctrl+0"
       },
       {
         "command": "utocode.rg1",
@@ -482,12 +482,12 @@
       {
         "command": "utocode.search#filter1",
         "key": "ctrl+alt+2",
-        "mac": "cmd+option+2"
+        "when": "isWindows"
       },
       {
         "command": "utocode.search#filter2",
         "key": "ctrl+alt+3",
-        "mac": "cmd+option+3"
+        "when": "isWindows"
       }
     ]
   },

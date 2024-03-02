@@ -1,5 +1,7 @@
 import * as cp from "child_process";
+import * as fs from 'fs';
 import { platform } from "node:process";
+import * as os from 'os';
 import path from "path";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
@@ -14,15 +16,21 @@ export class FdFind {
 
     private _workspaceFolders: string[];
 
-    private projectRoot: string;
+    private projectRoot: string[];
     private fdProgram;
     private fdDefOption: string;
 
+    private _checked: boolean = false;
+
     constructor(private context: vscode.ExtensionContext) {
-        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
-        this.projectRoot = this.workspaceFolders[0] || ".";
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
         this.fdProgram = this.getFd(context.extensionUri.fsPath);
+        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
+        if (this._workspaceFolders.length === 0) {
+            this.projectRoot = [os.homedir()];
+        } else {
+            this.projectRoot = this.workspaceFolders;
+        }
     }
 
     public get workspaceFolders(): string[] {
@@ -30,11 +38,19 @@ export class FdFind {
     }
 
     public async execute(fdQuery: FdQuery, isOpen: boolean = true) {
+        try {
+            this.checkingProgram();
+        } catch (error: any) {
+            notifyMessageWithTimeout(error.message);
+            return;
+        }
+
         let txt = getSelectionText();
         if (!fdQuery.srchPath && !txt) {
             txt = await vscode.window.showInputBox({
-                title: `Fd: filename to search`,
-                placeHolder: 'Please enter filename to search'
+                title: `Fd: Filename to search`,
+                placeHolder: 'Please enter filename to search',
+                prompt: fdQuery.fileType === 'file' ? 'Usage: [Filename] or [-g "**/*.sh"]' : ''
             }).then(res => {
                 return res ?? '';
             });
@@ -42,11 +58,11 @@ export class FdFind {
 
         let cmd = '';
         if (fdQuery.fileType === 'dir') {
-            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} . ${FindSuiteSettings.fdPath.join(' ')} ${this.projectRoot}`;
+            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
         } else {
             let command = [this.fdProgram, txt].join(' ');
-            let path = fdQuery.srchPath ? fdQuery.srchPath : `${FindSuiteSettings.fdPath.join(' ')} ${this.projectRoot}`;
-            cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} . ${path}`;
+            let path = fdQuery.srchPath ? '-g "**/*" --full-path ' + fdQuery.srchPath : this.getPlatformPath();
+            cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
         console.log(`cmd <${cmd}>`);
         logger.debug(`cmd <${cmd}>`);
@@ -54,7 +70,7 @@ export class FdFind {
         const result = await this.fdItems(cmd, fdQuery.fileType);
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result, {
-                title: `Fd: Text <${fdQuery.title}> :: Results <${result.length}>`,
+                title: `Fd: File <${fdQuery.title}> :: Results <${result.length}>`,
                 placeHolder: txt,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -66,31 +82,46 @@ export class FdFind {
                     items.forEach(async (item) => {
                         await this.openChoiceFile(item);
                     });
-
                 } else {
                     return items;
                 }
             }
         } else {
-            return await vscode.window.showQuickPick<vscode.QuickPickItem>(result, {
+            const selectedItem = await vscode.window.showQuickPick<vscode.QuickPickItem>(result, {
                 title: `Fd: Type <${fdQuery.fileType}> :: Results <${result.length}>`,
                 placeHolder: txt,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
                 matchOnDescription: true,
-                onDidSelectItem: async (item: vscode.QuickPickItem) => {
-                    await this.openChoiceFile(item);
-                }
+                // onDidSelectItem: async (item: vscode.QuickPickItem) => {
+                //     await this.openChoiceFile(item);
+                // }
             }).then(async (item) => {
                 return item;
             });
+
+            if (selectedItem && isOpen) {
+                await this.openChoiceFile(selectedItem);
+            } else if (selectedItem) {
+                return selectedItem;
+            }
         }
 
         return;
     }
 
-    private async fdItems(cmd: string, fileType: string): Promise<vscode.QuickPickItem[]> {
+    private getPlatformPath() {
+        let path;
+        switch (platform) {
+            case "win32": path = FindSuiteSettings.fdPathWind32; break;
+            case "darwin": path = FindSuiteSettings.fdPathDarwin; break;
+            default: path = FindSuiteSettings.fdPathLinux; break;
+        }
 
+        return ['--full-path', ...path, ...this.projectRoot].join(' ');
+    }
+
+    private async fdItems(cmd: string, fileType: string): Promise<vscode.QuickPickItem[]> {
         return new Promise((resolve, reject) => {
             cp.exec(cmd, { cwd: ".", maxBuffer: MAX_BUF_SIZE }, (err, stdout, stderr) => {
                 console.log(`error <${err}> stderr <${stderr}>`);
@@ -99,7 +130,7 @@ export class FdFind {
                     vscode.window.showErrorMessage(stderr);
                     return resolve([]);
                 }
-                const lines = stdout.split(/\n/).filter((l) => l !== "");
+                const lines = Array.from(new Set(stdout.split(/\n/).filter((l) => l !== "")));
                 console.log(`lines <${lines?.length ?? 0}>`);
 
                 if (!lines.length) {
@@ -109,7 +140,7 @@ export class FdFind {
                 const results = lines.map((line) => {
                     return {
                         label: fileType === 'file' ? '$(file)' : '$(folder)',
-                        description: `${path.basename(line)}`,
+                        description: path.basename(line),
                         detail: line
                     };
                 });
@@ -145,6 +176,40 @@ export class FdFind {
                 default: return FindSuiteSettings.fdLinuxProgram;
             }
         }
+    }
+
+    private checkingProgram() {
+        if (this._checked) {
+            return;
+        }
+
+        const programName = this.fdProgram;
+        if (platform !== 'win32') {
+            cp.exec(`which ${programName}`, (error, stdout, stderr) => {
+                if (error) {
+                    throw new Error(`Error checking for ${programName}: ${error.message}`);
+                }
+                if (stderr) {
+                    throw new Error(`Error checking for ${programName}: ${stderr}`);
+                }
+                const programPath = stdout.trim();
+                if (!programPath) {
+                    throw new Error(`${programName} is not installed.`);
+                }
+                console.log(`${programName} is installed at `, programPath);
+            });
+        }
+
+        if (FindSuiteSettings.fdInternalEnabled && platform !== 'win32') {
+            fs.chmod(programName, '755', (err: any) => {
+                if (err) {
+                    console.error('Error adding execute permission:', err);
+                    return;
+                }
+                console.log(programName + ' permission added successfully.');
+            });
+        }
+        this._checked = true;
     }
 
 }

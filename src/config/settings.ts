@@ -151,8 +151,25 @@ export default class FindSuiteSettings {
             '-H -s';
     }
 
-    public static get fdPath(): string[] {
-        const key = 'fd.path';
+    public static get fdPathWind32(): string[] {
+        const key = 'fd.path.wind32';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
+            ??
+            [];
+    }
+
+    public static get fdPathLinux(): string[] {
+        const key = 'fd.path.linux';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
+            ??
+            [];
+    }
+    public static get fdPathDarwin(): string[] {
+        const key = 'fd.path.darwin';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
@@ -205,7 +222,7 @@ export default class FindSuiteSettings {
             500;
     }
 
-    public static get internalEnabled(): boolean {
+    public static get rgInternalEnabled(): boolean {
         const key = 'rg.internal.enabled';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<boolean>(key)
             ??

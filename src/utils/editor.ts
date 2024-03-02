@@ -11,14 +11,14 @@ export function getEditorFsPath(dir: boolean = false) {
     return uri;
 }
 
-export function getSelectionText() {
+export function getSelectionText(positionWord: boolean = false) {
     const e = vscode.window.activeTextEditor;
     let content: string = '';
     if (e) {
         const selection: vscode.Selection = e.selection;
         if (!selection.isEmpty) {
             content = e.document.getText(selection);
-        } else if (selection.active) {
+        } else if (positionWord && selection.active) {
             let wordRange = e.document.getWordRangeAtPosition(selection.active);
             content = wordRange ? e.document.getText(wordRange) : '';
         }
@@ -67,46 +67,4 @@ export async function getDocument(languageId: string = 'xml') {
         return document;
     }
     return null;
-}
-
-export async function printEditorWithNew(output: string | undefined, languageId: string = 'plaintext') {
-    if (!output) {
-        return;
-    }
-
-    const editor = await openEditorWithNew(languageId);
-    if (editor) {
-        editor.edit((editBuilder) => {
-            editBuilder.insert(editor.selection.start, output);
-        });
-    } else {
-        vscode.window.showErrorMessage("There is no Editor window. Create or open a file");
-    }
-}
-
-export async function clearEditor() {
-    await printEditor('', true);
-}
-
-export async function printEditor(output: string, redraw: boolean = false) {
-    if (!output && !redraw) {
-        return;
-    }
-    const editor = vscode.window.activeTextEditor;
-    if (editor) {
-        if (redraw) {
-            const document = editor.document;
-            const range = document.validateRange(new vscode.Range(0, 0, document.lineCount, 0));
-            editor.edit((editBuilder) => {
-                editBuilder.replace(new vscode.Selection(range.start, range.end), output);
-            });
-        } else {
-            const currentPosition = editor.selection.start;
-            editor.edit((editBuilder) => {
-                editBuilder.insert(currentPosition, output);
-            });
-        }
-    } else {
-        vscode.window.showErrorMessage("There is no Editor window. Create or open a file");
-    }
 }
