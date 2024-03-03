@@ -23,10 +23,12 @@ const defEverythingConfig: EverythingConfig = {
 
 export class EverythingSearcher {
 
+  private query: string[] = [];
+
   constructor() {
   }
 
-  public async searchAndOpen(filterType: string) {
+  public async executeFilter(filterType: string) {
     try {
       const quickPick = vscode.window.createQuickPick();
       let option: EverythingConfig | undefined = FindSuiteSettings.everythingConfig.get(filterType);
@@ -153,7 +155,7 @@ export class EverythingSearcher {
   }
 
   public async execute(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
-    let config = defEverythingConfig;
+    let config: EverythingConfig;
     if (filterType === 'files') {
       config = this.makeEverythingConfig({
         sort: 'date_modified',
@@ -188,6 +190,8 @@ export class EverythingSearcher {
       if (query) {
         query = '__EMPTY__';
       }
+    } else {
+      config = defEverythingConfig;
     }
 
     config.filterType = filterType;
@@ -240,6 +244,75 @@ export class EverythingSearcher {
     }
 
     return undefined;
+  }
+
+  public async interact(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
+    let config: EverythingConfig;
+    config = this.makeEverythingConfig({
+      sort: 'date_modified',
+      title: 'Open Files',
+      query: 'files:'
+    });
+
+    const quickPick = vscode.window.createQuickPick<QuickPickItem>();
+    quickPick.title = 'Everything: Filename';
+    quickPick.placeholder = 'Please enter the string to search';
+    quickPick.ignoreFocusOut = true;
+    quickPick.matchOnDetail = true;
+    // quickPick.matchOnDescription = true;
+
+    const isOption = (s: string) => /^--?[a-z]+/.test(s);
+    const isWordQuoted = (s: string) => /^".*"/.test(s);
+
+    if (config.replaceQuery) {
+      quickPick.value = config.opt;
+      config.opt = '';
+    } else {
+      const txt = getSelectionText(true);
+      if (txt) {
+        quickPick.value = txt;
+      }
+    }
+
+    quickPick.onDidChangeValue(async (item) => {
+      if (!item || item === "") {
+        return;
+      }
+      this.query = item.split(/\s/).reduce((acc, curr, index) => {
+        if (index === 0 || isOption(curr) || isOption(acc[acc.length - 1])) {
+          if (!isWordQuoted(curr) && !isOption(curr)) {
+            acc.push(curr);
+            return acc;
+          }
+
+          acc.push(config.skipQuote ? curr : curr.replace(/"/g, ""));
+          return acc;
+        }
+        acc[acc.length - 1] = acc[acc.length - 1] + ` ${curr}`;
+        return acc;
+      }, [] as string[]);
+
+      try {
+        const queries = this.query.join(' ');
+        quickPick.items = await this.searchInEverything(config, queries);
+        quickPick.title = `Everything: ${config.title} <${queries}> :: Results <${quickPick.items.length}>`;
+      } catch (error: any) {
+        console.log(`interact() - Error: ${error.message}`);
+        logger.error(`interact() - Error: ${error.message}`);
+      }
+    });
+
+    quickPick.onDidAccept(async () => {
+      const item = quickPick.selectedItems[0] as QuickPickItem;
+      if (!item) {
+        return;
+      }
+
+      await this.openFile(item);
+      quickPick.dispose();
+    });
+
+    quickPick.show();
   }
 
   public async openMultiFiles(results: QuickPickItem[] | undefined, isOpen: boolean = true, limit: number = FindSuiteSettings.limitOpenFile) {

@@ -159,7 +159,7 @@
           "default": {
             "filter1": {
               "enabled": true,
-              "query": "ext:c;chm;cpp;csv;cxx;docm;dot;dotm;dotx;h;hpp;htm;html;hxx;ini;java;lua;mht;mhtml;odt;pdf;potx;potm;ppam;ppsm;ppsx;pps;pptm;rtf;sldm;sldx;thmx;txt;vsd;wpd;wri;xlam;xlsb;xlsm;xltm;xltx;xml",
+              "query": "ext:c;chm;cpp;csv;cxx;docm;dot;dotm;dotx;h;hcl;hpp;htm;html;ini;json;java;lua;mhtml;potm;ppam;ppsm;ppsx;pps;pptm;rtf;sldm;sldx;thmx;txt;vsd;wpd;wri;xlam;xlsb;xlsm;xltm;xltx;xml;yaml;yml",
               "regex": false,
               "fullpath": false,
               "inWorkspace": false,
@@ -221,7 +221,7 @@
         },
         "findsuite.rg.custom1": {
           "type": "string",
-          "default": "-g \"*.java\" -g \"*.xml\" -g \"*.properties\" -g \"*.yaml\" -g \"*.yml\"",
+          "default": "-g \"**/*.java\" -g \"**/.xml\" -g \"**/*.properties\" -g \"**/*.yaml\" -g \"**/*.yml\"",
           "description": "%rg.custom1.description%"
         },
         "findsuite.rg.custom2": {
@@ -278,6 +278,10 @@
         },
         {
           "command": "utocode.search#filter3",
+          "when": "isWindows"
+        },
+        {
+          "command": "utocode.incrementalEverything",
           "when": "isWindows"
         },
         {
@@ -350,6 +354,11 @@
       {
         "command": "utocode.rgThruEverything",
         "title": "Ripgrep with Everything",
+        "category": "FindSuite"
+      },
+      {
+        "command": "utocode.incrementalEverything",
+        "title": "Incremental Everything",
         "category": "FindSuite"
       },
       {
@@ -445,6 +454,11 @@
         "mac": "cmd+option+8"
       },
       {
+        "command": "utocode.incrementalEverything",
+        "key": "ctrl+alt+shift+f8",
+        "when": "isWindows"
+      },
+      {
         "command": "utocode.everything",
         "key": "ctrl+alt+f9",
         "when": "isWindows"
@@ -477,16 +491,6 @@
       {
         "command": "utocode.rgThruEverything",
         "key": "ctrl+f10",
-        "when": "isWindows"
-      },
-      {
-        "command": "utocode.search#filter1",
-        "key": "ctrl+alt+2",
-        "when": "isWindows"
-      },
-      {
-        "command": "utocode.search#filter2",
-        "key": "ctrl+alt+3",
         "when": "isWindows"
       }
     ]

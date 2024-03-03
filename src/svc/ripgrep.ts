@@ -24,10 +24,17 @@ export class RipgrepSearch {
     private projectRoot: string;
     private rgProgram;
     private query: string[] = [];
-    private scrollBack: QuickPickItemRgData[] = [];
+    // private scrollBack: QuickPickItemRgData[] = [];
     private rgDefOption: string;
 
     private _checked: boolean = false;
+
+    public get checked(): boolean {
+        return this._checked;
+    }
+    public set checked(value: boolean) {
+        this._checked = value;
+    }
 
     private _currentDecoration: vscode.TextEditorDecorationType | null = null;
 
@@ -50,7 +57,7 @@ export class RipgrepSearch {
         return this._workspaceFolders;
     }
 
-    public async execInteract(rgQuery: RgQuery) {
+    public async interact(rgQuery: RgQuery) {
         const quickPick = vscode.window.createQuickPick<QuickPickItemRgData>();
         quickPick.title = 'RipGrep: Text';
         quickPick.placeholder = 'Please enter the string to search';
@@ -60,7 +67,7 @@ export class RipgrepSearch {
 
         const isOption = (s: string) => /^--?[a-z]+/.test(s);
         const isWordQuoted = (s: string) => /^".*"/.test(s);
-        quickPick.items = this.scrollBack;
+        // quickPick.items = this.scrollBack;
 
         if (rgQuery.replaceQuery) {
             quickPick.value = rgQuery.opt;
@@ -97,9 +104,9 @@ export class RipgrepSearch {
                 }
                 let result: QuickPickItemResults;
                 if (rgQuery.skipQuote) {
-                    result = await this.fetchGrepItems([this.rgProgram, this.rgDefOption, ...this.query].join(' '), rgQuery);
+                    result = await this.fetchGrepItems([this.rgProgram, ...this.query].join(' '), rgQuery);
                 } else {
-                    result = await this.fetchGrepItems([this.rgProgram, this.rgDefOption, quote([...this.query])].join(' '), rgQuery);
+                    result = await this.fetchGrepItems([this.rgProgram, quote([...this.query])].join(' '), rgQuery);
                 }
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
@@ -110,35 +117,42 @@ export class RipgrepSearch {
             }
         });
 
+        quickPick.onDidChangeActive(async (selection) => {
+            if (selection && selection.length > 0) {
+                const item = selection[0] as QuickPickItemRgData;
+                await this.openChoiceFile(item, { preserveFocus: true, preview: true });
+            }
+        });
+
         quickPick.onDidAccept(async () => {
             const item = quickPick.selectedItems[0] as QuickPickItemRgData;
             if (!item) {
                 return;
             }
-            const scrollBackItem = {
-                label: this.query.join(" "),
-                description: "History",
-                line_number: this.scrollBack.length + 1,
-                start: 0,
-                end: 0,
-                option: item.option,
-                replaceQuery: rgQuery.replaceQuery,
-                skipQuote: rgQuery.skipQuote
-            };
+            // const scrollBackItem = {
+            //     label: this.query.join(" "),
+            //     description: "History",
+            //     line_number: this.scrollBack.length + 1,
+            //     start: 0,
+            //     end: 0,
+            //     option: item.option,
+            //     replaceQuery: rgQuery.replaceQuery,
+            //     skipQuote: rgQuery.skipQuote
+            // };
 
-            if (this.scrollBack.length > 10) {
-                this.scrollBack.shift();
-            }
-            this.scrollBack.unshift(scrollBackItem);
+            // if (this.scrollBack.length > 10) {
+            //     this.scrollBack.shift();
+            // }
+            // this.scrollBack.unshift(scrollBackItem);
 
-            if (item.description === "History") {
-                const history = item.label.split(/\s/);
-                const result = await this.fetchGrepItems([this.rgProgram, item.option, history, rgQuery.srchPath].join(' '), rgQuery);
-                quickPick.items = result.items;
-                // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', this.projectRoot);
-                quickPick.title = `RipGrep: Text <${item.label}> :: Results <${quickPick.items.length} / ${result.total}>`;
-                return;
-            }
+            // if (item.description === "History") {
+            //     const history = item.label.split(/\s/);
+            //     const result = await this.fetchGrepItems([this.rgProgram, item.option, history, rgQuery.srchPath].join(' '), rgQuery);
+            //     quickPick.items = result.items;
+            //     // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', this.projectRoot);
+            //     quickPick.title = `RipGrep: Text <${item.label}> :: Results <${quickPick.items.length} / ${result.total}>`;
+            //     return;
+            // }
 
             await this.openChoiceFile(item);
             quickPick.dispose();
@@ -240,7 +254,6 @@ export class RipgrepSearch {
             rgQuery.opt = this.rgDefOption;
         }
         const cmd = `${command} -n ${rgQuery.opt} ${rgQuery.srchPath ?? this.projectRoot} --json`;
-        // console.log(`command <${command}> opt <${rgQuery.opt}>`);
         console.log(`cmd <${cmd}>`);
         logger.debug(`cmd <${cmd}>`);
 
@@ -271,7 +284,7 @@ export class RipgrepSearch {
                 }).map((json) => {
                     const data = json.data;
                     return {
-                        label: `${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
+                        label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
                         description: data.path.text.replace(/\\/g, '/'),
                         detail: data.lines.text.trim(),
                         start: data.submatches[0].start,

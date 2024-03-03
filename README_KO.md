@@ -36,21 +36,30 @@ FindSuite를 사용하면 Visual Studio Code 환경에서 ripgrep과 Everything�
 파일에서 텍스트를 다루는 데 강력하고 편리한 Ripgrep 프로그램을 통합하여 VS Code 에서 쉽고 빠른 검색을 제공합니다.
 폴더 혹은 파일을 찾는 데 있어서 그 무엇보다 강력한 Everything 과 연동하여 파일을 빠르고 쉽게 찾을 수 있도록 도와줍니다.
 
-### Ripgrep 통합
+## Ripgrep 통합
 
 이 확장 프로그램은 ripgrep과 통합되어 사용자가 특정 문자열이 포함된 파일을 효율적으로 검색할 수 있습니다.
 
-## 단축키
+### 단축키
 
 - **Ctrl + F7**: ripgrep을 사용하여 현재 파일의 폴더 내에서 문자열 검색
 - **Ctrl + F8**: ripgrep을 사용하여 현재 workspace에 있는 파일들 내에서 문자열 검색
 - **Ctrl + Alt + 0**: ripgrep을 사용하여 현재 열려 있는 파일에서 문자열 검색
 
-### Everything 연동
+## Fd 통합
 
-시스템의 모든 파일과 폴더를 색인화하여 매우 빠른 파일 검색 Everything 과 연동하여 VS Code 에서 빠르고 많은 파일을 쉽게 다룰 수 있습니다.
+이 확장 프로그램은 fd와 통합되어 특정 파일 이름을 효율적으로 검색할 수 있습니다.
 
-## 단축키 (Requires Everything)
+### Shortcuts for Fd
+
+- **Ctrl + Alt + F7**: 기본으로 지정된 디렉토리와 현재 프로젝트의 디렉토리에서 파일을 검색합니다.
+- **Ctrl + Alt + F10**: Fd를 사용하여 파일을 검색한 다음 선택한 파일 내에서 검색합니다.
+
+## Everything 연동
+
+시스템의 모든 파일과 폴더를 색인화하여 매우 빠른 파일 검색 프로그램 Everything과 연동하여 VS Code 에서 빠르고 많은 파일을 쉽게 다룰 수 있습니다.
+
+### 단축키 (Everything 필요)
 
 - **Ctrl + F10**: 파일명으로 검색하고 그 중에서 선택한 파일에서 문자열 검색
 - **Ctrl + Alt + F9**: 시스템에 있는 모든 파일 검색

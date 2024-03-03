@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { platform } from "node:process";
 import * as os from 'os';
 import path from "path";
+import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { FdQuery } from "../model/fd";
@@ -21,6 +22,13 @@ export class FdFind {
     private fdDefOption: string;
 
     private _checked: boolean = false;
+
+    public get checked(): boolean {
+        return this._checked;
+    }
+    public set checked(value: boolean) {
+        this._checked = value;
+    }
 
     constructor(private context: vscode.ExtensionContext) {
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
@@ -61,7 +69,7 @@ export class FdFind {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
         } else {
             let command = [this.fdProgram, txt].join(' ');
-            let path = fdQuery.srchPath ? '-g "**/*" --full-path ' + fdQuery.srchPath : this.getPlatformPath();
+            let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
             cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
         console.log(`cmd <${cmd}>`);
@@ -108,17 +116,6 @@ export class FdFind {
         }
 
         return;
-    }
-
-    private getPlatformPath() {
-        let path;
-        switch (platform) {
-            case "win32": path = FindSuiteSettings.fdPathWind32; break;
-            case "darwin": path = FindSuiteSettings.fdPathDarwin; break;
-            default: path = FindSuiteSettings.fdPathLinux; break;
-        }
-
-        return ['--full-path', ...path, ...this.projectRoot].join(' ');
     }
 
     private async fdItems(cmd: string, fileType: string): Promise<vscode.QuickPickItem[]> {
@@ -178,6 +175,21 @@ export class FdFind {
         }
     }
 
+    private getPlatformPath() {
+        let path = this.getPlatformFdPath();
+        return ['--full-path', quote(path), quote(this.projectRoot)].join(' ');
+    }
+
+    private getPlatformFdPath() {
+        let path;
+        switch (platform) {
+            case "win32": path = FindSuiteSettings.fdPathWind32; break;
+            case "darwin": path = FindSuiteSettings.fdPathDarwin; break;
+            default: path = FindSuiteSettings.fdPathLinux; break;
+        }
+        return path;
+    }
+
     private checkingProgram() {
         if (this._checked) {
             return;
@@ -208,6 +220,10 @@ export class FdFind {
                 }
                 console.log(programName + ' permission added successfully.');
             });
+        }
+
+        if (this.getPlatformFdPath().length === 0) {
+            notifyMessageWithTimeout(`Please set "findsuite.fd.path.${platform}" for more searching`);
         }
         this._checked = true;
     }
