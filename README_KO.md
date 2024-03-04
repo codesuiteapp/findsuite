@@ -29,6 +29,10 @@ FindSuite를 사용하면 Visual Studio Code 환경에서 ripgrep과 Everything�
 
 ![Setting](images/setting.png)
 
+- **VSCode Settings for Fd**: Fd 프로그램에서 기본적으로 검색할 디렉토리를 입력해 주세요. 구분자는 ; 는 입니다. 예를 들어 윈도우 환경이면 Fd > Path: Win32 에 C:\workspace;D:\my-project; 처럼 입력합니다.
+
+![Fd](images/fd1.png)
+
 ## 기능
 
 ### FindSuite 프로그램

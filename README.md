@@ -24,6 +24,10 @@ Before using this extension, ensure that you have the following prerequisites in
 
 ![Setting](images/setting.png)
 
+- **VSCode Settings for Fd**: Please enter the default directories to search in the Fd program. The delimiter is ;. For example, in a Windows environment, enter like this in Fd > Path: Win32: C:\workspace;D:\my-project;.
+
+![Fd](images/fd1.png)
+
 ## Features
 
 ### FindSuite Program
