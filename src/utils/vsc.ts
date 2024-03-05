@@ -35,7 +35,7 @@ export function showMessageWithTimeout(message: string, timeout: number = 2200) 
 }
 
 export function openSettings(kind?: string) {
-    vscode.commands.executeCommand("workbench.action.openSettings", kind ? `findsuite.${kind} ` : "findsuite");
+    vscode.commands.executeCommand("workbench.action.openSettings", kind ? `findsuite.${kind}` : "findsuite");
 }
 
 export function getExtensionSetting() {
