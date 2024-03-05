@@ -29,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.1.3",
+  "version": "0.1.5",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -233,6 +233,16 @@
           "type": "string",
           "default": "--hidden -S",
           "description": "%rg.default.option.description%"
+        },
+        "findsuite.rg.matchColor.darkTheme": {
+          "type": "string",
+          "default": "#ffa500",
+          "description": "%rg.matchColor.darkTheme.description%"
+        },
+        "findsuite.rg.matchColor.lightTheme": {
+          "type": "string",
+          "default": "#ff1b51",
+          "description": "%rg.matchColor.lightTheme.description%"
         },
         "findsuite.rg.custom1": {
           "type": "string",

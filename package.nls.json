@@ -23,6 +23,8 @@
   "rg.program.linux.description": "Describe the location of the ripgrep program in Linux",
   "rg.count.description": "Number of results received from Ripgrep (default: 500)",
   "rg.default.option.description": "Set default options for ripgrep program",
+  "rg.matchColor.darkTheme.description": "Set the background color for strings that match patterns in ripgrep. [Dark Theme]",
+  "rg.matchColor.lightTheme.description": "Set the background color for strings that match patterns in ripgrep. [Light Theme]",
   "rg.custom1.description": "Please provide the custom1 configuration for ripgrep.",
   "rg.custom2.description": "Please provide the custom2 configuration for ripgrep.",
   "rg.custom3.description": "Please provide the custom3 configuration for ripgrep.",

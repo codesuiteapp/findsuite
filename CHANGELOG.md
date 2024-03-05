@@ -1,5 +1,10 @@
 # Change Log
 
+### [0.1.5] - 2024-03-06
+
+- Add Custom Color for Ripgrep
+- A few bug fixes
+
 ### [0.1.3] - 2024-03-05
 
 - A few bug fixes

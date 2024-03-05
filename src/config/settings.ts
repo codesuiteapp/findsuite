@@ -76,9 +76,9 @@ export default class FindSuiteSettings {
                     return;
                 }
 
-                let schema = ext.packageJSON.contributes.configuration?.properties?.[`clipsuite.${property}`];
+                let schema = ext.packageJSON.contributes.configuration?.properties?.[`findsuite.${property}`];
                 if (!schema) {
-                    logger.error(`Could not find configuration schema [clipsuite.${property}]`);
+                    logger.error(`Could not find configuration schema [findsuite.${property}]`);
                     return;
                 }
 
@@ -92,7 +92,7 @@ export default class FindSuiteSettings {
             if (!validationResult) {
                 let errorMsg = "There is an Error in Configuration: Please see Output window\n";
                 errorMsg += (validator.errors as ajv.ErrorObject[]).map((err: any) => {
-                    return `In clipsuite.${property}.${err.dataPath}: ${err.message}`;
+                    return `In findsuite.${property}.${err.dataPath}: ${err.message}`;
                 }).join("\n");
 
                 logger.error(errorMsg);
@@ -295,6 +295,24 @@ export default class FindSuiteSettings {
             '--hidden -S';
     }
 
+    public static get matchColorDarkTheme(): string {
+        const key = 'rg.matchColor.darkTheme';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '#ffa500';
+    }
+
+    public static get matchColorLightTheme(): string {
+        const key = 'rg.matchColor.lightTheme';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '#ff1b51';
+    }
+
     public static get custom1(): string {
         const key = 'rg.custom1';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
@@ -315,24 +333,6 @@ export default class FindSuiteSettings {
 
     public static get custom3(): string {
         const key = 'rg.custom3';
-        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
-            ??
-            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
-            ??
-            '';
-    }
-
-    public static get custom4(): string {
-        const key = 'rg.custom4';
-        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
-            ??
-            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
-            ??
-            '';
-    }
-
-    public static get custom5(): string {
-        const key = 'rg.custom5';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue

@@ -24,33 +24,20 @@ export class RipgrepSearch {
     private projectRoot: string;
     private rgProgram;
     private query: string[] = [];
-    // private scrollBack: QuickPickItemRgData[] = [];
     private rgDefOption: string;
 
-    private _checked: boolean = false;
-
-    public get checked(): boolean {
-        return this._checked;
-    }
-    public set checked(value: boolean) {
-        this._checked = value;
-    }
-
     private _currentDecoration: vscode.TextEditorDecorationType | null = null;
+    private _bgColor!: string;
 
-    public get currentDecoration(): vscode.TextEditorDecorationType | null {
-        return this._currentDecoration;
-    }
-
-    public set currentDecoration(value: vscode.TextEditorDecorationType | null) {
-        this._currentDecoration = value;
-    }
+    private _checked: boolean = false;
 
     constructor(private context: vscode.ExtensionContext) {
         this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
         this.projectRoot = this.workspaceFolders[0] || ".";
         this.rgDefOption = FindSuiteSettings.defaultOption;
         this.rgProgram = this.getRipgrep(context.extensionUri.fsPath);
+        const currentTheme = vscode.window.activeColorTheme.kind;
+        this.bgColor = this.getColorForTheme(currentTheme);
     }
 
     public get workspaceFolders(): string[] {
@@ -67,7 +54,6 @@ export class RipgrepSearch {
 
         const isOption = (s: string) => /^--?[a-z]+/.test(s);
         const isWordQuoted = (s: string) => /^".*"/.test(s);
-        // quickPick.items = this.scrollBack;
 
         if (rgQuery.replaceQuery) {
             quickPick.value = rgQuery.opt;
@@ -132,6 +118,11 @@ export class RipgrepSearch {
 
             await this.openChoiceFile(item);
             quickPick.dispose();
+        });
+
+        quickPick.onDidHide(() => {
+            const e = vscode.window.activeTextEditor;
+            e && this.clearDecoration(e);
         });
 
         quickPick.show();
@@ -309,11 +300,23 @@ export class RipgrepSearch {
 
         if (options) {
             this.currentDecoration = vscode.window.createTextEditorDecorationType({
-                backgroundColor: 'yellow'
+                backgroundColor: this._bgColor
             });
             const range = new vscode.Range(line, item.start, line, item.end);
             editor.setDecorations(this.currentDecoration, [range]);
         }
+    }
+
+    public getColorForTheme(theme: vscode.ColorThemeKind) {
+        if (theme === vscode.ColorThemeKind.Light) {
+            return FindSuiteSettings.matchColorLightTheme;
+        } else {
+            return FindSuiteSettings.matchColorDarkTheme;
+        }
+    }
+
+    public setColorForTheme(theme: vscode.ColorThemeKind) {
+        this._bgColor = this.getColorForTheme(theme);
     }
 
     private getRipgrep(rgExtPath: string) {
@@ -375,6 +378,29 @@ export class RipgrepSearch {
             });
         }
         this._checked = true;
+    }
+
+    public get bgColor() {
+        return this._bgColor;
+    }
+    public set bgColor(value) {
+        this._bgColor = value;
+    }
+
+    public get currentDecoration(): vscode.TextEditorDecorationType | null {
+        return this._currentDecoration;
+    }
+
+    public set currentDecoration(value: vscode.TextEditorDecorationType | null) {
+        this._currentDecoration = value;
+    }
+
+    public get checked(): boolean {
+        return this._checked;
+    }
+
+    public set checked(value: boolean) {
+        this._checked = value;
     }
 
 }

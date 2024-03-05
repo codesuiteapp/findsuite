@@ -23,6 +23,8 @@
   "rg.program.linux.description": "Linux의 Ripgrep 의 위치를 지정하세요",
   "rg.count.description": "Ripgrep에서 받는 결과의 개수 (default: 500)",
   "rg.default.option.description": "Ripgrep 프로그램의 기본 옵션을 설정하세요",
+  "rg.matchColor.darkTheme.description": "Ripgrep 에서 패턴 매치하는 문자열을 표현하는 백그라운드 색상을 설정하세요. [Dark Theme]",
+  "rg.matchColor.lightTheme.description": "Ripgrep 에서 패턴 매치하는 문자열을 표현하는 백그라운드 색상을 설정하세요. [Light Theme]",
   "rg.custom1.description": "Please provide the custom1 configuration for ripgrep.",
   "rg.custom2.description": "Please provide the custom2 configuration for ripgrep.",
   "rg.custom3.description": "Please provide the custom3 configuration for ripgrep.",

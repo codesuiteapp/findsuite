@@ -177,22 +177,12 @@ export function activate(context: vscode.ExtensionContext) {
       };
       await rg.interact(rgQuery);
     })
-    , vscode.commands.registerCommand('findsuite.rg4', async () => {
-      const rgQuery: RgQuery = {
-        ...rgInitQuery,
-        opt: FindSuiteSettings.custom4
-      };
-      await rg.interact(rgQuery);
-    })
-    , vscode.commands.registerCommand('findsuite.rg5', async () => {
-      const rgQuery: RgQuery = {
-        ...rgInitQuery,
-        opt: FindSuiteSettings.custom5
-      };
-      await rg.interact(rgQuery);
-    })
     , vscode.workspace.onDidChangeConfiguration(() => handleConfigChange)
   );
+
+  vscode.window.onDidChangeActiveColorTheme(theme => {
+    rg.setColorForTheme(theme.kind);
+  });
 }
 
 export function deactivate() {
