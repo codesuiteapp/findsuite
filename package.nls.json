@@ -1,4 +1,7 @@
 {
+  "compare.external.enabled.description": "Please choose whether to use an external Diff program.",
+  "compare.external.program.description": "Enter the location of the external Diff program. [For example: C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe]",
+  "compare.external.option.description": "Enter the option of the external Diff program",
   "everything.server_host.description": "Address of Everything Http Server (default: 127.0.0.1)",
   "everything.server_port.description": "Port of Everything Http Server (default: 3380)",
   "everything.count.description": "Number of results received from Everything (default: 1000)",

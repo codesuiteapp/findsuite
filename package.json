@@ -29,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.1.1",
+  "version": "0.1.2",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -46,6 +46,21 @@
       "type": "object",
       "title": "Find Suite",
       "properties": {
+        "findsuite.compare.external.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "%compare.external.enabled.description%"
+        },
+        "findsuite.compare.external.program": {
+          "type": "string",
+          "default": "",
+          "description": "%compare.external.program.description%"
+        },
+        "findsuite.compare.external.option": {
+          "type": "string",
+          "default": "",
+          "description": "%compare.external.option.description%"
+        },
         "findsuite.fd.internal.enabled": {
           "type": "boolean",
           "default": true,
@@ -159,7 +174,7 @@
           "default": {
             "filter1": {
               "enabled": true,
-              "query": "ext:c;chm;cpp;csv;cxx;docm;dot;dotm;dotx;h;hcl;hpp;htm;html;ini;json;java;lua;mhtml;potm;ppam;ppsm;ppsx;pps;pptm;rtf;sldm;sldx;thmx;txt;vsd;wpd;wri;xlam;xlsb;xlsm;xltm;xltx;xml;yaml;yml",
+              "query": "ext:c;cpp;csv;cxx;docm;dot;dotm;dotx;h;hcl;hpp;htm;html;ini;json;java;lua;mhtml;potm;ppam;ppsm;ppsx;pps;pptm;rtf;sldm;sldx;thmx;txt;vsd;wpd;wri;xlam;xlsb;xlsm;xltm;xltx;xml;yaml;yml",
               "regex": false,
               "fullpath": false,
               "inWorkspace": false,
@@ -249,247 +264,234 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "utocode.rgThruEverything",
+          "command": "findsuite.rgThruEverything",
           "when": "isWindows"
         },
         {
-          "command": "utocode.everything#folderFiles",
+          "command": "findsuite.everything#folderFiles",
           "when": "isWindows"
         },
         {
-          "command": "utocode.everything#folder",
+          "command": "findsuite.everything#folder",
           "when": "isWindows"
         },
         {
-          "command": "utocode.everything#workspace",
+          "command": "findsuite.everything#workspace",
           "when": "isWindows"
         },
         {
-          "command": "utocode.everything#path",
+          "command": "findsuite.everything#diff",
           "when": "isWindows"
         },
         {
-          "command": "utocode.search#filter1",
+          "command": "findsuite.everything#diffFolder",
           "when": "isWindows"
         },
         {
-          "command": "utocode.search#filter2",
+          "command": "findsuite.incrementalEverything",
           "when": "isWindows"
         },
         {
-          "command": "utocode.search#filter3",
-          "when": "isWindows"
-        },
-        {
-          "command": "utocode.incrementalEverything",
-          "when": "isWindows"
-        },
-        {
-          "command": "utocode.everything",
+          "command": "findsuite.everything",
           "when": "isWindows"
         }
       ]
     },
     "commands": [
       {
-        "command": "utocode.fd",
-        "title": "Fd Find",
+        "command": "findsuite.fd",
+        "title": "Fd multiple files",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.fdFile",
+        "command": "findsuite.fdFile",
         "title": "Fd File",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.fdFolder",
-        "title": "Fd Directory",
+        "command": "findsuite.fdFolder",
+        "title": "Open files in Fd Directory",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rgThruFd",
+        "command": "findsuite.fd#diff",
+        "title": "Diff files in Fd",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.fd#diffFolder",
+        "title": "Diff folder in Fd",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.rgThruFd",
         "title": "Ripgrep with Fd",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rg",
+        "command": "findsuite.rg",
         "title": "Ripgrep",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rgFile",
+        "command": "findsuite.rgFile",
         "title": "Ripgrep File",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rgws",
+        "command": "findsuite.rgws",
         "title": "Ripgrep Workspace",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rgFolder",
+        "command": "findsuite.rgFolder",
         "title": "Ripgrep Directory",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rg1",
+        "command": "findsuite.rg1",
         "title": "Ripgrep #1",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rg2",
+        "command": "findsuite.rg2",
         "title": "Ripgrep #2",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rg3",
+        "command": "findsuite.rg3",
         "title": "Ripgrep #3",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.rg4",
-        "title": "Ripgrep #4",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.rgThruEverything",
+        "command": "findsuite.rgThruEverything",
         "title": "Ripgrep with Everything",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.incrementalEverything",
+        "command": "findsuite.incrementalEverything",
         "title": "Incremental Everything",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.everything",
+        "command": "findsuite.everything",
         "title": "Everything",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.everything#folder",
-        "title": "Everything Folder",
+        "command": "findsuite.everything#folder",
+        "title": "Open folder thru Everything",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.everything#folderFiles",
-        "title": "Get All Files after Everything Folder",
+        "command": "findsuite.everything#folderFiles",
+        "title": "Open files in Everything Folder",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.everything#workspace",
+        "command": "findsuite.everything#workspace",
         "title": "Everything Workspace from file",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.everything#path",
-        "title": "Everything file with path",
+        "command": "findsuite.everything#diff",
+        "title": "Everything Diff",
         "category": "FindSuite"
       },
       {
-        "command": "utocode.search#filter1",
-        "title": "Everything #1",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter2",
-        "title": "Everything #2",
-        "category": "FindSuite"
-      },
-      {
-        "command": "utocode.search#filter3",
-        "title": "Everything #3",
+        "command": "findsuite.everything#diffFolder",
+        "title": "Everything Diff Folder",
         "category": "FindSuite"
       }
     ],
     "keybindings": [
       {
-        "command": "utocode.fd",
+        "command": "findsuite.fd",
         "key": "ctrl+alt+f7",
         "mac": "cmd+option+f7"
       },
       {
-        "command": "utocode.fdFile",
+        "command": "findsuite.fdFile",
         "key": "ctrl+alt+f8",
         "mac": "cmd+option+f8"
       },
       {
-        "command": "utocode.fdFolder",
+        "command": "findsuite.fdFolder",
         "key": "ctrl+alt+f9",
         "mac": "cmd+option+f9"
       },
       {
-        "command": "utocode.rgThruFd",
+        "command": "findsuite.fd#diff",
+        "key": "ctrl+k ctrl+shift+d",
+        "mac": "cmd+k cmd+shift+d"
+      },
+      {
+        "command": "findsuite.rgThruFd",
         "key": "ctrl+alt+f10",
         "mac": "cmd+ctrl+f10"
       },
       {
-        "command": "utocode.rgws",
+        "command": "findsuite.rgws",
         "key": "ctrl+f8",
         "mac": "cmd+f8"
       },
       {
-        "command": "utocode.rgFolder",
+        "command": "findsuite.rgFolder",
         "key": "ctrl+f7",
         "mac": "cmd+f7"
       },
       {
-        "command": "utocode.rgws",
+        "command": "findsuite.rgws",
         "key": "ctrl+f8",
         "mac": "cmd+f8"
       },
       {
-        "command": "utocode.rgFile",
+        "command": "findsuite.rgFile",
         "key": "ctrl+alt+0",
         "mac": "cmd+ctrl+0"
       },
       {
-        "command": "utocode.rg1",
+        "command": "findsuite.rg1",
         "key": "ctrl+alt+7",
         "mac": "cmd+option+7"
       },
       {
-        "command": "utocode.rg2",
+        "command": "findsuite.rg2",
         "key": "ctrl+alt+8",
         "mac": "cmd+option+8"
       },
       {
-        "command": "utocode.incrementalEverything",
+        "command": "findsuite.incrementalEverything",
         "key": "ctrl+alt+shift+f8",
         "when": "isWindows"
       },
       {
-        "command": "utocode.everything",
+        "command": "findsuite.everything",
         "key": "ctrl+alt+f9",
         "when": "isWindows"
       },
       {
-        "command": "utocode.everything#folderFiles",
+        "command": "findsuite.everything#folderFiles",
         "key": "ctrl+alt+m",
         "when": "isWindows"
       },
       {
-        "command": "utocode.everything#folder",
+        "command": "findsuite.everything#folder",
         "key": "ctrl+alt+4",
         "when": "isWindows"
       },
       {
-        "command": "utocode.everything#workspace",
+        "command": "findsuite.everything#workspace",
         "key": "ctrl+alt+shift+w",
         "when": "isWindows"
       },
       {
-        "command": "utocode.everything#path",
-        "key": "ctrl+alt+shift+f9",
+        "command": "findsuite.everything#diff",
+        "key": "ctrl+k ctrl+alt+d",
         "when": "isWindows"
       },
       {
-        "command": "utocode.rgThruEverythingWs",
-        "key": "ctrl+alt+shift+f10",
-        "when": "isWindows"
-      },
-      {
-        "command": "utocode.rgThruEverything",
+        "command": "findsuite.rgThruEverything",
         "key": "ctrl+f10",
         "when": "isWindows"
       }

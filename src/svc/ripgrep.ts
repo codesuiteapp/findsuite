@@ -129,30 +129,6 @@ export class RipgrepSearch {
             if (!item) {
                 return;
             }
-            // const scrollBackItem = {
-            //     label: this.query.join(" "),
-            //     description: "History",
-            //     line_number: this.scrollBack.length + 1,
-            //     start: 0,
-            //     end: 0,
-            //     option: item.option,
-            //     replaceQuery: rgQuery.replaceQuery,
-            //     skipQuote: rgQuery.skipQuote
-            // };
-
-            // if (this.scrollBack.length > 10) {
-            //     this.scrollBack.shift();
-            // }
-            // this.scrollBack.unshift(scrollBackItem);
-
-            // if (item.description === "History") {
-            //     const history = item.label.split(/\s/);
-            //     const result = await this.fetchGrepItems([this.rgProgram, item.option, history, rgQuery.srchPath].join(' '), rgQuery);
-            //     quickPick.items = result.items;
-            //     // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', this.projectRoot);
-            //     quickPick.title = `RipGrep: Text <${item.label}> :: Results <${quickPick.items.length} / ${result.total}>`;
-            //     return;
-            // }
 
             await this.openChoiceFile(item);
             quickPick.dispose();

@@ -20,6 +20,7 @@ export interface EverythingConfig extends EverythingConfigProperty {
     name: string;
     filterType: string;
     title: string;
+    canPickMany?: boolean;
 }
 
 export type FindSuitePropertyType = "everythingConfig";
@@ -104,6 +105,33 @@ export default class FindSuiteSettings {
 
     public static getProperty(key: string): string | undefined {
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key);
+    }
+
+    public static get compareExternalEnabled(): boolean {
+        const key = 'compare.external.enabled';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<boolean>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<boolean>(key)?.defaultValue
+            ??
+            false;
+    }
+
+    public static get compareExternalProgram(): string {
+        const key = 'compare.external.program';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get compareExternalOption(): string {
+        const key = 'compare.external.option';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
     }
 
     public static get fdInternalEnabled(): boolean {

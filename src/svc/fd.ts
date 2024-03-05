@@ -56,12 +56,16 @@ export class FdFind {
         let txt = getSelectionText();
         if (!fdQuery.srchPath && !txt) {
             txt = await vscode.window.showInputBox({
-                title: `Fd: Filename to search`,
+                title: `Fd: ${fdQuery.title ?? 'Filename to search'}`,
                 placeHolder: 'Please enter filename to search',
                 prompt: fdQuery.fileType === 'file' ? 'Usage: [Filename] or [-g "**/*.sh"]' : ''
             }).then(res => {
                 return res ?? '';
             });
+        }
+
+        if (!fdQuery.srchPath && !txt) {
+            return;
         }
 
         let cmd = '';
@@ -78,7 +82,7 @@ export class FdFind {
         const result = await this.fdItems(cmd, fdQuery.fileType);
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result, {
-                title: `Fd: File <${fdQuery.title}> :: Results <${result.length}>`,
+                title: `Fd: File <${txt}> :: Results <${result.length}>`,
                 placeHolder: txt,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -96,7 +100,7 @@ export class FdFind {
             }
         } else {
             const selectedItem = await vscode.window.showQuickPick<vscode.QuickPickItem>(result, {
-                title: `Fd: Type <${fdQuery.fileType}> :: Results <${result.length}>`,
+                title: `Fd: ${fdQuery.fileType} <${txt}> :: Results <${result.length}>`,
                 placeHolder: txt,
                 ignoreFocusOut: true,
                 matchOnDetail: true,

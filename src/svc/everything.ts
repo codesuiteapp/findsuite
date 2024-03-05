@@ -145,7 +145,7 @@ export class EverythingSearcher {
     }
   }
 
-  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string }) {
+  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string, canPickMany?: boolean }) {
     let config: EverythingConfig | undefined = {
       ...defEverythingConfig,
       ...extraConfig
@@ -167,6 +167,13 @@ export class EverythingSearcher {
         sort: 'date_modified',
         title: 'Open Folder',
         query: 'folder:'
+      });
+    } else if (filterType === 'diffFolder') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Open Folder',
+        query: 'folder:',
+        canPickMany: true
       });
     } else if (filterType === 'folderFiles') {
       config = this.makeEverythingConfig({
@@ -219,7 +226,7 @@ export class EverythingSearcher {
       const item = await vscode.window.showQuickPick(items, {
         title: `Everything <${txt}> :: Results <${items.length}> :: Open`,
         placeHolder: txt,
-        canPickMany: false,
+        canPickMany: config?.canPickMany ?? false,
         matchOnDetail: true,
         matchOnDescription: true
       }).then(selectedItem => {

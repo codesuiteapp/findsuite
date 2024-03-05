@@ -1,4 +1,7 @@
 {
+  "compare.external.enabled.description": "외부 Diff 프로그램 사용 여부를 선택하세요",
+  "compare.external.program.description": "외부 Diff 프로그램의 위치를 입력하세요. (예: C:\\Program Files (x86)\\WinMerge\\WinMergeU.exe)",
+  "compare.external.option.description": "외부 Diff 프로그램 Option를 입력하세요",
   "everything.server_host.description": "Everything Http Server의 주소 (default: 127.0.0.1)",
   "everything.server_port.description": "Everything Http Server의 Port (default: 3380)",
   "everything.count.description": "Everything 에서 받는 결과의 개수 (default: 1000)",
