@@ -29,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.1.2",
+  "version": "0.1.3",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -462,7 +462,7 @@
       },
       {
         "command": "findsuite.incrementalEverything",
-        "key": "ctrl+alt+shift+f8",
+        "key": "ctrl+alt+shift+f9",
         "when": "isWindows"
       },
       {

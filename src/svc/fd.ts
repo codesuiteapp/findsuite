@@ -187,7 +187,7 @@ export class FdFind {
     private getPlatformFdPath() {
         let path;
         switch (platform) {
-            case "win32": path = FindSuiteSettings.fdPathWind32; break;
+            case "win32": path = FindSuiteSettings.fdPathWin32; break;
             case "darwin": path = FindSuiteSettings.fdPathDarwin; break;
             default: path = FindSuiteSettings.fdPathLinux; break;
         }

@@ -179,8 +179,8 @@ export default class FindSuiteSettings {
             '-H -s';
     }
 
-    public static get fdPathWind32(): string[] {
-        const key = 'fd.path.wind32';
+    public static get fdPathWin32(): string[] {
+        const key = 'fd.path.win32';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')

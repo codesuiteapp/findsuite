@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.1.3] - 2024-03-05
+
+- A few bug fixes
+
 ### [0.1.2] - 2024-03-05
 
 - Add Function: File Diff
