@@ -1,5 +1,4 @@
-import exp from "constants";
-import { ExtensionContext, Uri } from "vscode";
+import { ExtensionContext } from "vscode";
 
 export namespace vscExtension {
 
