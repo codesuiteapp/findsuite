@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import { QuickPickItem } from "vscode";
 
 export interface FdQuery {
     title: string;
@@ -9,5 +9,13 @@ export interface FdQuery {
 }
 
 export interface QuickPickItemResults {
-    items: vscode.QuickPickItem[];
+    items: QuickPickItem[];
 }
+
+export const fdInitQuery: FdQuery = {
+    title: 'Filename to search',
+    opt: '',
+    fileType: 'file',
+    srchPath: undefined,
+    isMany: true
+};

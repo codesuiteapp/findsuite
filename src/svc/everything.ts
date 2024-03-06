@@ -21,7 +21,7 @@ const defEverythingConfig: EverythingConfig = {
   title: ""
 };
 
-export class EverythingSearcher {
+export class Everything {
 
   private query: string[] = [];
 

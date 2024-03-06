@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import { QuickPickItem } from "vscode";
 
 export interface RgQuery {
     title: string;
@@ -8,6 +8,15 @@ export interface RgQuery {
     skipQuote: boolean;
     isMany: boolean;
 }
+
+export const rgInitQuery: RgQuery = {
+    title: 'text',
+    opt: '',
+    srchPath: undefined,
+    replaceQuery: false,
+    skipQuote: true,
+    isMany: true
+};
 
 export interface RipgrepResult {
     type: string;
@@ -41,7 +50,7 @@ export interface QuickPickItemResults {
     items: QuickPickItemRgData[];
 }
 
-export interface QuickPickItemRgData extends vscode.QuickPickItem {
+export interface QuickPickItemRgData extends QuickPickItem {
     line_number: number;
     start: number;
     end: number;

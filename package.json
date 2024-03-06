@@ -204,6 +204,12 @@
             }
           }
         },
+        "findsuite.rg.input.preferType": {
+          "type": "string",
+          "enum": ["Input", "Incremental"],
+          "default": "Input",
+          "description": "%rg.input.preferType.description%"
+        },
         "findsuite.rg.internal.enabled": {
           "type": "boolean",
           "default": true,

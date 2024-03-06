@@ -5,7 +5,7 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData } from "../model/ripgrep";
+import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
 import { getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
@@ -48,9 +48,10 @@ export class RipgrepSearch {
         const quickPick = vscode.window.createQuickPick<QuickPickItemRgData>();
         quickPick.title = 'RipGrep: Text';
         quickPick.placeholder = 'Please enter the string to search';
+        quickPick.canSelectMany = rgQuery.isMany;
         quickPick.ignoreFocusOut = true;
         quickPick.matchOnDetail = true;
-        // quickPick.matchOnDescription = true;
+        quickPick.matchOnDescription = true;
 
         const isOption = (s: string) => /^--?[a-z]+/.test(s);
         const isWordQuoted = (s: string) => /^".*"/.test(s);
@@ -120,6 +121,12 @@ export class RipgrepSearch {
             quickPick.dispose();
         });
 
+        quickPick.onDidTriggerItemButton(async (e) => {
+            if (e.button.tooltip === 'File') {
+                await this.openChoiceFile(e.item);
+            }
+        });
+
         quickPick.onDidHide(() => {
             const e = vscode.window.activeTextEditor;
             e && this.clearDecoration(e);
@@ -145,10 +152,13 @@ export class RipgrepSearch {
                 return res ?? '';
             });
         }
+
+        await this.executeItem(rgQuery, txt);
+    }
+
+    private async executeItem(rgQuery: RgQuery, txt: string | undefined = undefined) {
         if (!txt) {
-            const mesg = 'Ripgrep: Query is empty';
-            logger.error(mesg);
-            notifyMessageWithTimeout(mesg);
+            this.notifyEmptyQuery('Ripgrep: Query is empty');
             return;
         }
 
@@ -187,33 +197,33 @@ export class RipgrepSearch {
         }
     }
 
+    private notifyEmptyQuery(mesg: string) {
+        console.log(mesg);
+        notifyMessageWithTimeout(mesg);
+    }
+
     public async executeAfterFind(results: vscode.QuickPickItem[]) {
-        if (results) {
-            const query = await vscode.window.showInputBox({
-                title: `Ripgrep :: Enter text to search Files <${results.length}>`,
-                prompt: 'Please enter filename to search',
-                value: getSelectionText(true)
-            }).then(res => {
-                return res ?? '';
-            });
-
-            if (!query) {
-                const mesg = 'Ripgrep: Query is empty';
-                console.log(mesg);
-                notifyMessageWithTimeout(mesg);
-                return;
-            }
-
-            const rgQuery: RgQuery = {
-                title: 'text',
-                opt: '',
-                srchPath: `${results.map(item => '"' + item.detail + '"').join(' ')}`,
-                replaceQuery: false,
-                skipQuote: true,
-                isMany: true
-            };
-            await this.execute(rgQuery, query);
+        if (!results || results.length === 0) {
+            notifyMessageWithTimeout('Results is empty');
+            return;
         }
+
+        const query = await vscode.window.showInputBox({
+            title: `Ripgrep :: Enter text to search Files <${results.length}> :: (2/2)`,
+            prompt: 'Please enter filename to search',
+            value: getSelectionText(true)
+        }).then(res => {
+            return res ?? '';
+        });
+
+        const rgQuery = {
+            ...rgInitQuery,
+            replaceQuery: true,
+            opt: query,
+            srchPath: `${results.map(item => '"' + item.detail + '"').join(' ')}`
+        };
+
+        await this.interact(rgQuery);
     }
 
     private async fetchGrepItems(command: string, rgQuery: RgQuery): Promise<QuickPickItemResults> {
@@ -223,6 +233,11 @@ export class RipgrepSearch {
         const cmd = `${command} -n ${rgQuery.opt} ${rgQuery.srchPath ?? this.projectRoot} --json`;
         console.log(`cmd <${cmd}>`);
         logger.debug(`cmd <${cmd}>`);
+
+        const fileBtn: vscode.QuickInputButton = {
+            iconPath: vscode.ThemeIcon.File,
+            tooltip: 'File'
+        };
 
         return new Promise((resolve, reject) => {
             cp.exec(cmd, { cwd: ".", maxBuffer: MAX_BUF_SIZE }, (err, stdout, stderr) => {
@@ -254,6 +269,7 @@ export class RipgrepSearch {
                         label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
                         description: data.path.text.replace(/\\/g, '/'),
                         detail: data.lines.text.trim(),
+                        buttons: [fileBtn],
                         start: data.submatches[0].start,
                         end: data.submatches[0].end,
                         line_number: Number(data.line_number),
