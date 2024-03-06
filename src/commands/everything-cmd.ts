@@ -1,31 +1,39 @@
 import { ExtensionContext, Uri, commands } from "vscode";
+import FindSuiteSettings from "../config/settings";
 import { showMultipleDiffs } from "../svc/diff";
 import { Everything } from "../svc/everything";
 import { RipgrepSearch } from "../svc/ripgrep";
+import { notifyMessageWithTimeout } from "../utils/vsc";
 
 export function registerEverything(context: ExtensionContext, everything: Everything, rg: RipgrepSearch) {
-    if (!everything) {
-        return;
-    }
-
+    const isWin = FindSuiteSettings.isWindows;
     context.subscriptions.push(
         commands.registerCommand('findsuite.everything', async () => {
-            everything && await everything.execute('files');
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.execute('files');
         })
         , commands.registerCommand('findsuite.incrementalEverything', async () => {
-            everything && await everything.interact('files');
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.interact('files');
         })
         , commands.registerCommand('findsuite.everything#folder', async () => {
-            everything && await everything.execute("folder");
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.execute("folder");
         })
         , commands.registerCommand('findsuite.everything#path', async () => {
-            if (!everything) {
+            if (!checkPlatform(isWin)) {
                 return;
             }
             await everything.execute("path");
         })
         , commands.registerCommand('findsuite.everything#folderFiles', async () => {
-            if (!everything) {
+            if (!checkPlatform(isWin)) {
                 return;
             }
             const result = await everything.execute("folderFiles", false);
@@ -34,7 +42,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
         })
         , commands.registerCommand('findsuite.everything#workspace', async () => {
-            if (!everything) {
+            if (!checkPlatform(isWin)) {
                 return;
             }
             const result = await everything.execute("code-workspace", false);
@@ -44,7 +52,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
         })
         , commands.registerCommand('findsuite.everything#diff', async () => {
-            if (!everything) {
+            if (!checkPlatform(isWin)) {
                 return;
             }
             const result = await everything.execute("files", false);
@@ -53,7 +61,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
         })
         , commands.registerCommand('findsuite.everything#diffFolder', async () => {
-            if (!everything) {
+            if (!checkPlatform(isWin)) {
                 return;
             }
             const result = await everything.execute("diffFolder", false);
@@ -62,10 +70,20 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
         })
         , commands.registerCommand('findsuite.rgThruEverything', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
             const results = await everything.execute('files', false);
             if (results) {
                 await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
             }
         })
     );
+}
+
+function checkPlatform(isWin: boolean) {
+    if (!isWin) {
+        notifyMessageWithTimeout('This feature requires Windows.');
+    }
+    return isWin;
 }

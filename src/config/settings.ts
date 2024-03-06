@@ -33,11 +33,11 @@ export default class FindSuiteSettings {
 
     private static readonly rootName = 'findsuite';
 
-    private static isMac: boolean = process.platform === "darwin";
-    private static isLinux: boolean = process.platform === "linux";
-    private static isWindows: boolean = process.platform === "win32";
+    public static isMac: boolean = process.platform === "darwin";
+    public static isLinux: boolean = process.platform === "linux";
+    public static isWindows: boolean = process.platform === "win32";
 
-    private static getPlatform(): string {
+    public static getPlatform(): string {
         if (FindSuiteSettings.isMac) {
             return 'mac';
         } else if (FindSuiteSettings.isLinux) {
