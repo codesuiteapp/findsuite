@@ -1,5 +1,10 @@
 # Change Log
 
+### [0.1.6] - 2024-03-07
+
+- Add Function: Diff workspace
+- A few bug fixes
+
 ### [0.1.5] - 2024-03-06
 
 - Add Custom Color for Ripgrep
