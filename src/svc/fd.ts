@@ -45,7 +45,7 @@ export class FdFind {
         return this._workspaceFolders;
     }
 
-    public async execute(fdQuery: FdQuery, isOpen: boolean = true) {
+    public async execute(fdQuery: FdQuery, isOpen: boolean = true, required: boolean = false) {
         try {
             this.checkingProgram();
         } catch (error: any) {
@@ -54,7 +54,7 @@ export class FdFind {
         }
 
         let txt = getSelectionText();
-        if (!fdQuery.srchPath && !txt) {
+        if (!fdQuery.srchPath && !txt || required) {
             txt = await vscode.window.showInputBox({
                 title: `Fd: ${fdQuery.title ?? 'Filename to search'}`,
                 placeHolder: 'Please enter filename to search',
@@ -71,6 +71,8 @@ export class FdFind {
         let cmd = '';
         if (fdQuery.fileType === 'dir') {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
+        } else if (fdQuery.fileType === 'diffWs') {
+            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
         } else {
             let command = [this.fdProgram, txt].join(' ');
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();

@@ -109,6 +109,12 @@ export function activate(context: vscode.ExtensionContext) {
         await showMultipleDiffs(result);
       }
     })
+    , vscode.commands.registerCommand('findsuite.fd#diffWs', async () => {
+      const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', fileType: 'diffWs' } }, false);
+      if (result && Array.isArray(result)) {
+        await showMultipleDiffs(result);
+      }
+    })
     , vscode.commands.registerCommand('findsuite.fd#diffFolder', async () => {
       const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t d' } }, false);
       if (result && Array.isArray(result)) {

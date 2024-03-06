@@ -329,6 +329,11 @@
         "category": "FindSuite"
       },
       {
+        "command": "findsuite.fd#diffWs",
+        "title": "Diff files in Workspace",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.fd#diffFolder",
         "title": "Diff folder in Fd",
         "category": "FindSuite"

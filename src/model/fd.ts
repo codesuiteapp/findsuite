@@ -4,7 +4,7 @@ export interface FdQuery {
     title: string;
     opt: string;
     srchPath: string | undefined;
-    fileType: "file" | "dir";
+    fileType: "file" | "dir" | "diff" | "diffWs";
     isMany: boolean;
 }
 

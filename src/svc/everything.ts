@@ -90,6 +90,15 @@ export class EverythingSearcher {
     };
     console.log(`name <${config.name}> path <${http_options.path}>`);
 
+    const fileBtn: vscode.QuickInputButton = {
+      iconPath: vscode.ThemeIcon.File,
+      tooltip: 'File'
+    };
+    // const folderBtn: vscode.QuickInputButton = {
+    //   iconPath: vscode.ThemeIcon.Folder,
+    //   tooltip: 'Folder'
+    // };
+
     return new Promise((resolve, reject) => {
       const request = http.get(http_options, (response) => {
         response.setEncoding('utf8');
@@ -107,6 +116,7 @@ export class EverythingSearcher {
               f.label = f.type === 'file' ? '$(file)' : '$(folder)';
               f.description = f.name;
               f.detail = `${path.join(f.path, f.name)}`;
+              f.buttons = [fileBtn];
             });
             resolve(files);
           } catch (e) {
@@ -300,9 +310,9 @@ export class EverythingSearcher {
       }, [] as string[]);
 
       try {
-        const queries = this.query.join(' ');
-        quickPick.items = await this.searchInEverything(config, queries);
-        quickPick.title = `Everything: ${config.title} <${queries}> :: Results <${quickPick.items.length}>`;
+        const queryTxt = this.query.join(' ');
+        quickPick.items = await this.searchInEverything(config, queryTxt);
+        quickPick.title = `Everything: ${config.title} <${queryTxt}> :: Results <${quickPick.items.length}>`;
       } catch (error: any) {
         console.log(`interact() - Error: ${error.message}`);
         logger.error(`interact() - Error: ${error.message}`);
@@ -317,6 +327,12 @@ export class EverythingSearcher {
 
       await this.openFile(item);
       quickPick.dispose();
+    });
+
+    quickPick.onDidTriggerItemButton(async (e) => {
+      if (e.button.tooltip === 'File') {
+        await this.openFile(e.item);
+      }
     });
 
     quickPick.show();

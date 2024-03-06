@@ -1,7 +1,8 @@
 out
 dist
 node_modules
-.vscode-test/
-*.vsix
 package-lock.json
+.vscode-test/
 .vscode/bookmarks.json
+*.vsix
+*.code-workspace
