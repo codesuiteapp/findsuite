@@ -1,6 +1,4 @@
 import * as cp from 'child_process';
-import * as os from 'os';
-import * as path from 'path';
 import { ProgressLocation, Uri, env, version, window } from 'vscode';
 
 export function showInfoMessageWithTimeout(message: string, timeout: number = 3000) {

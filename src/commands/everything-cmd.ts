@@ -26,6 +26,12 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
             await everything.execute("folder");
         })
+        , commands.registerCommand('findsuite.everything#workspace', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.execute("workspace");
+        })
         , commands.registerCommand('findsuite.everything#path', async () => {
             if (!checkPlatform(isWin)) {
                 return;
@@ -41,7 +47,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
                 await everything.execute("path", true, result.detail + ' files:');
             }
         })
-        , commands.registerCommand('findsuite.everything#workspace', async () => {
+        , commands.registerCommand('findsuite.everything#codeWorkspace', async () => {
             if (!checkPlatform(isWin)) {
                 return;
             }

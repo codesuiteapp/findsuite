@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from '../config/settings';
+import { fileBtn } from '../model/button';
 import { getSelectionText } from '../utils/editor';
 import logger from '../utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
@@ -23,9 +24,11 @@ const defEverythingConfig: EverythingConfig = {
 
 export class Everything {
 
+  private _workspaceFolders: string[];
   private query: string[] = [];
 
   constructor() {
+    this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
   }
 
   public async executeFilter(filterType: string) {
@@ -89,15 +92,6 @@ export class Everything {
       ].join('&'))
     };
     console.log(`name <${config.name}> path <${http_options.path}>`);
-
-    const fileBtn: vscode.QuickInputButton = {
-      iconPath: vscode.ThemeIcon.File,
-      tooltip: 'File'
-    };
-    // const folderBtn: vscode.QuickInputButton = {
-    //   iconPath: vscode.ThemeIcon.Folder,
-    //   tooltip: 'Folder'
-    // };
 
     return new Promise((resolve, reject) => {
       const request = http.get(http_options, (response) => {
@@ -198,6 +192,19 @@ export class Everything {
         query: 'ext:code-workspace'
       });
       query = '__EMPTY__';
+    } else if (filterType === 'workspace') {
+      if (!this._workspaceFolders || this._workspaceFolders.length === 0) {
+        notifyMessageWithTimeout('Workspace is not exist');
+        return;
+      }
+      config = this.makeEverythingConfig({
+        sort: 'name',
+        title: 'Open Files',
+        query: 'path:' + this._workspaceFolders[0] + ' files:'
+      });
+      if (query) {
+        query = '__EMPTY__';
+      }
     } else if (filterType === 'path') {
       config = this.makeEverythingConfig({
         sort: 'name',

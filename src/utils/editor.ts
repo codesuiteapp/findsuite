@@ -68,3 +68,11 @@ export async function getDocument(languageId: string = 'xml') {
     }
     return null;
 }
+
+export function revealEditor(revealType: vscode.TextEditorRevealType = vscode.TextEditorRevealType.AtTop) {
+    const e = vscode.window.activeTextEditor;
+    if (e) {
+        e.revealRange(e.selection, revealType);
+    }
+}
+

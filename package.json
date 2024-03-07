@@ -101,6 +101,11 @@
           "default": "-H -s",
           "description": "%fd.default.option.description%"
         },
+        "findsuite.fd.excludePattern": {
+          "type": "string",
+          "default": "",
+          "description": "%fd.exclude.pattern.description%"
+        },
         "findsuite.everything.host": {
           "type": "string",
           "default": "127.0.0.1",
@@ -299,6 +304,10 @@
           "when": "isWindows"
         },
         {
+          "command": "findsuite.everything#codeWorkspace",
+          "when": "isWindows"
+        },
+        {
           "command": "findsuite.everything#diff",
           "when": "isWindows"
         },
@@ -419,6 +428,11 @@
       },
       {
         "command": "findsuite.everything#workspace",
+        "title": "Open files in Everything Workspace",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.everything#codeWorkspace",
         "title": "Everything Workspace from file",
         "category": "FindSuite"
       },
@@ -430,6 +444,16 @@
       {
         "command": "findsuite.everything#diffFolder",
         "title": "Everything Diff Folder",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.revealTop",
+        "title": "Reveal to Top",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.revealCenter",
+        "title": "Reveal to Center",
         "category": "FindSuite"
       }
     ],
@@ -445,7 +469,7 @@
         "mac": "cmd+option+f8"
       },
       {
-        "command": "findsuite.fdFolder",
+        "command": "findsuite.fdWs",
         "key": "ctrl+alt+9",
         "mac": "cmd+option+9"
       },
@@ -468,11 +492,6 @@
         "command": "findsuite.rgFolder",
         "key": "ctrl+f7",
         "mac": "cmd+f7"
-      },
-      {
-        "command": "findsuite.rgws",
-        "key": "ctrl+f8",
-        "mac": "cmd+f8"
       },
       {
         "command": "findsuite.rgFile",
@@ -510,7 +529,7 @@
         "when": "isWindows"
       },
       {
-        "command": "findsuite.everything#workspace",
+        "command": "findsuite.everything#codeWorkspace",
         "key": "ctrl+alt+shift+w",
         "when": "isWindows"
       },
@@ -523,6 +542,14 @@
         "command": "findsuite.rgThruEverything",
         "key": "ctrl+f10",
         "when": "isWindows"
+      },
+      {
+        "command": "findsuite.revealTop",
+        "key": "ctrl+k ctrl+h"
+      },
+      {
+        "command": "findsuite.revealCenter",
+        "key": "ctrl+k ctrl+m"
       }
     ]
   },

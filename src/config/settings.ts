@@ -196,11 +196,21 @@ export default class FindSuiteSettings {
             ??
             [];
     }
+
     public static get fdPathDarwin(): string[] {
         const key = 'fd.path.darwin';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
+            ??
+            [];
+    }
+
+    public static get fdExcludePattern(): string[] {
+        const key = 'fd.excludePattern';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(',')
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(',')
             ??
             [];
     }

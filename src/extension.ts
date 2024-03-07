@@ -1,10 +1,11 @@
 import { platform } from "node:process";
-import { ConfigurationChangeEvent, ExtensionContext, commands, window, workspace } from "vscode";
+import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
 import { registerEverything, registerFd, registerRg } from "./commands";
 import { fdInitQuery } from "./model/fd";
 import { Everything } from "./svc/everything";
 import { FdFind } from "./svc/fd";
 import { RipgrepSearch } from "./svc/ripgrep";
+import { revealEditor } from "./utils/editor";
 
 export function activate(context: ExtensionContext) {
   const fd = new FdFind(context);
@@ -25,6 +26,12 @@ export function activate(context: ExtensionContext) {
       if (results) {
         await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
       }
+    })
+    , commands.registerCommand('findsuite.revealTop', async () => {
+      revealEditor();
+    })
+    , commands.registerCommand('findsuite.revealCenter', async () => {
+      revealEditor(TextEditorRevealType.InCenter);
     })
     , workspace.onDidChangeConfiguration((e) => {
       handleConfigChange(e, fd, rg);

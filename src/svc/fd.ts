@@ -80,10 +80,12 @@ export class FdFind {
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
             cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
-        console.log(`cmd <${cmd}>`);
-        logger.debug(`cmd <${cmd}>`);
 
-        const result = await this.fdItems(cmd, fdQuery.fileType);
+        const cmdOpt = cmd + FindSuiteSettings.fdExcludePattern.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
+        console.log(`cmd <${cmdOpt}>`);
+        logger.debug(`cmd <${cmdOpt}>`);
+
+        const result = await this.fdItems(cmdOpt, fdQuery.fileType);
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result, {
                 title: `Fd: File <${txt}> :: Results <${result.length}>`,
@@ -144,7 +146,7 @@ export class FdFind {
 
                 const results = lines.map((line) => {
                     return {
-                        label: fileType === 'file' ? '$(file)' : '$(folder)',
+                        label: fileType === 'dir' ? '$(folder)' : '$(file)',
                         description: path.basename(line),
                         detail: line
                     };
