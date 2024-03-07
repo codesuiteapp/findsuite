@@ -11,6 +11,9 @@ export function registerFd(context: ExtensionContext, fd: FdFind) {
         , commands.registerCommand('findsuite.fdFile', async () => {
             await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', isMany: false } });
         })
+        , commands.registerCommand('findsuite.fdWs', async () => {
+            await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
+        })
         , commands.registerCommand('findsuite.fdFolder', async () => {
             const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Directory to search', opt: '-t d', fileType: 'dir', isMany: false } }, false);
             if (result) {

@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.1.7] - 2024-03-07
+
+- A few bug fixes
+
 ### [0.1.6] - 2024-03-07
 
 - Add Function: Diff workspace

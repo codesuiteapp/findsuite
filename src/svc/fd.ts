@@ -73,6 +73,8 @@ export class FdFind {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
         } else if (fdQuery.fileType === 'diffWs') {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+        } else if (fdQuery.fileType === 'fileWs') {
+            cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
         } else {
             let command = [this.fdProgram, txt].join(' ');
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();

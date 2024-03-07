@@ -29,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.1.6",
+  "version": "0.1.7",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -206,7 +206,10 @@
         },
         "findsuite.rg.input.preferType": {
           "type": "string",
-          "enum": ["Input", "Incremental"],
+          "enum": [
+            "Input",
+            "Incremental"
+          ],
           "default": "Input",
           "description": "%rg.input.preferType.description%"
         },
@@ -330,6 +333,11 @@
         "category": "FindSuite"
       },
       {
+        "command": "findsuite.fdWs",
+        "title": "Open files in Fd Workspace",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.fd#diff",
         "title": "Diff files in Fd",
         "category": "FindSuite"
@@ -438,8 +446,8 @@
       },
       {
         "command": "findsuite.fdFolder",
-        "key": "ctrl+alt+f9",
-        "mac": "cmd+option+f9"
+        "key": "ctrl+alt+9",
+        "mac": "cmd+option+9"
       },
       {
         "command": "findsuite.fd#diff",
