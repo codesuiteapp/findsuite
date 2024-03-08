@@ -29,7 +29,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.1.7",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -101,9 +101,9 @@
           "default": "-H -s",
           "description": "%fd.default.option.description%"
         },
-        "findsuite.fd.excludePattern": {
-          "type": "string",
-          "default": "",
+        "findsuite.fd.excludePatterns": {
+          "type": "array",
+          "default": [],
           "description": "%fd.exclude.pattern.description%"
         },
         "findsuite.everything.host": {
@@ -125,6 +125,11 @@
           "type": "integer",
           "default": 100,
           "description": "%everything.limitOpenFile.description%"
+        },
+        "findsuite.everything.excludePatterns": {
+          "type": "array",
+          "default": [],
+          "description": "%everything.excludePatterns.description%"
         },
         "findsuite.everythingConfig": {
           "type": "object",
@@ -480,18 +485,13 @@
       },
       {
         "command": "findsuite.rgThruFd",
-        "key": "ctrl+alt+f10",
-        "mac": "cmd+ctrl+f10"
+        "key": "ctrl+f10",
+        "mac": "cmd+f10"
       },
       {
         "command": "findsuite.rgws",
-        "key": "ctrl+f8",
-        "mac": "cmd+f8"
-      },
-      {
-        "command": "findsuite.rgFolder",
-        "key": "ctrl+f7",
-        "mac": "cmd+f7"
+        "key": "ctrl+alt+f",
+        "mac": "cmd+ctrl+f"
       },
       {
         "command": "findsuite.rgFile",
@@ -540,7 +540,7 @@
       },
       {
         "command": "findsuite.rgThruEverything",
-        "key": "ctrl+f10",
+        "key": "ctrl+alt+f10",
         "when": "isWindows"
       },
       {

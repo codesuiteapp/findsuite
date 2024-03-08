@@ -61,7 +61,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             if (!checkPlatform(isWin)) {
                 return;
             }
-            const result = await everything.execute("files", false);
+            const result = await everything.execute("diffFiles", false);
             if (result && Array.isArray(result)) {
                 await showMultipleDiffs(result, 'dir');
             }
@@ -79,7 +79,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             if (!checkPlatform(isWin)) {
                 return;
             }
-            const results = await everything.execute('files', false);
+            const results = await everything.execute('filesPipe', false);
             if (results) {
                 await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
             }

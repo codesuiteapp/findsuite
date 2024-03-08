@@ -206,11 +206,11 @@ export default class FindSuiteSettings {
             [];
     }
 
-    public static get fdExcludePattern(): string[] {
-        const key = 'fd.excludePattern';
-        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(',')
+    public static get fdExcludePatterns(): string[] {
+        const key = 'fd.excludePatterns';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string[]>(key)
             ??
-            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(',')
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string[]>(key)?.defaultValue
             ??
             [];
     }
@@ -249,6 +249,15 @@ export default class FindSuiteSettings {
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
             ??
             100;
+    }
+
+    public static get excludePatterns(): string[] {
+        const key = 'everything.excludePatterns';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string[]>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string[]>(key)?.defaultValue
+            ??
+            [];
     }
 
     public static get rgInputPreferType(): string {
