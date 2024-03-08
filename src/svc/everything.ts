@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from '../config/settings';
 import { fileBtn } from '../model/button';
+import { formatBytes } from '../utils/converter';
 import { getSelectionText } from '../utils/editor';
 import logger from '../utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
@@ -82,7 +83,7 @@ export class Everything {
       hostname: FindSuiteSettings.host,
       port: FindSuiteSettings.port,
       path: encodeURI('/?' + [
-        'json=1&path_column=1',
+        'json=1&path_column=1&size_column=1&date_modified_column=1',
         `q=${this.buildSearchQuery(config, query)}`,
         'path=' + (config.fullpath ? 1 : 0),
         'sort=' + config.sort,
@@ -108,12 +109,12 @@ export class Everything {
             const files: any[] = JSON.parse(body).results as EverythingResponse[];
             files.forEach(f => {
               f.label = f.type === 'file' ? '$(file)' : '$(folder)';
-              f.description = f.name;
+              f.description = `${f.name} ${f.type === 'file' ? '(' + formatBytes(f.size) + ')' : ''}`;
               f.detail = `${path.join(f.path, f.name)}`;
               f.buttons = [fileBtn];
             });
             resolve(files);
-          } catch (e) {
+          } catch (e: any) {
             reject(new Error(`Failed to decode Everything response as JSON, body data: ${body}`));
           }
         });
@@ -126,22 +127,23 @@ export class Everything {
   private buildSearchQuery(config: EverythingConfig, extraQuery: string): string {
     let query = '';
     if (config && config.enabled) {
-      query = config.query.length > 0 ? config.query + '+' : '';
+      query = config.query.length > 0 ? config.query + '+' + FindSuiteSettings.excludePatterns.filter(f => f).map(p => { return `!path:${p} `; }).join('+') : '';
     }
+    console.log(`buildQuery <${query}> extraQuery <${extraQuery}>`);
 
     if (!config.inWorkspace) {
       return (query + extraQuery.trim().replace(/\s/g, '+')).trim();
     } else {
-      let ws = vscode.workspace.workspaceFolders;
+      let ws = this._workspaceFolders;
 
-      if (ws === undefined) {
+      if (this._workspaceFolders.length === 0) {
         return extraQuery;
       } else {
         let patterns: string[] = [];
         let userPattern: string = '\\*' + extraQuery + '*';
 
-        ws.forEach((element: vscode.WorkspaceFolder) => {
-          patterns.push(element.uri.fsPath + userPattern);
+        ws.forEach((path) => {
+          patterns.push(path + userPattern);
         });
 
         return patterns.join(' | ');
@@ -166,11 +168,24 @@ export class Everything {
         title: 'Open Files',
         query: 'files:'
       });
+    } else if (filterType === 'filesPipe') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Select Files and Rg (Like Pipe)',
+        query: 'files:'
+      });
     } else if (filterType === 'folder') {
       config = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Open Folder',
         query: 'folder:'
+      });
+    } else if (filterType === 'diffFiles') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Select Files to Diff',
+        query: 'folder:',
+        canPickMany: true
       });
     } else if (filterType === 'diffFolder') {
       config = this.makeEverythingConfig({
@@ -182,7 +197,7 @@ export class Everything {
     } else if (filterType === 'folderFiles') {
       config = this.makeEverythingConfig({
         sort: 'date_modified',
-        title: 'Open multi files in Folder',
+        title: 'Search Folder (1/2)',
         query: 'folder:'
       });
     } else if (filterType === 'code-workspace') {
@@ -200,7 +215,8 @@ export class Everything {
       config = this.makeEverythingConfig({
         sort: 'name',
         title: 'Open Files',
-        query: 'path:' + this._workspaceFolders[0] + ' files:'
+        query: 'path:' + this._workspaceFolders.join('|') + ' files:',
+        canPickMany: true
       });
       if (query) {
         query = '__EMPTY__';
@@ -271,8 +287,7 @@ export class Everything {
   }
 
   public async interact(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
-    let config: EverythingConfig;
-    config = this.makeEverythingConfig({
+    let config: EverythingConfig = this.makeEverythingConfig({
       sort: 'date_modified',
       title: 'Open Files',
       query: 'files:'

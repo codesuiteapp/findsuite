@@ -81,7 +81,7 @@ export class FdFind {
             cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
 
-        const cmdOpt = cmd + FindSuiteSettings.fdExcludePattern.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
+        const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
         console.log(`cmd <${cmdOpt}>`);
         logger.debug(`cmd <${cmdOpt}>`);
 

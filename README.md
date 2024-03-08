@@ -40,8 +40,7 @@ The extension seamlessly integrates with ripgrep, allowing users to search for f
 
 ### Shortcuts
 
-- **Ctrl + F7**: Search for strings within the current file's folder using ripgrep.
-- **Ctrl + F8**: Search for strings within the files in the current workspace using ripgrep.
+- **Ctrl + Alt + f**: Search for strings within the files in the current workspace using ripgrep.
 - **Ctrl + Alt + 0**: Search for strings within the currently open file using ripgrep.
 
 ## Fd Integration
@@ -50,8 +49,9 @@ The extension seamlessly integrates with fd, allowing users to search for specif
 
 ### Shortcuts for Fd
 
+- **Ctrl + Alt + 9**: Search for all files in current project.
 - **Ctrl + Alt + F7**: Search for files in both the directory designated as default and the directory of the current project
-- **Ctrl + Alt + F10**: Use Fd to search for files, then use Ripgrep to search within the selected file.
+- **Ctrl + F10**: Use Fd to search for files, then use Ripgrep to search within the selected file. (Like the pipe ('|') in Linux)
 - **Ctrl + k Ctrl + Alt + d**: Use Fd to search for files and compare the selected files (diff).
 
 ## Everything integration
@@ -60,8 +60,8 @@ Ultra-fast file search by indexing every file and folder on your system. Works w
 
 ### Shortcut Keys (Requires Everything)
 
-- **Ctrl + F10**: Use Everything to search and then use Ripgrep to search for strings within the selected file.
 - **Ctrl + Alt + F9**: Search for files using Everything.
+- **Ctrl + Alt + F10**: Use Everything to search and then use Ripgrep to search for strings within the selected file. (Like the pipe ('|') in Linux)
 - **Ctrl + Alt + m**: Open multiple files within a directory searched using Everything.
 - **Ctrl + Alt + 4**: Search using Everything and open the selected folder(s).
 - **Ctrl + Alt + Shift + w**: Use Everything to search for code-workspace files and open Workspace.

@@ -22,7 +22,7 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(
     commands.registerCommand('findsuite.rgThruFd', async () => {
-      const results = await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } }, false);
+      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files and Rg (Like pipe)', opt: '-t f' } }, false);
       if (results) {
         await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
       }

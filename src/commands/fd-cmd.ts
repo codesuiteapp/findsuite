@@ -21,13 +21,13 @@ export function registerFd(context: ExtensionContext, fd: FdFind) {
             }
         })
         , commands.registerCommand('findsuite.fd#diff', async () => {
-            const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } }, false);
+            const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files to Diff', opt: '-t f' } }, false);
             if (result && Array.isArray(result)) {
                 await showMultipleDiffs(result);
             }
         })
         , commands.registerCommand('findsuite.fd#diffWs', async () => {
-            const result = await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', fileType: 'diffWs' } }, false);
+            const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files to Diff', opt: '-t f', fileType: 'diffWs' } }, false);
             if (result && Array.isArray(result)) {
                 await showMultipleDiffs(result);
             }
