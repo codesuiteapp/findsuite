@@ -53,7 +53,7 @@ FindSuite를 사용하면 Visual Studio Code 환경에서 ripgrep과 Everything�
 
 이 확장 프로그램은 fd와 통합되어 특정 파일 이름을 효율적으로 검색할 수 있습니다.
 
-### Shortcuts for Fd
+### 단축키 for Fd
 
 - **Ctrl + Alt + 9**: 현재 프로젝트의 디렉토리에서 모든 파일을 검색합니다.
 - **Ctrl + Alt + F7**: 기본으로 지정된 디렉토리와 현재 프로젝트의 디렉토리에서 파일을 검색합니다.
@@ -64,7 +64,7 @@ FindSuite를 사용하면 Visual Studio Code 환경에서 ripgrep과 Everything�
 
 시스템의 모든 파일과 폴더를 색인화하여 매우 빠른 파일 검색 프로그램 Everything과 연동하여 VS Code 에서 빠르고 많은 파일을 쉽게 다룰 수 있습니다.
 
-### 단축키 (Everything 필요)
+### 단축키 for Everything
 
 - **Ctrl + Alt + F9**: 시스템에 있는 모든 파일 검색
 - **Ctrl + Alt + F10**: Everything을 사용하여 검색하고 그 중에서 선택한 파일에서 Ripgrep를 사용하여 문자열 검색. (리눅스의 파이프 ['|']과 유사)

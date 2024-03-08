@@ -12,10 +12,10 @@ export function registerFd(context: ExtensionContext, fd: FdFind) {
             await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', isMany: false } });
         })
         , commands.registerCommand('findsuite.fdWs', async () => {
-            await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
+            await fd.execute({ ...fdInitQuery, ...{ title: 'Search Workspace', opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
         })
         , commands.registerCommand('findsuite.fdFolder', async () => {
-            const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Directory to search', opt: '-t d', fileType: 'dir', isMany: false } }, false);
+            const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Search Directory', opt: '-t d', fileType: 'dir', isMany: false } }, false);
             if (result) {
                 await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', srchPath: Array.isArray(result) ? result[0].detail! : result.detail } });
             }

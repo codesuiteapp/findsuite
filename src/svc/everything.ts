@@ -161,47 +161,47 @@ export class Everything {
   }
 
   public async execute(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
-    let config: EverythingConfig;
+    let extraConfig: EverythingConfig;
     if (filterType === 'files') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Open Files',
         query: 'files:'
       });
     } else if (filterType === 'filesPipe') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Select Files and Rg (Like Pipe)',
         query: 'files:'
       });
     } else if (filterType === 'folder') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Open Folder',
         query: 'folder:'
       });
     } else if (filterType === 'diffFiles') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Select Files to Diff',
         query: 'folder:',
         canPickMany: true
       });
     } else if (filterType === 'diffFolder') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Open Folder',
         query: 'folder:',
         canPickMany: true
       });
     } else if (filterType === 'folderFiles') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Search Folder (1/2)',
         query: 'folder:'
       });
     } else if (filterType === 'code-workspace') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'name',
         title: 'Open new window with workspace',
         query: 'ext:code-workspace'
@@ -212,7 +212,7 @@ export class Everything {
         notifyMessageWithTimeout('Workspace is not exist');
         return;
       }
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'name',
         title: 'Open Files',
         query: 'path:' + this._workspaceFolders.join('|') + ' files:',
@@ -222,7 +222,7 @@ export class Everything {
         query = '__EMPTY__';
       }
     } else if (filterType === 'path') {
-      config = this.makeEverythingConfig({
+      extraConfig = this.makeEverythingConfig({
         sort: 'name',
         title: 'Open Folder',
         query: 'path:' + (query ?? '')
@@ -231,11 +231,11 @@ export class Everything {
         query = '__EMPTY__';
       }
     } else {
-      config = defEverythingConfig;
+      extraConfig = defEverythingConfig;
     }
 
-    config.filterType = filterType;
-    return this.executeConfig(config, isOpen, query);
+    extraConfig.filterType = filterType;
+    return this.executeConfig(extraConfig, isOpen, query);
   }
 
   public async executeConfig(config: EverythingConfig, isOpen: boolean = true, inQuery: string | undefined = undefined) {
@@ -257,7 +257,7 @@ export class Everything {
 
     if (config.filterType === 'folder' || config.filterType === 'folderFiles' || config.filterType === 'code-workspace') {
       const item = await vscode.window.showQuickPick(items, {
-        title: `Everything <${txt}> :: Results <${items.length}> :: Open`,
+        title: `Everything ${txt ? '<' + txt + '>' : ''} :: Results <${items.length}> :: Open`,
         placeHolder: txt,
         canPickMany: config?.canPickMany ?? false,
         matchOnDetail: true,
@@ -273,7 +273,7 @@ export class Everything {
       }
     } else {
       let results = await vscode.window.showQuickPick(items, {
-        title: `Everything <${txt}> :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : "Ripgrep"}`,
+        title: `Everything ${txt ? '<' + txt + '>' : ''} :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : ""}`,
         placeHolder: txt,
         canPickMany: true,
         matchOnDetail: true,
@@ -294,7 +294,7 @@ export class Everything {
     });
 
     const quickPick = vscode.window.createQuickPick<QuickPickItem>();
-    quickPick.title = 'Everything: Filename';
+    quickPick.title = 'Everything:: Filename';
     quickPick.placeholder = 'Please enter the string to search';
     quickPick.ignoreFocusOut = true;
     quickPick.matchOnDetail = true;

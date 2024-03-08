@@ -58,7 +58,7 @@ The extension seamlessly integrates with fd, allowing users to search for specif
 
 Ultra-fast file search by indexing every file and folder on your system. Works with Everything to handle large numbers of files quickly and easily in VS Code.
 
-### Shortcut Keys (Requires Everything)
+### Shortcuts Keys (Requires Everything)
 
 - **Ctrl + Alt + F9**: Search for files using Everything.
 - **Ctrl + Alt + F10**: Use Everything to search and then use Ripgrep to search for strings within the selected file. (Like the pipe ('|') in Linux)
