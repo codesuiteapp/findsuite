@@ -9,7 +9,7 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
         commands.registerCommand('findsuite.rg', async () => {
             await preferExecuteQuery(rg, rgInitQuery);
         })
-        , commands.registerCommand('findsuite.rgFolder', async () => {
+        , commands.registerCommand('findsuite.rgDirectory', async () => {
             const rgQuery = {
                 ...rgInitQuery,
                 title: 'Current Folder',

@@ -28,15 +28,15 @@ export function activate(context: ExtensionContext) {
       }
     })
     , commands.registerCommand('findsuite.rgWithFdDir', async () => {
-      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Directory and Rg (Like fd -t f | rg)', opt: '-t d' } }, false);
+      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Directory and Rg (Like fd -t d | rg)', opt: '-t d' } }, false);
       if (results) {
         await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
       }
     })
-    , commands.registerCommand('findsuite.revealTop', async () => {
+    , commands.registerCommand('findsuite.reveal#top', async () => {
       revealEditor();
     })
-    , commands.registerCommand('findsuite.revealCenter', async () => {
+    , commands.registerCommand('findsuite.reveal#center', async () => {
       revealEditor(TextEditorRevealType.InCenter);
     })
     , workspace.onDidChangeConfiguration((e) => {

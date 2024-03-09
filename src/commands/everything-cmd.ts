@@ -84,6 +84,15 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
                 await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
             }
         })
+        , commands.registerCommand('findsuite.rgWithEverythingFolder', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            const results = await everything.execute('folderPipe', false);
+            if (results) {
+                await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+            }
+        })
     );
 }
 

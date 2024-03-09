@@ -171,13 +171,19 @@ export class Everything {
     } else if (filterType === 'filesPipe') {
       extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
-        title: 'Select Files and Rg (Like Pipe)',
+        title: 'Select Files and Rg (Like everything | rg)',
         query: 'files:'
       });
     } else if (filterType === 'folder') {
       extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Open Folder',
+        query: 'folder:'
+      });
+    } else if (filterType === 'folderPipe') {
+      extraConfig = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Select Folders and Rg (Like everything | rg)',
         query: 'folder:'
       });
     } else if (filterType === 'diffFiles') {

@@ -1,7 +1,8 @@
 # Change Log
 
-### [0.2.0] - 2024-03-08
+### [0.2.0] - 2024-03-09
 
+- Redefine the shortcut keys
 - A few bug fixes
 
 ### [0.1.7] - 2024-03-07

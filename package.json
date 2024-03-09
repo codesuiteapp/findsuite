@@ -277,16 +277,6 @@
           "type": "string",
           "default": "@*Mapping",
           "description": "%rg.custom3.description%"
-        },
-        "findsuite.rg.custom4": {
-          "type": "string",
-          "default": "@*Mapper",
-          "description": "%rg.custom4.description%"
-        },
-        "findsuite.rg.custom5": {
-          "type": "string",
-          "default": "",
-          "description": "%rg.custom5.description%"
         }
       }
     },
@@ -294,6 +284,10 @@
       "commandPalette": [
         {
           "command": "findsuite.rgWithEverything",
+          "when": "isWindows"
+        },
+        {
+          "command": "findsuite.rgWithEverythingFolder",
           "when": "isWindows"
         },
         {
@@ -383,37 +377,27 @@
       },
       {
         "command": "findsuite.rgFile",
-        "title": "Ripgrep File",
+        "title": "Ripgrep in Current File",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.rgws",
-        "title": "Ripgrep Workspace",
+        "title": "Ripgrep in Workspace",
         "category": "FindSuite"
       },
       {
-        "command": "findsuite.rgFolder",
-        "title": "Ripgrep Directory",
-        "category": "FindSuite"
-      },
-      {
-        "command": "findsuite.rg1",
-        "title": "Ripgrep #1",
-        "category": "FindSuite"
-      },
-      {
-        "command": "findsuite.rg2",
-        "title": "Ripgrep #2",
-        "category": "FindSuite"
-      },
-      {
-        "command": "findsuite.rg3",
-        "title": "Ripgrep #3",
+        "command": "findsuite.rgDirectory",
+        "title": "Ripgrep in Directory",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.rgWithEverything",
         "title": "Ripgrep with Everything (Like everything | rg)",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.rgWithEverythingFolder",
+        "title": "Ripgrep with Everything Folder (Like everything | rg)",
         "category": "FindSuite"
       },
       {
@@ -457,12 +441,12 @@
         "category": "FindSuite"
       },
       {
-        "command": "findsuite.revealTop",
+        "command": "findsuite.reveal#top",
         "title": "Reveal to Top",
         "category": "FindSuite"
       },
       {
-        "command": "findsuite.revealCenter",
+        "command": "findsuite.reveal#center",
         "title": "Reveal to Center",
         "category": "FindSuite"
       }
@@ -471,7 +455,7 @@
       {
         "command": "findsuite.fdFile",
         "key": "ctrl+alt+f7",
-        "mac": "cmd+shift+f7"
+        "mac": "cmd+ctrl+f7"
       },
       {
         "command": "findsuite.fd",
@@ -490,8 +474,13 @@
       },
       {
         "command": "findsuite.rgWithFd",
-        "key": "ctrl+f10",
-        "mac": "cmd+f10"
+        "key": "ctrl+f7",
+        "mac": "cmd+f7"
+      },
+      {
+        "command": "findsuite.rgWithFdDir",
+        "key": "ctrl+shift+f7",
+        "mac": "cmd+shift+f7"
       },
       {
         "command": "findsuite.rgws",
@@ -504,8 +493,18 @@
         "mac": "cmd+shift+0"
       },
       {
+        "command": "findsuite.rgWithEverything",
+        "key": "ctrl+f10",
+        "when": "isWindows"
+      },
+      {
+        "command": "findsuite.rgWithEverythingFolder",
+        "key": "ctrl+shift+f10",
+        "when": "isWindows"
+      },
+      {
         "command": "findsuite.incrementalEverything",
-        "key": "ctrl+alt+shift+f9",
+        "key": "ctrl+alt+shift+f10",
         "when": "isWindows"
       },
       {
@@ -534,16 +533,11 @@
         "when": "isWindows"
       },
       {
-        "command": "findsuite.rgWithEverything",
-        "key": "ctrl+alt+f10",
-        "when": "isWindows"
-      },
-      {
-        "command": "findsuite.revealTop",
+        "command": "findsuite.reveal#top",
         "key": "ctrl+k ctrl+h"
       },
       {
-        "command": "findsuite.revealCenter",
+        "command": "findsuite.reveal#center",
         "key": "ctrl+k ctrl+m"
       }
     ]
