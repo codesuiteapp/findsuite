@@ -75,7 +75,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
                 await showMultipleDiffs(result, 'dir');
             }
         })
-        , commands.registerCommand('findsuite.rgThruEverything', async () => {
+        , commands.registerCommand('findsuite.rgWithEverything', async () => {
             if (!checkPlatform(isWin)) {
                 return;
             }

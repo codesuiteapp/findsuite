@@ -21,8 +21,14 @@ export function activate(context: ExtensionContext) {
   }
 
   context.subscriptions.push(
-    commands.registerCommand('findsuite.rgThruFd', async () => {
-      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files and Rg (Like pipe)', opt: '-t f' } }, false);
+    commands.registerCommand('findsuite.rgWithFd', async () => {
+      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files and Rg (Like fd -t f | rg)', opt: '-t f' } }, false);
+      if (results) {
+        await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+      }
+    })
+    , commands.registerCommand('findsuite.rgWithFdDir', async () => {
+      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Directory and Rg (Like fd -t f | rg)', opt: '-t d' } }, false);
       if (results) {
         await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
       }

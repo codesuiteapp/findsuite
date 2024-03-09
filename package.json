@@ -104,7 +104,7 @@
         "findsuite.fd.excludePatterns": {
           "type": "array",
           "default": [],
-          "description": "%fd.exclude.pattern.description%"
+          "description": "%fd.exclude.patterns.description%"
         },
         "findsuite.everything.host": {
           "type": "string",
@@ -293,7 +293,7 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "findsuite.rgThruEverything",
+          "command": "findsuite.rgWithEverything",
           "when": "isWindows"
         },
         {
@@ -367,8 +367,13 @@
         "category": "FindSuite"
       },
       {
-        "command": "findsuite.rgThruFd",
-        "title": "Ripgrep with Fd",
+        "command": "findsuite.rgWithFd",
+        "title": "Ripgrep with Fd (Like fd -t f | rg)",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.rgWithFdDir",
+        "title": "Ripgrep with Fd Directory (Like fd -t d | rg)",
         "category": "FindSuite"
       },
       {
@@ -407,8 +412,8 @@
         "category": "FindSuite"
       },
       {
-        "command": "findsuite.rgThruEverything",
-        "title": "Ripgrep with Everything",
+        "command": "findsuite.rgWithEverything",
+        "title": "Ripgrep with Everything (Like everything | rg)",
         "category": "FindSuite"
       },
       {
@@ -464,19 +469,19 @@
     ],
     "keybindings": [
       {
-        "command": "findsuite.fd",
+        "command": "findsuite.fdFile",
         "key": "ctrl+alt+f7",
-        "mac": "cmd+option+f7"
+        "mac": "cmd+shift+f7"
       },
       {
-        "command": "findsuite.fdFile",
-        "key": "ctrl+alt+f8",
-        "mac": "cmd+option+f8"
+        "command": "findsuite.fd",
+        "key": "ctrl+alt+shift+f7",
+        "mac": "cmd+ctrl+shift+f7"
       },
       {
         "command": "findsuite.fdWs",
         "key": "ctrl+alt+9",
-        "mac": "cmd+option+9"
+        "mac": "cmd+shift+9"
       },
       {
         "command": "findsuite.fd#diff",
@@ -484,7 +489,7 @@
         "mac": "cmd+k cmd+shift+d"
       },
       {
-        "command": "findsuite.rgThruFd",
+        "command": "findsuite.rgWithFd",
         "key": "ctrl+f10",
         "mac": "cmd+f10"
       },
@@ -496,17 +501,7 @@
       {
         "command": "findsuite.rgFile",
         "key": "ctrl+alt+0",
-        "mac": "cmd+ctrl+0"
-      },
-      {
-        "command": "findsuite.rg1",
-        "key": "ctrl+alt+7",
-        "mac": "cmd+option+7"
-      },
-      {
-        "command": "findsuite.rg2",
-        "key": "ctrl+alt+8",
-        "mac": "cmd+option+8"
+        "mac": "cmd+shift+0"
       },
       {
         "command": "findsuite.incrementalEverything",
@@ -539,7 +534,7 @@
         "when": "isWindows"
       },
       {
-        "command": "findsuite.rgThruEverything",
+        "command": "findsuite.rgWithEverything",
         "key": "ctrl+alt+f10",
         "when": "isWindows"
       },
