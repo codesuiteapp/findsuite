@@ -77,6 +77,9 @@ export class FdFind {
         const result = await notifyWithProgress(`Searching ${txt ? '<' + txt + '>' : ''}`, async () => {
             return await this.fdItems(cmdOpt, fdQuery.fileType);
         });
+        if (!result) {
+            return;
+        }
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result, {
                 title: `Fd:: File ${txt ? '<' + txt + '>' : ''} :: Results <${result.length}>`,

@@ -1,5 +1,7 @@
 import * as cp from 'child_process';
-import { ProgressLocation, Uri, env, version, window } from 'vscode';
+import { CancellationTokenSource, ProgressLocation, Uri, env, version, window } from 'vscode';
+import FindSuiteSettings from '../config/settings';
+import logger from '../utils/logger';
 
 export function showInfoMessageWithTimeout(message: string, timeout: number = 3000) {
     const upTo = timeout / 10;
@@ -33,13 +35,41 @@ export async function showDoneableInfo(title: string, callback: () => Promise<vo
 }
 
 export async function notifyWithProgress<T>(title: string, callback: () => Promise<T>) {
-    const result = await window.withProgress<T>({
-        location: ProgressLocation.Notification,
-        title,
-    },
-        async () => callback()
-    );
-    return result;
+    const cts = new CancellationTokenSource();
+    const timeout = setTimeout(() => {
+        cts.cancel();
+        window.showErrorMessage(`Timeout ${FindSuiteSettings.timeout}s`);
+    }, FindSuiteSettings.timeout * 1000);
+
+    try {
+        const result = await window.withProgress<T>({
+            location: ProgressLocation.Notification,
+            title,
+            cancellable: true,
+        },
+            async (progress, token) => {
+                cts.token.onCancellationRequested(() => {
+                    progress.report({ increment: 100 });
+                });
+
+                token.onCancellationRequested(() => {
+                    progress.report({ increment: 100 });
+                });
+
+                return await callback();
+            },
+        );
+
+        clearTimeout(timeout);
+        return result;
+    } catch (err) {
+        if (err instanceof Error && err.message === 'Canceled') {
+            console.log(err.message);
+            logger.error('notify():', err.message);
+            return undefined;
+        }
+        throw err;
+    }
 }
 
 export async function showErrorMessageWithMoreInfo(message: string, link: string) {

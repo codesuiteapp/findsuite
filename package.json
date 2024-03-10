@@ -47,6 +47,11 @@
       "type": "object",
       "title": "Find Suite",
       "properties": {
+        "findsuite.timeout": {
+          "type": "number",
+          "default": 5,
+          "description": "%timeout.description%"
+        },
         "findsuite.compare.external.enabled": {
           "type": "boolean",
           "default": false,

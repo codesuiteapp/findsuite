@@ -167,6 +167,9 @@ export class RipgrepSearch {
         const result = await notifyWithProgress(`Searching <${txt}>`, async () => {
             return await this.fetchGrepItems([this.rgProgram, `"${txt}"`].join(' '), rgQuery);
         });
+        if (!result) {
+            return;
+        }
         if (rgQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
                 title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.items.length} / ${result.total}>`,

@@ -107,6 +107,15 @@ export default class FindSuiteSettings {
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key);
     }
 
+    public static get timeout(): number {
+        const key = 'timeout';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<number>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<number>(key)?.defaultValue
+            ??
+            3;
+    }
+
     public static get compareExternalEnabled(): boolean {
         const key = 'compare.external.enabled';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<boolean>(key)

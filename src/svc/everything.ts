@@ -59,9 +59,13 @@ export class Everything {
           return;
         }
 
-        quickPick.items = await notifyWithProgress(`Searching <${item}>`, async () => {
+        const result = await notifyWithProgress(`Searching <${item}>`, async () => {
           return await this.searchInEverything(option!, item, FindSuiteSettings.count * 5);
         });
+        if (!result) {
+          return;
+        }
+        quickPick.items = result;
         quickPick.title = `Everything <${item}> (${option.description}) :: Results <${quickPick.items.length}>`;
         console.log(`items <${quickPick.items.length}>`);
       });
@@ -264,9 +268,12 @@ export class Everything {
       });
     }
 
-    const items: QuickPickItem[] = await notifyWithProgress(`Searching <${txt}>`, async () => {
+    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching <${txt}>`, async () => {
       return await this.searchInEverything(config, txt);
     });
+    if (!items) {
+      return;
+    }
     const limit = FindSuiteSettings.limitOpenFile;
 
     if (config.filterType === 'folder' || config.filterType === 'folderFiles' || config.filterType === 'code-workspace') {
