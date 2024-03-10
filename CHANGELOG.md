@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.2.1] - 2024-03-10
+
+- Add Function: message for searching
+
 ### [0.2.0] - 2024-03-09
 
 - Redefine the shortcut keys

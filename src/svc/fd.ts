@@ -7,6 +7,7 @@ import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { FdQuery } from "../model/fd";
+import { notifyWithProgress } from "../ui/ui";
 import { getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
@@ -23,13 +24,6 @@ export class FdFind {
 
     private _checked: boolean = false;
 
-    public get checked(): boolean {
-        return this._checked;
-    }
-    public set checked(value: boolean) {
-        this._checked = value;
-    }
-
     constructor(private context: vscode.ExtensionContext) {
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
         this.fdProgram = this.getFd(context.extensionUri.fsPath);
@@ -39,10 +33,6 @@ export class FdFind {
         } else {
             this.projectRoot = this.workspaceFolders;
         }
-    }
-
-    public get workspaceFolders(): string[] {
-        return this._workspaceFolders;
     }
 
     public async execute(fdQuery: FdQuery, isOpen: boolean = true, required: boolean = false) {
@@ -83,9 +73,10 @@ export class FdFind {
 
         const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
         console.log(`cmd <${cmdOpt}>`);
-        logger.debug(`cmd <${cmdOpt}>`);
 
-        const result = await this.fdItems(cmdOpt, fdQuery.fileType);
+        const result = await notifyWithProgress(`Searching ${txt ? '<' + txt + '>' : ''}`, async () => {
+            return await this.fdItems(cmdOpt, fdQuery.fileType);
+        });
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result, {
                 title: `Fd:: File ${txt ? '<' + txt + '>' : ''} :: Results <${result.length}>`,
@@ -129,6 +120,7 @@ export class FdFind {
     }
 
     private async fdItems(cmd: string, fileType: string): Promise<vscode.QuickPickItem[]> {
+        logger.debug('fd():', cmd);
         return new Promise((resolve, reject) => {
             cp.exec(cmd, { cwd: ".", maxBuffer: MAX_BUF_SIZE }, (err, stdout, stderr) => {
                 console.log(`error <${err}> stderr <${stderr}>`);
@@ -236,6 +228,18 @@ export class FdFind {
             notifyMessageWithTimeout(`Please set "findsuite.fd.path.${platform}" for more searching`);
         }
         this._checked = true;
+    }
+
+    public get workspaceFolders(): string[] {
+        return this._workspaceFolders;
+    }
+
+    public get checked(): boolean {
+        return this._checked;
+    }
+
+    public set checked(value: boolean) {
+        this._checked = value;
     }
 
 }

@@ -5,7 +5,9 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
+import { fileBtn } from "../model/button";
 import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
+import { notifyWithProgress } from "../ui/ui";
 import { getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
@@ -162,7 +164,9 @@ export class RipgrepSearch {
             return;
         }
 
-        const result = await this.fetchGrepItems([this.rgProgram, `"${txt}"`].join(' '), rgQuery);
+        const result = await notifyWithProgress(`Searching <${txt}>`, async () => {
+            return await this.fetchGrepItems([this.rgProgram, `"${txt}"`].join(' '), rgQuery);
+        });
         if (rgQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
                 title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.items.length} / ${result.total}>`,
@@ -231,13 +235,8 @@ export class RipgrepSearch {
             rgQuery.opt = this.rgDefOption;
         }
         const cmd = `${command} -n ${rgQuery.opt} ${rgQuery.srchPath ?? this.projectRoot} --json`;
-        console.log(`cmd <${cmd}>`);
-        logger.debug(`cmd <${cmd}>`);
-
-        const fileBtn: vscode.QuickInputButton = {
-            iconPath: vscode.ThemeIcon.File,
-            tooltip: 'File'
-        };
+        console.log(`ripgrep(): <${cmd}>`);
+        logger.debug(`ripgrep(): ${cmd}`);
 
         return new Promise((resolve, reject) => {
             cp.exec(cmd, { cwd: ".", maxBuffer: MAX_BUF_SIZE }, (err, stdout, stderr) => {

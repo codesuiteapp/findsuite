@@ -32,6 +32,16 @@ export async function showDoneableInfo(title: string, callback: () => Promise<vo
     );
 }
 
+export async function notifyWithProgress<T>(title: string, callback: () => Promise<T>) {
+    const result = await window.withProgress<T>({
+        location: ProgressLocation.Notification,
+        title,
+    },
+        async () => callback()
+    );
+    return result;
+}
+
 export async function showErrorMessageWithMoreInfo(message: string, link: string) {
     const moreInfo = 'More Info';
     const result = await window.showErrorMessage(message, moreInfo);

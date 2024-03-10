@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from '../config/settings';
 import { fileBtn } from '../model/button';
+import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
 import { getSelectionText } from '../utils/editor';
 import logger from '../utils/logger';
@@ -58,7 +59,9 @@ export class Everything {
           return;
         }
 
-        quickPick.items = await this.searchInEverything(option, item, FindSuiteSettings.count * 5);
+        quickPick.items = await notifyWithProgress(`Searching <${item}>`, async () => {
+          return await this.searchInEverything(option!, item, FindSuiteSettings.count * 5);
+        });
         quickPick.title = `Everything <${item}> (${option.description}) :: Results <${quickPick.items.length}>`;
         console.log(`items <${quickPick.items.length}>`);
       });
@@ -92,7 +95,10 @@ export class Everything {
         'count=' + cnt,
       ].join('&'))
     };
-    console.log(`name <${config.name}> path <${http_options.path}>`);
+    if (http_options.path) {
+      logger.debug('everything():', http_options.path);
+      console.log(`name <${config.name}> path <${http_options.path}>`);
+    }
 
     return new Promise((resolve, reject) => {
       const request = http.get(http_options, (response) => {
@@ -258,7 +264,9 @@ export class Everything {
       });
     }
 
-    const items: QuickPickItem[] = await this.searchInEverything(config, txt);
+    const items: QuickPickItem[] = await notifyWithProgress(`Searching <${txt}>`, async () => {
+      return await this.searchInEverything(config, txt);
+    });
     const limit = FindSuiteSettings.limitOpenFile;
 
     if (config.filterType === 'folder' || config.filterType === 'folderFiles' || config.filterType === 'code-workspace') {

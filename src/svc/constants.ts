@@ -1,6 +1,6 @@
 export namespace Constants {
 
-    export const EXTENSION_NAME = 'Find Suite';
+    export const EXTENSION_NAME = 'findsuite';
 
     export const MAX_BUFFER_SIZE = 1000;
 

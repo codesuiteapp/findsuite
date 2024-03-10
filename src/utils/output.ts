@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
-import { Constants } from '../svc/constants';
 
-const outputChannel = vscode.window.createOutputChannel(Constants.EXTENSION_NAME);
+const outputChannel = vscode.window.createOutputChannel('Find Suite');
 let isShow = false;
 
 export function show() {
