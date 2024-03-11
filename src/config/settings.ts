@@ -261,6 +261,15 @@ export default class FindSuiteSettings {
             [];
     }
 
+    public static get rgExcludePatterns(): string[] {
+        const key = 'rg.excludePatterns';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string[]>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string[]>(key)?.defaultValue
+            ??
+            [];
+    }
+
     public static get rgInputPreferType(): string {
         const key = 'rg.input.preferType';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)

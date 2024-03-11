@@ -6,7 +6,7 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { FdQuery } from "../model/fd";
+import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
 import { getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
@@ -83,8 +83,8 @@ export class FdFind {
             return;
         }
         if (fdQuery.isMany) {
-            const items = await vscode.window.showQuickPick(result, {
-                title: `Fd:: File ${mesg} :: Results <${result.length}>`,
+            const items = await vscode.window.showQuickPick(result.items, {
+                title: `Fd:: File ${mesg} :: Results <${result.total}>`,
                 placeHolder: txt,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -101,8 +101,8 @@ export class FdFind {
                 }
             }
         } else {
-            const selectedItem = await vscode.window.showQuickPick<vscode.QuickPickItem>(result, {
-                title: `Fd:: ${fdQuery.fileType} ${mesg} :: Results <${result.length}>`,
+            const selectedItem = await vscode.window.showQuickPick<vscode.QuickPickItem>(result.items, {
+                title: `Fd:: ${fdQuery.fileType} ${mesg} :: Results <${result.total}>`,
                 placeHolder: txt,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
@@ -124,7 +124,7 @@ export class FdFind {
         return;
     }
 
-    private async fdItems(cmd: string, fileType: string): Promise<vscode.QuickPickItem[]> {
+    private async fdItems(cmd: string, fileType: string): Promise<QuickPickItemResults<vscode.QuickPickItem>> {
         logger.debug('fd():', cmd);
         return new Promise((resolve, reject) => {
             cp.exec(cmd, { cwd: ".", maxBuffer: MAX_BUF_SIZE }, (err, stdout, stderr) => {
@@ -132,23 +132,16 @@ export class FdFind {
                 if (stderr) {
                     logger.error(stderr);
                     notifyMessageWithTimeout(stderr);
-                    return resolve([]);
+                    return resolve({ total: 0, items: [] });
                 }
                 const lines = Array.from(new Set(stdout.split(/\n/).filter((l) => l !== "")));
                 console.log(`lines <${lines?.length ?? 0}>`);
 
                 if (!lines.length) {
-                    return resolve([]);
+                    return resolve({ total: 0, items: [] });
                 }
 
-                // const results = lines.map((line) => {
-                //     return {
-                //         label: fileType === 'dir' ? '$(folder)' : '$(file)',
-                //         description: path.basename(line),
-                //         detail: line
-                //     };
-                // });
-
+                let total = 0;
                 const results: vscode.QuickPickItem[] = [];
                 let currentDir: string | undefined = undefined;
 
@@ -167,8 +160,9 @@ export class FdFind {
                     const detail = line;
 
                     results.push({ label, description, detail });
+                    total++;
                 });
-                return resolve(results);
+                return resolve({ total: total, items: results });
             });
         });
     }

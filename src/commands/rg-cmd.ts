@@ -23,7 +23,7 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
             const rgQuery = {
                 ...rgInitQuery,
                 title: 'Workspace',
-                srchPath: `"${rg.workspaceFolders.join(' ')}"`,
+                srchPath: `${rg.workspaceFolders.join(' ')}`,
                 isMany: false
             };
 

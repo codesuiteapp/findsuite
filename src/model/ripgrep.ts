@@ -45,11 +45,6 @@ export interface RipgrepMatchData {
 
 }
 
-export interface QuickPickItemResults {
-    total: number;
-    items: QuickPickItemRgData[];
-}
-
 export interface QuickPickItemRgData extends QuickPickItem {
     line_number: number;
     start: number;

@@ -6,16 +6,17 @@ import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { rgHeaderButtons, searchButtons } from "../model/button";
-import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
+import { QuickPickItemResults } from "../model/fd";
+import { QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
 import { notifyWithProgress, showInfoMessageWithTimeout } from "../ui/ui";
 import { copyClipboardFilePath, copyClipboardFiles, getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
-import { showMultipleDiffs, showMultipleDiffs2 } from "./diff";
+import { showMultipleDiffs2 } from "./diff";
 
 const MAX_BUF_SIZE = 200000 * 1024;
 
-const emptyRgData: QuickPickItemResults = {
+const emptyRgData: QuickPickItemResults<QuickPickItemRgData> = {
     total: 0,
     items: []
 };
@@ -35,7 +36,7 @@ export class RipgrepSearch {
     private _checked: boolean = false;
 
     constructor(private context: vscode.ExtensionContext) {
-        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
+        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => quote([folder.uri.fsPath])) || [];
         this.projectRoot = this.workspaceFolders[0] || ".";
         this.rgDefOption = FindSuiteSettings.defaultOption;
         this.rgProgram = this.getRipgrep(context.extensionUri.fsPath);
@@ -93,7 +94,7 @@ export class RipgrepSearch {
                 if (!rgQuery.srchPath) {
                     rgQuery.srchPath = this.projectRoot;
                 }
-                let result: QuickPickItemResults;
+                let result: QuickPickItemResults<QuickPickItemRgData>;
                 // if (rgQuery.skipQuote) {
                 //     result = await this.fetchGrepItems([this.rgProgram, ...this.query].join(' '), rgQuery);
                 // } else {
@@ -178,7 +179,7 @@ export class RipgrepSearch {
         }
 
         const result = await notifyWithProgress(`Searching <${txt}>`, async () => {
-            return await this.fetchGrepItems([this.rgProgram, `"${txt}"`].join(' '), rgQuery);
+            return await this.fetchGrepItems([this.rgProgram, `${txt}`].join(' '), rgQuery);
         });
         if (result === undefined) {
             return;
@@ -230,7 +231,7 @@ export class RipgrepSearch {
         }
 
         const query = await vscode.window.showInputBox({
-            title: `Ripgrep :: Enter text to search Files <${results.length}> :: (2/2)`,
+            title: `Ripgrep :: Enter text to search Files <${results.length}>`,
             prompt: 'Please enter filename to search',
             value: getSelectionText(true)
         }).then(res => {
@@ -247,11 +248,12 @@ export class RipgrepSearch {
         await this.interact(rgQuery);
     }
 
-    private async fetchGrepItems(command: string, rgQuery: RgQuery): Promise<QuickPickItemResults> {
+    private async fetchGrepItems(command: string, rgQuery: RgQuery): Promise<QuickPickItemResults<QuickPickItemRgData>> {
         if (!rgQuery.opt) {
             rgQuery.opt = this.rgDefOption;
         }
-        const cmd = `${command} -n ${rgQuery.opt} ${rgQuery.srchPath ?? this.projectRoot} --json`;
+        const excludes = FindSuiteSettings.rgExcludePatterns.length > 0 ? '-g "!{' + FindSuiteSettings.rgExcludePatterns.join(',') + '}"' : '';
+        const cmd = `${command} -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? this.projectRoot} --json`;
         console.log(`ripgrep(): <${cmd}>`);
         logger.debug(`ripgrep(): ${cmd}`);
 
@@ -264,20 +266,21 @@ export class RipgrepSearch {
                     return resolve(emptyRgData);
                 }
                 const lines = stdout.split(/\n/).filter((l) => l !== "");
-                console.log(`lines <${lines?.length ?? 0}>`);
+                console.log(`ripgrep(): lines <${lines?.length ?? 0}>`);
+                logger.debug(`ripgrep(): lines <${lines?.length ?? 0}>`);
 
                 if (!lines.length) {
                     return resolve(emptyRgData);
                 }
 
-                let cnt = 0;
+                let total = 0;
                 const results = lines.map((line) => {
                     return JSON.parse(line);
                 }).filter((json) => {
-                    if (cnt > FindSuiteSettings.rgCount || !json.type) {
+                    if (total > FindSuiteSettings.rgCount || !json.type) {
                         return false;
                     } else if (json.type === 'begin') {
-                        cnt++;
+                        total++;
                         return false;
                     }
                     return true;
@@ -287,11 +290,11 @@ export class RipgrepSearch {
                         return {
                             label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
                             description: data.path.text.replace(/\\/g, '/'),
-                            detail: data.lines.text.trim(),
+                            detail: data.lines.text?.trim(),
                             buttons: searchButtons,
                             start: data.submatches[0].start,
                             end: data.submatches[0].end,
-                            line_number: Number(data.line_number),
+                            line_number: Number(data.line_number ?? 1),
                             option: rgQuery.opt,
                             replaceQuery: rgQuery.replaceQuery,
                             skipQuote: rgQuery.skipQuote
@@ -315,11 +318,8 @@ export class RipgrepSearch {
                     summary = JSON.parse(lines[lines.length - 1]) as RgSummaryData;
                 }
 
-                console.log(`summary <${summary?.data.stats.matched_lines ?? 0} / ${summary?.data.stats.matches ?? 0}>`);
-                return resolve({
-                    total: summary?.data.stats.matched_lines ?? 0,
-                    items: results
-                });
+                console.log(`summary <${total} / ${summary?.data.stats.matches ?? 0}>`);
+                return resolve({ total: total, items: results });
             });
         });
     }

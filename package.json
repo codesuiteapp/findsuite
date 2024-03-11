@@ -105,7 +105,7 @@
         "findsuite.fd.excludePatterns": {
           "type": "array",
           "default": [],
-          "description": "%fd.exclude.patterns.description%"
+          "description": "%fd.excludePatterns.description%"
         },
         "findsuite.everything.host": {
           "type": "string",
@@ -214,6 +214,13 @@
               "description": "Many extension for Java"
             }
           }
+        },
+        "findsuite.rg.excludePatterns": {
+          "type": "array",
+          "default": [
+            ".git"
+          ],
+          "description": "%rg.excludePatterns.description%"
         },
         "findsuite.rg.input.preferType": {
           "type": "string",

@@ -1,15 +1,9 @@
-import { QuickPickItem } from "vscode";
-
 export interface FdQuery {
     title: string;
     opt: string;
     srchPath: string | undefined;
     fileType: "file" | "fileWs" | "dir" | "diff" | "diffWs";
     isMany: boolean;
-}
-
-export interface QuickPickItemResults {
-    items: QuickPickItem[];
 }
 
 export const fdInitQuery: FdQuery = {
@@ -19,3 +13,8 @@ export const fdInitQuery: FdQuery = {
     srchPath: undefined,
     isMany: true
 };
+
+export interface QuickPickItemResults<T> {
+    total: number;
+    items: T[];
+}

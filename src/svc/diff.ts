@@ -21,7 +21,7 @@ export async function showMultipleDiffs2(files: vscode.QuickPickItem[], diffType
     const prog = FindSuiteSettings.compareExternalProgram;
 
     if (files.length !== 2) {
-        showInfoMessageWithTimeout('Please select two files.');
+        showInfoMessageWithTimeout(`Please select two files. You have selected ${files.length} files.`);
         return;
     }
     if (files[0].description === files[1].description) {
@@ -34,6 +34,7 @@ export async function showMultipleDiffs2(files: vscode.QuickPickItem[], diffType
         return;
     }
 
+    showInfoMessageWithTimeout('Performing file comparison.');
     if (external && prog) {
         await executeDiff(files[0].description!, files[1].description!, prog, FindSuiteSettings.compareExternalOption);
     } else {
