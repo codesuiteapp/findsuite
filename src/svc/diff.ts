@@ -1,5 +1,4 @@
 import * as cp from "child_process";
-import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { showInfoMessageWithTimeout } from "../ui/ui";
@@ -14,6 +13,31 @@ export async function diff(src: string, dst: string, cmd: string = 'vscode.diff'
 export async function multipleDiffs(files: string[]) {
     for (let i = 0; i < files.length; i += 2) {
         await diff(files[i], files[i + 1]);
+    }
+}
+
+export async function showMultipleDiffs2(files: vscode.QuickPickItem[], diffType: "file" | "dir" = "file") {
+    const external = FindSuiteSettings.compareExternalEnabled;
+    const prog = FindSuiteSettings.compareExternalProgram;
+
+    if (files.length !== 2) {
+        showInfoMessageWithTimeout('Please select two files.');
+        return;
+    }
+    if (files[0].description === files[1].description) {
+        showInfoMessageWithTimeout('The names of the two files are identical.');
+        return;
+    }
+
+    if (diffType === 'dir' && !external) {
+        showInfoMessageWithTimeout('Folder comparison is only available when an external program is selected. Please register an "External Diff Program."');
+        return;
+    }
+
+    if (external && prog) {
+        await executeDiff(files[0].description!, files[1].description!, prog, FindSuiteSettings.compareExternalOption);
+    } else {
+        await diff(files[0].description!, files[1].description!);
     }
 }
 

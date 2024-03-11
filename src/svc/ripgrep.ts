@@ -5,12 +5,13 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { fileBtn } from "../model/button";
+import { rgHeaderButtons, searchButtons } from "../model/button";
 import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
 import { notifyWithProgress, showInfoMessageWithTimeout } from "../ui/ui";
-import { getSelectionText } from "../utils/editor";
+import { copyClipboardFilePath, copyClipboardFiles, getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
+import { showMultipleDiffs, showMultipleDiffs2 } from "./diff";
 
 const MAX_BUF_SIZE = 200000 * 1024;
 
@@ -54,6 +55,7 @@ export class RipgrepSearch {
         quickPick.ignoreFocusOut = true;
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
+        quickPick.buttons = rgHeaderButtons;
 
         const isOption = (s: string) => /^--?[a-z]+/.test(s);
         const isWordQuoted = (s: string) => /^".*"/.test(s);
@@ -123,9 +125,20 @@ export class RipgrepSearch {
             quickPick.dispose();
         });
 
+        quickPick.onDidTriggerButton(async (e) => {
+            const items = quickPick.selectedItems as unknown as vscode.QuickPickItem[];
+            if (e.tooltip === 'Diff') {
+                await showMultipleDiffs2(items, 'file');
+            } else if (e.tooltip === 'Copy') {
+                copyClipboardFiles(items);
+            }
+        });
+
         quickPick.onDidTriggerItemButton(async (e) => {
-            if (e.button.tooltip === 'File') {
+            if (e.button.tooltip === 'View') {
                 await this.openChoiceFile(e.item);
+            } else if (e.button.tooltip === 'Copy') {
+                copyClipboardFilePath(e.item);
             }
         });
 
@@ -275,7 +288,7 @@ export class RipgrepSearch {
                             label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
                             description: data.path.text.replace(/\\/g, '/'),
                             detail: data.lines.text.trim(),
-                            buttons: [fileBtn],
+                            buttons: searchButtons,
                             start: data.submatches[0].start,
                             end: data.submatches[0].end,
                             line_number: Number(data.line_number),

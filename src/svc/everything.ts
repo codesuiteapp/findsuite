@@ -3,10 +3,10 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from '../config/settings';
-import { fileBtn } from '../model/button';
+import { searchButtons } from '../model/button';
 import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
-import { getSelectionText } from '../utils/editor';
+import { copyClipboardWithFile, getSelectionText } from '../utils/editor';
 import logger from '../utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
 
@@ -121,7 +121,7 @@ export class Everything {
               f.label = f.type === 'file' ? '$(file)' : '$(folder)';
               f.description = `${f.name} ${f.type === 'file' ? '(' + formatBytes(f.size) + ')' : ''}`;
               f.detail = `${path.join(f.path, f.name)}`;
-              f.buttons = [fileBtn];
+              f.buttons = searchButtons;
             });
             resolve(files);
           } catch (e: any) {
@@ -321,6 +321,7 @@ export class Everything {
     const quickPick = vscode.window.createQuickPick<QuickPickItem>();
     quickPick.title = 'Everything:: Filename';
     quickPick.placeholder = 'Please enter the string to search';
+    quickPick.canSelectMany = true;
     quickPick.ignoreFocusOut = true;
     quickPick.matchOnDetail = true;
     // quickPick.matchOnDescription = true;
@@ -377,8 +378,10 @@ export class Everything {
     });
 
     quickPick.onDidTriggerItemButton(async (e) => {
-      if (e.button.tooltip === 'File') {
+      if (e.button.tooltip === 'View') {
         await this.openFile(e.item);
+      } else if (e.button.tooltip === 'Copy') {
+        copyClipboardWithFile(e.item);
       }
     });
 

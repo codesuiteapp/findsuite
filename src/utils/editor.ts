@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import path from 'path';
 import * as vscode from 'vscode';
+import { QuickPickItemRgData } from '../model/ripgrep';
+import { showInfoMessageWithTimeout } from '../ui/ui';
 
 export function getEditorFsPath(dir: boolean = false) {
     let uri;
@@ -76,3 +78,30 @@ export function revealEditor(revealType: vscode.TextEditorRevealType = vscode.Te
     }
 }
 
+export function copyClipboard(txt: string, cnt: number = 1) {
+    vscode.env.clipboard.writeText(txt);
+    showInfoMessageWithTimeout(`<${cnt}> Copied to clipboard`);
+}
+
+export function copyClipboardFilePath(item: QuickPickItemRgData) {
+    if (item.description) {
+        copyClipboard(item.description);
+    }
+}
+
+export function copyClipboardFiles(items: vscode.QuickPickItem[]) {
+    if (items) {
+        const files = items.map(item => item.description).join('\n');
+        copyClipboard(files, items.length);
+    }
+}
+
+export function copyClipboardWithFile(file: any) {
+    if (!file) {
+        return;
+    }
+
+    const fullname = path.join(file.path, file.name);
+    vscode.env.clipboard.writeText(fullname);
+    showInfoMessageWithTimeout('Copied to clipboard');
+}
