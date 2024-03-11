@@ -4,7 +4,7 @@
   "compare.external.option.description": "외부 Diff 프로그램 Option를 입력하세요",
   "everything.server_host.description": "Everything Http Server의 주소 (default: 127.0.0.1)",
   "everything.server_port.description": "Everything Http Server의 Port (default: 3380)",
-  "everything.count.description": "Everything 에서 받는 결과의 개수 (default: 1000)",
+  "everything.count.description": "Everything 에서 받는 결과의 개수 (default: 5000)",
   "everything.limitOpenFile.description": "Everything 에서 받은 결과를 한 번에 열 수 있는 파일수 (default: 100)",
   "everything.search.description": "Everything 에서 사용할 검색 설정",
   "everything.exclude.enabled.description": "Everything 에서 검색할 때 사용할 파일 제외 사용 여부",

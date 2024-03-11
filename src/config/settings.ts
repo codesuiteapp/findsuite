@@ -21,6 +21,7 @@ export interface EverythingConfig extends EverythingConfigProperty {
     filterType: string;
     title: string;
     canPickMany?: boolean;
+    mesg?: string;
 }
 
 export type FindSuitePropertyType = "everythingConfig";

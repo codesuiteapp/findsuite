@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { fileBtn } from "../model/button";
 import { QuickPickItemResults, QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
-import { notifyWithProgress } from "../ui/ui";
+import { notifyWithProgress, showInfoMessageWithTimeout } from "../ui/ui";
 import { getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
@@ -92,14 +92,14 @@ export class RipgrepSearch {
                     rgQuery.srchPath = this.projectRoot;
                 }
                 let result: QuickPickItemResults;
-                if (rgQuery.skipQuote) {
-                    result = await this.fetchGrepItems([this.rgProgram, ...this.query].join(' '), rgQuery);
-                } else {
-                    result = await this.fetchGrepItems([this.rgProgram, quote([...this.query])].join(' '), rgQuery);
-                }
+                // if (rgQuery.skipQuote) {
+                //     result = await this.fetchGrepItems([this.rgProgram, ...this.query].join(' '), rgQuery);
+                // } else {
+                // }
+                result = await this.fetchGrepItems([this.rgProgram, quote([...this.query])].join(' '), rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
-                quickPick.title = `RipGrep: ${rgQuery.title} <${this.query}> :: Results <${quickPick.items.length} / ${result.total}>`;
+                quickPick.title = `RipGrep: ${rgQuery.title} <${this.query}> :: Results <${result.total}>`;
             } catch (error: any) {
                 console.log(`fetchGrepItems() - Error: ${error.message}`);
                 logger.error(`fetchGrepItems() - Error: ${error.message}`);
@@ -167,9 +167,13 @@ export class RipgrepSearch {
         const result = await notifyWithProgress(`Searching <${txt}>`, async () => {
             return await this.fetchGrepItems([this.rgProgram, `"${txt}"`].join(' '), rgQuery);
         });
+        if (result === undefined) {
+            return;
+        }
+
         if (rgQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
-                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.items.length} / ${result.total}>`,
+                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
                 placeHolder: txt,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -183,7 +187,7 @@ export class RipgrepSearch {
             }
         } else {
             await vscode.window.showQuickPick<QuickPickItemRgData>(result.items, {
-                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.items.length} / ${result.total}>`,
+                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
                 placeHolder: txt,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
@@ -224,7 +228,7 @@ export class RipgrepSearch {
             ...rgInitQuery,
             replaceQuery: true,
             opt: query,
-            srchPath: `${results.map(item => '"' + item.detail + '"').join(' ')}`
+            srchPath: `${results.map(item => quote([item.detail!])).join(' ')}`
         };
 
         await this.interact(rgQuery);
@@ -243,7 +247,7 @@ export class RipgrepSearch {
                 console.log(`error <${err}> stderr <${stderr}>`);
                 if (stderr) {
                     logger.error(stderr);
-                    vscode.window.showErrorMessage(stderr);
+                    showInfoMessageWithTimeout(stderr);
                     return resolve(emptyRgData);
                 }
                 const lines = stdout.split(/\n/).filter((l) => l !== "");
@@ -257,25 +261,40 @@ export class RipgrepSearch {
                 const results = lines.map((line) => {
                     return JSON.parse(line);
                 }).filter((json) => {
-                    if (cnt < FindSuiteSettings.rgCount && json.type === 'match') {
+                    if (cnt > FindSuiteSettings.rgCount || !json.type) {
+                        return false;
+                    } else if (json.type === 'begin') {
                         cnt++;
-                        return true;
+                        return false;
                     }
-                    return false;
+                    return true;
                 }).map((json) => {
                     const data = json.data;
-                    return {
-                        label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
-                        description: data.path.text.replace(/\\/g, '/'),
-                        detail: data.lines.text.trim(),
-                        buttons: [fileBtn],
-                        start: data.submatches[0].start,
-                        end: data.submatches[0].end,
-                        line_number: Number(data.line_number),
-                        option: rgQuery.opt,
-                        replaceQuery: rgQuery.replaceQuery,
-                        skipQuote: rgQuery.skipQuote
-                    };
+                    if (json.type === 'match') {
+                        return {
+                            label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
+                            description: data.path.text.replace(/\\/g, '/'),
+                            detail: data.lines.text.trim(),
+                            buttons: [fileBtn],
+                            start: data.submatches[0].start,
+                            end: data.submatches[0].end,
+                            line_number: Number(data.line_number),
+                            option: rgQuery.opt,
+                            replaceQuery: rgQuery.replaceQuery,
+                            skipQuote: rgQuery.skipQuote
+                        };
+                    } else {
+                        return {
+                            label: '',
+                            kind: vscode.QuickPickItemKind.Separator,
+                            start: 0,
+                            end: 0,
+                            line_number: 0,
+                            option: '',
+                            replaceQuery: false,
+                            skipQuote: false
+                        };
+                    }
                 });
 
                 let summary: RgSummaryData | undefined = undefined;
@@ -283,7 +302,7 @@ export class RipgrepSearch {
                     summary = JSON.parse(lines[lines.length - 1]) as RgSummaryData;
                 }
 
-                console.log(`results <${results?.length ?? 0}> summary <${summary?.data.stats.matched_lines ?? 0} / ${summary?.data.stats.matches ?? 0}>`);
+                console.log(`summary <${summary?.data.stats.matched_lines ?? 0} / ${summary?.data.stats.matches ?? 0}>`);
                 return resolve({
                     total: summary?.data.stats.matched_lines ?? 0,
                     items: results

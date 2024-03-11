@@ -12,7 +12,7 @@ import { getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
 
-const MAX_BUF_SIZE = 200000 * 1024;
+const MAX_BUF_SIZE = 200 * 1024 * 1024;
 
 export class FdFind {
 
@@ -59,12 +59,14 @@ export class FdFind {
         }
 
         let cmd = '';
+        let mesg = `${txt ? '<' + txt + '>' : ''}`;
         if (fdQuery.fileType === 'dir') {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
         } else if (fdQuery.fileType === 'diffWs') {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
         } else if (fdQuery.fileType === 'fileWs') {
             cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+            mesg = '<Files in Workspace>';
         } else {
             let command = [this.fdProgram, txt].join(' ');
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
@@ -74,12 +76,15 @@ export class FdFind {
         const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
         console.log(`cmd <${cmdOpt}>`);
 
-        const result = await notifyWithProgress(`Searching ${txt ? '<' + txt + '>' : ''}`, async () => {
+        const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
             return await this.fdItems(cmdOpt, fdQuery.fileType);
         });
+        if (result === undefined) {
+            return;
+        }
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result, {
-                title: `Fd:: File ${txt ? '<' + txt + '>' : ''} :: Results <${result.length}>`,
+                title: `Fd:: File ${mesg} :: Results <${result.length}>`,
                 placeHolder: txt,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -97,7 +102,7 @@ export class FdFind {
             }
         } else {
             const selectedItem = await vscode.window.showQuickPick<vscode.QuickPickItem>(result, {
-                title: `Fd:: ${fdQuery.fileType} ${txt ? '<' + txt + '>' : ''} :: Results <${result.length}>`,
+                title: `Fd:: ${fdQuery.fileType} ${mesg} :: Results <${result.length}>`,
                 placeHolder: txt,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
@@ -126,7 +131,7 @@ export class FdFind {
                 console.log(`error <${err}> stderr <${stderr}>`);
                 if (stderr) {
                     logger.error(stderr);
-                    vscode.window.showErrorMessage(stderr);
+                    notifyMessageWithTimeout(stderr);
                     return resolve([]);
                 }
                 const lines = Array.from(new Set(stdout.split(/\n/).filter((l) => l !== "")));
@@ -136,14 +141,33 @@ export class FdFind {
                     return resolve([]);
                 }
 
-                const results = lines.map((line) => {
-                    return {
-                        label: fileType === 'dir' ? '$(folder)' : '$(file)',
-                        description: path.basename(line),
-                        detail: line
-                    };
-                });
+                // const results = lines.map((line) => {
+                //     return {
+                //         label: fileType === 'dir' ? '$(folder)' : '$(file)',
+                //         description: path.basename(line),
+                //         detail: line
+                //     };
+                // });
 
+                const results: vscode.QuickPickItem[] = [];
+                let currentDir: string | undefined = undefined;
+
+                lines.forEach((line) => {
+                    const dirName = path.dirname(line);
+                    if (dirName !== currentDir) {
+                        if (currentDir !== undefined) {
+                            results.push({ label: '', kind: vscode.QuickPickItemKind.Separator });
+                        }
+                        currentDir = dirName;
+                    }
+
+                    const baseName = path.basename(line);
+                    const label = fileType === 'dir' ? '$(folder)' : '$(file)';
+                    const description = baseName;
+                    const detail = line;
+
+                    results.push({ label, description, detail });
+                });
                 return resolve(results);
             });
         });

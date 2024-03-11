@@ -4,7 +4,7 @@
   "compare.external.option.description": "Enter the option of the external Diff program",
   "everything.server_host.description": "Address of Everything Http Server (default: 127.0.0.1)",
   "everything.server_port.description": "Port of Everything Http Server (default: 3380)",
-  "everything.count.description": "Number of results received from Everything (default: 1000)",
+  "everything.count.description": "Number of results received from Everything (default:5000)",
   "everything.limitOpenFile.description": "Number of files that can be opened at once from results received from Everything (default: 100)",
   "everything.search.description": "Everything search settings",
   "everything.exclude.enabled.description": "Whether to exclude files when searching with Everything",

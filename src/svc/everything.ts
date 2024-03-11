@@ -59,9 +59,13 @@ export class Everything {
           return;
         }
 
-        quickPick.items = await notifyWithProgress(`Searching <${item}>`, async () => {
+        const result = await notifyWithProgress(`Searching <${item}>`, async () => {
           return await this.searchInEverything(option!, item, FindSuiteSettings.count * 5);
         });
+        if (result === undefined) {
+          return;
+        }
+        quickPick.items = result;
         quickPick.title = `Everything <${item}> (${option.description}) :: Results <${quickPick.items.length}>`;
         console.log(`items <${quickPick.items.length}>`);
       });
@@ -157,7 +161,7 @@ export class Everything {
     }
   }
 
-  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string, canPickMany?: boolean }) {
+  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string, canPickMany?: boolean, mesg?: string }) {
     let config: EverythingConfig | undefined = {
       ...defEverythingConfig,
       ...extraConfig
@@ -216,7 +220,8 @@ export class Everything {
       extraConfig = this.makeEverythingConfig({
         sort: 'name',
         title: 'Open new window with workspace',
-        query: 'ext:code-workspace'
+        query: 'ext:code-workspace',
+        mesg: '<code-workspace>'
       });
       query = '__EMPTY__';
     } else if (filterType === 'workspace') {
@@ -228,7 +233,8 @@ export class Everything {
         sort: 'name',
         title: 'Open Files',
         query: 'path:' + this._workspaceFolders.join('|') + ' files:',
-        canPickMany: true
+        canPickMany: true,
+        mesg: '<Files in Workspace>'
       });
       if (query) {
         query = '__EMPTY__';
@@ -264,14 +270,19 @@ export class Everything {
       });
     }
 
-    const items: QuickPickItem[] = await notifyWithProgress(`Searching <${txt}>`, async () => {
+    let mesg = config.mesg ?? `${txt ? '<' + txt + '>' : ''}`;
+    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg}`, async () => {
       return await this.searchInEverything(config, txt);
     });
+
+    if (items === undefined) {
+      return;
+    }
     const limit = FindSuiteSettings.limitOpenFile;
 
     if (config.filterType === 'folder' || config.filterType === 'folderFiles' || config.filterType === 'code-workspace') {
       const item = await vscode.window.showQuickPick(items, {
-        title: `Everything ${txt ? '<' + txt + '>' : ''} :: Results <${items.length}> :: Open`,
+        title: `Everything ${mesg} :: Results <${items.length}> :: Open`,
         placeHolder: txt,
         canPickMany: config?.canPickMany ?? false,
         matchOnDetail: true,
@@ -287,7 +298,7 @@ export class Everything {
       }
     } else {
       let results = await vscode.window.showQuickPick(items, {
-        title: `Everything ${txt ? '<' + txt + '>' : ''} :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? "Open File" : ""}`,
+        title: `Everything ${mesg} :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? 'Open File' : ''}`,
         placeHolder: txt,
         canPickMany: true,
         matchOnDetail: true,

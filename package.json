@@ -30,7 +30,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.2.1",
+  "version": "0.2.2",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -119,7 +119,7 @@
         },
         "findsuite.everything.count": {
           "type": "integer",
-          "default": 1000,
+          "default": 5000,
           "description": "%everything.count.description%"
         },
         "findsuite.everything.limitOpenFile": {

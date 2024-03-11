@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.2.2] - 2024-03-11
+
+- A few bug fixes
+
 ### [0.2.1] - 2024-03-10
 
 - Add Function: message for searching
