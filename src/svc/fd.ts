@@ -67,6 +67,10 @@ export class FdFind {
         } else if (fdQuery.fileType === 'fileWs') {
             cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
             mesg = '<Files in Workspace>';
+        } else if (fdQuery.fileType === 'fileCodeWs') {
+            cmd = `${this.fdProgram} -a -g "**/*.code-workspace" ${fdQuery.opt} ${this.fdDefOption} --full-path ${this.getPlatformPath()}`;
+            fdQuery.fileType = 'file';
+            mesg = '<Code-Workspace>';
         } else {
             let command = [this.fdProgram, txt].join(' ');
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();

@@ -1,4 +1,4 @@
-import { ExtensionContext, commands } from "vscode";
+import { ExtensionContext, Uri, commands } from "vscode";
 import { fdInitQuery } from "../model/fd";
 import { showMultipleDiffs } from "../svc/diff";
 import { FdFind } from "../svc/fd";
@@ -12,7 +12,21 @@ export function registerFd(context: ExtensionContext, fd: FdFind) {
             await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', isMany: false } });
         })
         , commands.registerCommand('findsuite.fdWs', async () => {
-            await fd.execute({ ...fdInitQuery, ...{ title: 'Search Workspace', opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
+            await fd.execute({ ...fdInitQuery, ...{ title: 'Search in Workspace', opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
+        })
+        , commands.registerCommand('findsuite.fdCodeWs', async () => {
+            const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Search Workspace File', opt: '-t f', fileType: 'fileCodeWs', srchPath: '.', isMany: false } }, false);
+            if (result && !Array.isArray(result)) {
+                let uri = Uri.file(result.detail!);
+                await commands.executeCommand('vscode.openFolder', uri, false);
+            }
+        })
+        , commands.registerCommand('findsuite.fdCodeWsNew', async () => {
+            const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Search Workspace File', opt: '-t f', fileType: 'fileCodeWs', srchPath: '.', isMany: false } }, false);
+            if (result && !Array.isArray(result)) {
+                let uri = Uri.file(result.detail!);
+                await commands.executeCommand('vscode.openFolder', uri, true);
+            }
         })
         , commands.registerCommand('findsuite.fdFolder', async () => {
             const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Search Directory', opt: '-t d', fileType: 'dir', isMany: false } }, false);

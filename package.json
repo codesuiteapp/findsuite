@@ -349,37 +349,47 @@
       },
       {
         "command": "findsuite.fdFolder",
-        "title": "Open files in Fd Directory",
+        "title": "Open files in Directory via Fd",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.fdWs",
-        "title": "Open files in Fd Workspace",
+        "title": "Open files via Fd Workspace",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.fdCodeWs",
+        "title": "Open Workspace from code-ws via Fd",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.fdCodeWsNew",
+        "title": "Open Workspace in New Window from code-ws via Fd",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.fd#diff",
-        "title": "Diff files in Fd",
+        "title": "Diff files via Fd",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.fd#diffWs",
-        "title": "Diff files in Workspace",
+        "title": "Diff files in Workspace via Fd",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.fd#diffFolder",
-        "title": "Diff folder in Fd",
+        "title": "Diff folder via Fd",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.rgWithFd",
-        "title": "Ripgrep with Fd (Like fd -t f | rg)",
+        "title": "Ripgrep via Fd (Like fd -t f | rg)",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.rgWithFdDir",
-        "title": "Ripgrep with Fd Directory (Like fd -t d | rg)",
+        "title": "Ripgrep via Fd Directory (Like fd -t d | rg)",
         "category": "FindSuite"
       },
       {
@@ -404,12 +414,12 @@
       },
       {
         "command": "findsuite.rgWithEverything",
-        "title": "Ripgrep with Everything (Like everything | rg)",
+        "title": "Ripgrep via Everything (Like everything | rg)",
         "category": "FindSuite"
       },
       {
         "command": "findsuite.rgWithEverythingFolder",
-        "title": "Ripgrep with Everything Folder (Like everything | rg)",
+        "title": "Ripgrep via Everything Folder (Like everything | rg)",
         "category": "FindSuite"
       },
       {
@@ -424,7 +434,7 @@
       },
       {
         "command": "findsuite.everything#folder",
-        "title": "Open folder thru Everything",
+        "title": "Open folder via Everything",
         "category": "FindSuite"
       },
       {
@@ -488,6 +498,16 @@
         "command": "findsuite.fdWs",
         "key": "ctrl+alt+9",
         "mac": "cmd+shift+9"
+      },
+      {
+        "command": "findsuite.fdCodeWs",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w"
+      },
+      {
+        "command": "findsuite.fdCodeWsNew",
+        "key": "ctrl+k ctrl+shift+w",
+        "mac": "cmd+k cmd+shift+w"
       },
       {
         "command": "findsuite.fd#diff",
