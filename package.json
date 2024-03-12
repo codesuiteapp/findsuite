@@ -466,6 +466,11 @@
         "mac": "cmd+ctrl+f7"
       },
       {
+        "command": "findsuite.fdFolder",
+        "key": "ctrl+alt+m",
+        "mac": "cmd+option+m"
+      },
+      {
         "command": "findsuite.fd",
         "key": "ctrl+alt+shift+f7",
         "mac": "cmd+ctrl+shift+f7"
@@ -522,7 +527,7 @@
       },
       {
         "command": "findsuite.everything#folderFiles",
-        "key": "ctrl+alt+m",
+        "key": "ctrl+alt+shift+m",
         "when": "isWindows"
       },
       {

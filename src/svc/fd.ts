@@ -135,7 +135,7 @@ export class FdFind {
                     return resolve({ total: 0, items: [] });
                 }
                 const lines = Array.from(new Set(stdout.split(/\n/).filter((l) => l !== "")));
-                console.log(`lines <${lines?.length ?? 0}>`);
+                console.log(`fd:: lines <${lines?.length ?? 0}>`);
 
                 if (!lines.length) {
                     return resolve({ total: 0, items: [] });

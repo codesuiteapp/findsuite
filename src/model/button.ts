@@ -15,6 +15,11 @@ export const diffBtn: QuickInputButton = {
     tooltip: 'Diff'
 };
 
-export const searchButtons = [viewBtn, copyBtn];
+export const addClipBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('add'),
+    tooltip: 'Add to clipboard'
+};
 
-export const rgHeaderButtons = [diffBtn, copyBtn];
+export const searchButtons = [addClipBtn, viewBtn, copyBtn];
+
+export const rgHeaderButtons = [addClipBtn, diffBtn, copyBtn];

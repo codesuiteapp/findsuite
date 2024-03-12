@@ -25,7 +25,6 @@ export class RipgrepSearch {
 
     private _workspaceFolders: string[];
 
-    private projectRoot: string;
     private rgProgram;
     private query: string[] = [];
     private rgDefOption: string;
@@ -36,8 +35,7 @@ export class RipgrepSearch {
     private _checked: boolean = false;
 
     constructor(private context: vscode.ExtensionContext) {
-        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => quote([folder.uri.fsPath])) || [];
-        this.projectRoot = this.workspaceFolders[0] || ".";
+        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
         this.rgDefOption = FindSuiteSettings.defaultOption;
         this.rgProgram = this.getRipgrep(context.extensionUri.fsPath);
         const currentTheme = vscode.window.activeColorTheme.kind;
@@ -56,7 +54,9 @@ export class RipgrepSearch {
         quickPick.ignoreFocusOut = true;
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
-        quickPick.buttons = rgHeaderButtons;
+        if (rgQuery.isMany) {
+            quickPick.buttons = rgHeaderButtons;
+        }
 
         const isOption = (s: string) => /^--?[a-z]+/.test(s);
         const isWordQuoted = (s: string) => /^".*"/.test(s);
@@ -92,20 +92,17 @@ export class RipgrepSearch {
             quickPick.items = [];
             try {
                 if (!rgQuery.srchPath) {
-                    rgQuery.srchPath = this.projectRoot;
+                    rgQuery.srchPath = quote(this._workspaceFolders);
                 }
-                let result: QuickPickItemResults<QuickPickItemRgData>;
-                // if (rgQuery.skipQuote) {
-                //     result = await this.fetchGrepItems([this.rgProgram, ...this.query].join(' '), rgQuery);
-                // } else {
-                // }
-                result = await this.fetchGrepItems([this.rgProgram, quote([...this.query])].join(' '), rgQuery);
+
+                const result = await this.fetchGrepItems(quote([this.rgProgram, ...this.query]), rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
                 quickPick.title = `RipGrep: ${rgQuery.title} <${this.query}> :: Results <${result.total}>`;
             } catch (error: any) {
                 console.log(`fetchGrepItems() - Error: ${error.message}`);
                 logger.error(`fetchGrepItems() - Error: ${error.message}`);
+                notifyMessageWithTimeout(error.message);
             }
         });
 
@@ -132,6 +129,8 @@ export class RipgrepSearch {
                 await showMultipleDiffs2(items, 'file');
             } else if (e.tooltip === 'Copy') {
                 copyClipboardFiles(items);
+            } else if (e.tooltip === 'Add to clipboard') {
+                copyClipboardFiles(items, true);
             }
         });
 
@@ -140,6 +139,8 @@ export class RipgrepSearch {
                 await this.openChoiceFile(e.item);
             } else if (e.button.tooltip === 'Copy') {
                 copyClipboardFilePath(e.item);
+            } else if (e.button.tooltip === 'Add to clipboard') {
+                copyClipboardFilePath(e.item, true);
             }
         });
 
@@ -253,7 +254,7 @@ export class RipgrepSearch {
             rgQuery.opt = this.rgDefOption;
         }
         const excludes = FindSuiteSettings.rgExcludePatterns.length > 0 ? '-g "!{' + FindSuiteSettings.rgExcludePatterns.join(',') + '}"' : '';
-        const cmd = `${command} -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? this.projectRoot} --json`;
+        const cmd = `${command} -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? quote(this._workspaceFolders)} --json`;
         console.log(`ripgrep(): <${cmd}>`);
         logger.debug(`ripgrep(): ${cmd}`);
 
@@ -265,9 +266,9 @@ export class RipgrepSearch {
                     showInfoMessageWithTimeout(stderr);
                     return resolve(emptyRgData);
                 }
-                const lines = stdout.split(/\n/).filter((l) => l !== "");
-                console.log(`ripgrep(): lines <${lines?.length ?? 0}>`);
-                logger.debug(`ripgrep(): lines <${lines?.length ?? 0}>`);
+                const lines: string[] = stdout.split(/\n/).filter((l) => l !== "");
+                console.log(`ripgrep(): lines <${lines?.length}>`);
+                logger.debug(`ripgrep(): lines <${lines?.length}>`);
 
                 if (!lines.length) {
                     return resolve(emptyRgData);
@@ -289,7 +290,7 @@ export class RipgrepSearch {
                     if (json.type === 'match') {
                         return {
                             label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
-                            description: data.path.text.replace(/\\/g, '/'),
+                            description: FindSuiteSettings.isWindows ? data.path.text.replace(/\\\\/g, '\\') : data.path.text.replace(/\\/g, '/'),
                             detail: data.lines.text?.trim(),
                             buttons: searchButtons,
                             start: data.submatches[0].start,

@@ -50,7 +50,7 @@ The extension seamlessly integrates with fd, allowing users to search for specif
 
 - **Ctrl + Alt + 9**: It searches and displays all files within the current project's directory, allowing you to select and open multiple files.
 - **Ctrl + Alt + F7**: Search for files in both the directory designated as default and the directory of the current project
-- **Ctrl + F7**: Use Fd to search for files, then use Ripgrep to search within the selected file. (Like 'fd -t | rg')
+- **Ctrl + Alt + m**: Open multiple files within a directory searched using Fd.
 - **Ctrl + Shift + F7**: It searches directories using Fd, then uses Ripgrep to search within the selected directory. (Like 'fd -d | rg')
 - **Ctrl + k Ctrl + Shift + d**: Use Fd to search for files and compare the selected files (diff).
 
@@ -73,7 +73,7 @@ Ultra-fast file search by indexing every file and folder on your system. Works w
 - **Ctrl + Shift + F10**: It uses Everything to search for folders, then uses Ripgrep to search for strings within the selected folders
 - **Ctrl + Alt + F9**: Search for files using Everything.
 - **Ctrl + Alt + 4**: Search using Everything and open the selected folder(s).
-- **Ctrl + Alt + m**: Open multiple files within a directory searched using Everything.
+- **Ctrl + Alt + Shift+ m**: Open multiple files within a directory searched using Everything.
 - **Ctrl + Alt + Shift + w**: Use Everything to search for code-workspace files and open Workspace.
 - **Ctrl + k Ctrl + Alt + d**: Use Everything to search for files and compare the selected files (diff).
 

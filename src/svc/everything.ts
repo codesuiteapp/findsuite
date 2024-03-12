@@ -382,6 +382,8 @@ export class Everything {
         await this.openFile(e.item);
       } else if (e.button.tooltip === 'Copy') {
         copyClipboardWithFile(e.item);
+      } else if (e.button.tooltip === 'Add to clipboard') {
+        copyClipboardWithFile(e.item, true);
       }
     });
 

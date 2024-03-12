@@ -78,30 +78,37 @@ export function revealEditor(revealType: vscode.TextEditorRevealType = vscode.Te
     }
 }
 
-export function copyClipboard(txt: string, cnt: number = 1) {
-    vscode.env.clipboard.writeText(txt);
-    showInfoMessageWithTimeout(`<${cnt}> Copied to clipboard`);
+export async function copyClipboard(txt: string, cnt: number = 1, append: boolean = false) {
+    const old = append ? await vscode.env.clipboard.readText() + '\n' : '';
+    const last = old.trim().split('\n').pop();
+    let mesg;
+    if (last === txt) {
+        mesg = 'It is the same as the last input.';
+    } else {
+        await vscode.env.clipboard.writeText(old + txt);
+        mesg = `<${cnt}> ${append ? 'Added' : 'Copied'} to clipboard`;
+    }
+    showInfoMessageWithTimeout(mesg);
 }
 
-export function copyClipboardFilePath(item: QuickPickItemRgData) {
+export function copyClipboardFilePath(item: QuickPickItemRgData, append: boolean = false) {
     if (item.description) {
-        copyClipboard(item.description);
+        copyClipboard(item.description, 1, append);
     }
 }
 
-export function copyClipboardFiles(items: vscode.QuickPickItem[]) {
-    if (items) {
+export function copyClipboardFiles(items: vscode.QuickPickItem[], append: boolean = false) {
+    if (items && items.length > 0) {
         const files = items.map(item => item.description).join('\n');
-        copyClipboard(files, items.length);
+        copyClipboard(files, items.length, append);
     }
 }
 
-export function copyClipboardWithFile(file: any) {
+export function copyClipboardWithFile(file: any, append: boolean = false) {
     if (!file) {
         return;
     }
 
     const fullname = path.join(file.path, file.name);
-    vscode.env.clipboard.writeText(fullname);
-    showInfoMessageWithTimeout('Copied to clipboard');
+    copyClipboard(fullname, 1, append);
 }

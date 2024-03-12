@@ -1,5 +1,6 @@
 import { ExtensionContext, Uri, commands } from "vscode";
 import FindSuiteSettings from "../config/settings";
+import { Constants } from "../svc/constants";
 import { showMultipleDiffs } from "../svc/diff";
 import { Everything } from "../svc/everything";
 import { RipgrepSearch } from "../svc/ripgrep";
@@ -81,7 +82,12 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
             const results = await everything.execute('filesPipe', false);
             if (results) {
-                await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+                const list = Array.isArray(results) ? results : [results];
+                if (list.length > Constants.RG_LIMITS) {
+                    notifyMessageWithTimeout(`The number <${list.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
+                    return;
+                }
+                await rg.executeAfterFind(list);
             }
         })
         , commands.registerCommand('findsuite.rgWithEverythingFolder', async () => {
@@ -90,7 +96,12 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
             const results = await everything.execute('folderPipe', false);
             if (results) {
-                await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+                const list = Array.isArray(results) ? results : [results];
+                if (list.length > Constants.RG_LIMITS) {
+                    notifyMessageWithTimeout(`The number <${list.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
+                    return;
+                }
+                await rg.executeAfterFind(list);
             }
         })
     );

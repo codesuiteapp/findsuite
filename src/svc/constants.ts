@@ -6,4 +6,6 @@ export namespace Constants {
 
     export const EMPTY_STRING = '_EMPTY_';
 
+    export const RG_LIMITS = 70;
+
 }

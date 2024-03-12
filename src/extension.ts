@@ -2,10 +2,12 @@ import { platform } from "node:process";
 import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
 import { registerEverything, registerFd, registerRg } from "./commands";
 import { fdInitQuery } from "./model/fd";
+import { Constants } from "./svc/constants";
 import { Everything } from "./svc/everything";
 import { FdFind } from "./svc/fd";
 import { RipgrepSearch } from "./svc/ripgrep";
 import { revealEditor } from "./utils/editor";
+import { notifyMessageWithTimeout } from "./utils/vsc";
 
 export function activate(context: ExtensionContext) {
   const fd = new FdFind(context);
@@ -24,13 +26,23 @@ export function activate(context: ExtensionContext) {
     commands.registerCommand('findsuite.rgWithFd', async () => {
       const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files and Rg (Like fd -t f | rg)', opt: '-t f' } }, false);
       if (results) {
-        await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+        const list = Array.isArray(results) ? results : [results];
+        if (list.length > Constants.RG_LIMITS) {
+          notifyMessageWithTimeout(`The number <${list.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
+          return;
+        }
+        await rg.executeAfterFind(list);
       }
     })
     , commands.registerCommand('findsuite.rgWithFdDir', async () => {
       const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Directory and Rg (Like fd -t d | rg)', opt: '-t d' } }, false);
       if (results) {
-        await rg.executeAfterFind(Array.isArray(results) ? results : [results]);
+        const list = Array.isArray(results) ? results : [results];
+        if (list.length > Constants.RG_LIMITS) {
+          notifyMessageWithTimeout(`The number <${list.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
+          return;
+        }
+        await rg.executeAfterFind(list);
       }
     })
     , commands.registerCommand('findsuite.reveal#top', async () => {
