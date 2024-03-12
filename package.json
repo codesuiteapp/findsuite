@@ -30,7 +30,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.2.2",
+  "version": "0.2.3",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -315,6 +315,10 @@
           "when": "isWindows"
         },
         {
+          "command": "findsuite.everything#codeWorkspaceNew",
+          "when": "isWindows"
+        },
+        {
           "command": "findsuite.everything#diff",
           "when": "isWindows"
         },
@@ -435,7 +439,12 @@
       },
       {
         "command": "findsuite.everything#codeWorkspace",
-        "title": "Everything Workspace from file",
+        "title": "Open Workspace from code-ws",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.everything#codeWorkspaceNew",
+        "title": "Open Workspace in New Window from code-ws",
         "category": "FindSuite"
       },
       {
@@ -537,6 +546,11 @@
       },
       {
         "command": "findsuite.everything#codeWorkspace",
+        "key": "ctrl+alt+w",
+        "when": "isWindows"
+      },
+      {
+        "command": "findsuite.everything#codeWorkspaceNew",
         "key": "ctrl+alt+shift+w",
         "when": "isWindows"
       },
