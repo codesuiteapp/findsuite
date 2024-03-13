@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.2.3] - 2024-03-13
+
+- Many bugs have been fixed for ripgrep
+
 ### [0.2.2] - 2024-03-12
 
 - A few bug fixes
