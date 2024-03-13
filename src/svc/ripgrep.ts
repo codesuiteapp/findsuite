@@ -58,9 +58,6 @@ export class RipgrepSearch {
             quickPick.buttons = rgHeaderButtons;
         }
 
-        const isOption = (s: string) => /^--?[a-z]+/.test(s);
-        const isWordQuoted = (s: string) => /^".*"/.test(s);
-
         if (rgQuery.replaceQuery) {
             quickPick.value = rgQuery.opt;
             rgQuery.opt = '';
@@ -71,23 +68,12 @@ export class RipgrepSearch {
             }
         }
 
+        // const isOption = (s: string) => /^--?[a-z]+/.test(s);
+        // const isWordQuoted = (s: string) => /^".*"/.test(s);
         quickPick.onDidChangeValue(async (item) => {
             if (!item || item === "") {
                 return;
             }
-            this.query = item.split(/\s/).reduce((acc, curr, index) => {
-                if (index === 0 || isOption(curr) || isOption(acc[acc.length - 1])) {
-                    if (!isWordQuoted(curr) && !isOption(curr)) {
-                        acc.push(curr);
-                        return acc;
-                    }
-
-                    acc.push(rgQuery.skipQuote ? curr : curr.replace(/"/g, ""));
-                    return acc;
-                }
-                acc[acc.length - 1] = acc[acc.length - 1] + ` ${curr}`;
-                return acc;
-            }, [] as string[]);
 
             quickPick.items = [];
             try {
@@ -95,7 +81,7 @@ export class RipgrepSearch {
                     rgQuery.srchPath = quote(this._workspaceFolders);
                 }
 
-                const result = await this.fetchGrepItems(quote([this.rgProgram, ...this.query]), rgQuery);
+                const result = await this.fetchGrepItems(quote([this.rgProgram]), quickPick.value, rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
                 quickPick.title = `RipGrep: ${rgQuery.title} <${this.query}> :: Results <${result.total}>`;
@@ -180,7 +166,7 @@ export class RipgrepSearch {
         }
 
         const result = await notifyWithProgress(`Searching <${txt}>`, async () => {
-            return await this.fetchGrepItems([this.rgProgram, `${txt}`].join(' '), rgQuery);
+            return await this.fetchGrepItems(this.rgProgram, txt, rgQuery);
         });
         if (result === undefined) {
             return;
@@ -249,13 +235,19 @@ export class RipgrepSearch {
         await this.interact(rgQuery);
     }
 
-    private async fetchGrepItems(command: string, rgQuery: RgQuery): Promise<QuickPickItemResults<QuickPickItemRgData>> {
+    private replaceQuery(txt: string) {
+        const chars = /([\\\/\(\)\[\]\{\}\?\+\*\|\^\$\.'"])/g;
+        const lineChars = /(\r\n|\n)/g;
+        return txt.replace(chars, '\\$1').replace(lineChars, ' ').trim();
+    }
+
+    private async fetchGrepItems(command: string, query: string, rgQuery: RgQuery): Promise<QuickPickItemResults<QuickPickItemRgData>> {
         if (!rgQuery.opt) {
             rgQuery.opt = this.rgDefOption;
         }
         const excludes = FindSuiteSettings.rgExcludePatterns.length > 0 ? '-g "!{' + FindSuiteSettings.rgExcludePatterns.join(',') + '}"' : '';
-        const cmd = `${command} -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? quote(this._workspaceFolders)} --json`;
-        console.log(`ripgrep(): <${cmd}>`);
+        const cmd = `${command} "${this.replaceQuery(query)}" -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? quote(this._workspaceFolders)} --json`;
+        console.log(`ripgrep(): ${cmd}`);
         logger.debug(`ripgrep(): ${cmd}`);
 
         return new Promise((resolve, reject) => {
@@ -267,8 +259,8 @@ export class RipgrepSearch {
                     return resolve(emptyRgData);
                 }
                 const lines: string[] = stdout.split(/\n/).filter((l) => l !== "");
-                console.log(`ripgrep(): lines <${lines?.length}>`);
-                logger.debug(`ripgrep(): lines <${lines?.length}>`);
+                console.log(`ripgrep(): results <${lines?.length}>`);
+                logger.debug(`ripgrep(): results <${lines?.length}>`);
 
                 if (!lines.length) {
                     return resolve(emptyRgData);
