@@ -3,6 +3,7 @@ import FindSuiteSettings from "../config/settings";
 import { RgQuery, rgInitQuery } from "../model/ripgrep";
 import { RipgrepSearch } from "../svc/ripgrep";
 import { getEditorFsPath } from "../utils/editor";
+import { vscExtension } from "../vsc-ns";
 
 export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
     context.subscriptions.push(
@@ -36,6 +37,15 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
                 srchPath: getEditorFsPath(),
                 isMany: false
             });
+        })
+        , commands.registerCommand('findsuite.rgFavorites', async () => {
+            const rgQuery = {
+                ...rgInitQuery,
+                title: 'Favorites',
+                srchPath: `${vscExtension.favoriteFiles.getAllFiles().join(' ')}`
+            };
+
+            await rg.interact(rgQuery);
         })
         , commands.registerCommand('findsuite.rgre', async () => {
             await rg.execute({

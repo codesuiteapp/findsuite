@@ -25,8 +25,21 @@ export const windowBtn: QuickInputButton = {
     tooltip: 'Window'
 };
 
+export const starBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('star'),
+    tooltip: 'Favorite'
+};
+
 export const searchButtons = [addClipBtn, viewBtn, copyBtn];
+
+export const fdButtons = [starBtn, addClipBtn, viewBtn, copyBtn];
 
 export const wsButtons = [windowBtn];
 
+export const favorButtons = [viewBtn];
+
+export const favorHeaderButtons = [diffBtn];
+
 export const rgHeaderButtons = [addClipBtn, diffBtn, copyBtn];
+
+export const fdHeaderButtons = [starBtn];

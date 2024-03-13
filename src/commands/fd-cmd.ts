@@ -6,13 +6,13 @@ import { FdFind } from "../svc/fd";
 export function registerFd(context: ExtensionContext, fd: FdFind) {
     context.subscriptions.push(
         commands.registerCommand('findsuite.fd', async () => {
-            await fd.execute({ ...fdInitQuery, ...{ opt: '-t f' } });
+            await fd.execute1({ ...fdInitQuery, ...{ opt: '-t f' } });
         })
         , commands.registerCommand('findsuite.fdFile', async () => {
-            await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', isMany: false } });
+            await fd.execute1({ ...fdInitQuery, ...{ opt: '-t f', isMany: false } });
         })
         , commands.registerCommand('findsuite.fdWs', async () => {
-            await fd.execute({ ...fdInitQuery, ...{ title: 'Search in Workspace', opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
+            await fd.execute1({ ...fdInitQuery, ...{ title: 'Search in Workspace', opt: '-t f', fileType: 'fileWs', srchPath: '.', isMany: true } });
         })
         , commands.registerCommand('findsuite.fdCodeWs', async () => {
             await fd.executeCodeWorkspace();

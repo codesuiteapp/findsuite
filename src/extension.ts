@@ -1,6 +1,7 @@
 import { platform } from "node:process";
 import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
 import { registerEverything, registerFd, registerRg } from "./commands";
+import { registerFavor } from "./commands/favorite-cmd";
 import { fdInitQuery } from "./model/fd";
 import { Constants } from "./svc/constants";
 import { Everything } from "./svc/everything";
@@ -8,8 +9,10 @@ import { FdFind } from "./svc/fd";
 import { RipgrepSearch } from "./svc/ripgrep";
 import { revealEditor } from "./utils/editor";
 import { notifyMessageWithTimeout } from "./utils/vsc";
+import { vscExtension } from "./vsc-ns";
 
 export function activate(context: ExtensionContext) {
+  vscExtension.favoriteFiles = registerFavor(context);
   const fd = new FdFind(context);
   const rg = new RipgrepSearch(context);
   let everything: Everything | undefined;

@@ -91,9 +91,9 @@ export async function copyClipboard(txt: string, cnt: number = 1, append: boolea
     showInfoMessageWithTimeout(mesg);
 }
 
-export function copyClipboardFilePath(item: QuickPickItemRgData, append: boolean = false) {
-    if (item.description) {
-        copyClipboard(item.description, 1, append);
+export function copyClipboardFilePath(item: string, append: boolean = false) {
+    if (item) {
+        copyClipboard(item, 1, append);
     }
 }
 

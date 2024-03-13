@@ -3,6 +3,7 @@
 ### [0.2.3] - 2024-03-13
 
 - Many bugs have been fixed for ripgrep
+- Add Function: Favorites
 
 ### [0.2.2] - 2024-03-12
 

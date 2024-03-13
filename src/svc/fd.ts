@@ -6,12 +6,13 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { wsButtons } from "../model/button";
+import { fdButtons, wsButtons } from "../model/button";
 import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
-import { getSelectionText, openWorkspace } from "../utils/editor";
+import { copyClipboardFilePath, getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
+import { vscExtension } from "../vsc-ns";
 
 const MAX_BUF_SIZE = 200 * 1024 * 1024;
 
@@ -24,6 +25,8 @@ export class FdFind {
     private fdDefOption: string;
 
     private _checked: boolean = false;
+
+    private favoriteFiles = vscExtension.favoriteFiles;
 
     constructor(private context: vscode.ExtensionContext) {
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
@@ -85,7 +88,7 @@ export class FdFind {
         }
         if (fdQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
-                title: `Fd:: File ${mesg} :: Results <${result.total}>`,
+                title: `Fd :: File ${mesg} :: Results <${result.total}>`,
                 placeHolder: txt,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -103,7 +106,7 @@ export class FdFind {
             }
         } else {
             const selectedItem = await vscode.window.showQuickPick<vscode.QuickPickItem>(result.items, {
-                title: `Fd:: ${fdQuery.fileType} ${mesg} :: Results <${result.total}>`,
+                title: `Fd :: ${fdQuery.fileType} ${mesg} :: Results <${result.total}>`,
                 placeHolder: txt,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
@@ -124,6 +127,89 @@ export class FdFind {
         return;
     }
 
+    public async execute1(fdQuery: FdQuery) {
+        try {
+            this.checkingProgram();
+        } catch (error: any) {
+            notifyMessageWithTimeout(error.message);
+            return;
+        }
+
+        let txt = getSelectionText();
+        if (!fdQuery.srchPath && !txt) {
+            txt = await vscode.window.showInputBox({
+                title: `Fd:: ${fdQuery.title ?? 'Search name'}`,
+                placeHolder: 'Please enter filename to search',
+                prompt: fdQuery.fileType === 'file' ? 'Usage: [Filename] or [-g "**/*.txt"]' : ''
+            }).then(res => {
+                return res ?? '';
+            });
+        }
+
+        if (!fdQuery.srchPath && !txt) {
+            return;
+        }
+
+        let cmd = '';
+        let mesg = `${txt ? '<' + txt + '>' : ''}`;
+        if (fdQuery.fileType === 'dir') {
+            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
+        } else if (fdQuery.fileType === 'diffWs') {
+            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+        } else if (fdQuery.fileType === 'fileWs') {
+            cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+            mesg = '<Files in Workspace>';
+        } else {
+            let command = [this.fdProgram, txt].join(' ');
+            let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
+            cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
+        }
+
+        const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
+        console.log(`cmd <${cmdOpt}>`);
+
+        const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
+            return await this.fdItems(cmdOpt, fdQuery.fileType, fdButtons);
+        });
+        if (!result) {
+            return;
+        }
+
+        const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem>();
+        quickPick.title = `Fd ${mesg} :: Results <${result.total}>`;
+        quickPick.placeholder = txt;
+        quickPick.matchOnDetail = true;
+        quickPick.matchOnDescription = true;
+        quickPick.items = result.items;
+
+        quickPick.onDidAccept(async () => {
+            const items = quickPick.selectedItems as vscode.QuickPickItem[];
+            if (!items || items.length === 0) {
+                return;
+            }
+
+            items.forEach(async (item) => {
+                await this.openChoiceFile(item);
+            });
+            quickPick.dispose();
+        });
+
+        quickPick.onDidTriggerItemButton(async (e) => {
+            if (e.button.tooltip === 'View') {
+                await this.openChoiceFile(e.item);
+            } else if (e.button.tooltip === 'Copy') {
+                copyClipboardFilePath(e.item.detail!);
+            } else if (e.button.tooltip === 'Add to clipboard') {
+                copyClipboardFilePath(e.item.detail!, true);
+            } else if (e.button.tooltip === 'Favorite') {
+                this.favoriteFiles.addFile(e.item.detail!);
+                notifyMessageWithTimeout('Added on Favorites');
+            }
+        });
+
+        quickPick.show();
+    }
+
     public async executeCodeWorkspace() {
         try {
             this.checkingProgram();
@@ -139,7 +225,7 @@ export class FdFind {
         console.log(`cmd <${cmdOpt}>`);
 
         const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
-            return await this.fdItems(cmdOpt, 'code-workspace');
+            return await this.fdItems(cmdOpt, 'code-workspace', wsButtons);
         });
         if (!result) {
             return;
@@ -172,15 +258,13 @@ export class FdFind {
         quickPick.show();
     }
 
-    private async fdItems(cmd: string, fileType: string): Promise<QuickPickItemResults<vscode.QuickPickItem>> {
+    private async fdItems(cmd: string, fileType: string, buttons: vscode.QuickInputButton[] | undefined = undefined): Promise<QuickPickItemResults<vscode.QuickPickItem>> {
         logger.debug('fd():', cmd);
-        let buttons;
         let label: string;
         if (fileType === 'dir') {
             label = '$(dir)';
         } else if (fileType === 'code-workspace') {
             label = '$(record)';
-            buttons = wsButtons;
         } else {
             label = '$(file)';
         }
@@ -217,7 +301,7 @@ export class FdFind {
                         label: fileType === 'code-workspace' ? label + ' ' + desc.split('.').shift() : label,
                         description: desc,
                         detail: line,
-                        buttons: wsButtons
+                        buttons: buttons
                     });
                     total++;
                 });

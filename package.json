@@ -218,7 +218,8 @@
         "findsuite.rg.excludePatterns": {
           "type": "array",
           "default": [
-            ".git"
+            ".git",
+            "*.dll"
           ],
           "description": "%rg.excludePatterns.description%"
         },
@@ -334,6 +335,21 @@
     },
     "commands": [
       {
+        "command": "findsuite.favorites",
+        "title": "List Favorite Files",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.clearFavorites",
+        "title": "Clear Favorite Files",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.addFavorite",
+        "title": "Add to Favorite Files",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.fd",
         "title": "Fd multiple files",
         "category": "FindSuite"
@@ -401,6 +417,11 @@
       {
         "command": "findsuite.rgDirectory",
         "title": "Ripgrep in Directory",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.rgFavorites",
+        "title": "Ripgrep in Favorites",
         "category": "FindSuite"
       },
       {

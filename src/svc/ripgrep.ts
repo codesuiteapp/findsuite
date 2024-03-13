@@ -77,8 +77,6 @@ export class RipgrepSearch {
             }
         }
 
-        // const isOption = (s: string) => /^--?[a-z]+/.test(s);
-        // const isWordQuoted = (s: string) => /^".*"/.test(s);
         quickPick.onDidChangeValue(async (item) => {
             if (!item || item === "") {
                 return;
@@ -90,7 +88,7 @@ export class RipgrepSearch {
                     rgQuery.srchPath = quote(this._workspaceFolders);
                 }
 
-                const result = await this.fetchGrepItems(quote([this.rgProgram]), quickPick.value, rgQuery);
+                const result = await this.fetchGrepItems(this.rgProgram, quickPick.value, rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
                 quickPick.title = `RipGrep: ${rgQuery.title} <${quickPick.value}> :: Results <${result.total}>`;
@@ -133,9 +131,9 @@ export class RipgrepSearch {
             if (e.button.tooltip === 'View') {
                 await this.openChoiceFile(e.item);
             } else if (e.button.tooltip === 'Copy') {
-                copyClipboardFilePath(e.item);
+                copyClipboardFilePath(e.item.description!);
             } else if (e.button.tooltip === 'Add to clipboard') {
-                copyClipboardFilePath(e.item, true);
+                copyClipboardFilePath(e.item.description!, true);
             }
         });
 
@@ -286,7 +284,7 @@ export class RipgrepSearch {
             ...rgInitQuery,
             replaceQuery: true,
             opt: query,
-            srchPath: `${results.map(item => quote([item.detail!])).join(' ')}`
+            srchPath: `${FindSuiteSettings.isWindows ? results.map(item => '"' + item.detail! + '"').join(' ') : results.map(item => quote([item.detail!])).join(' ')}`
         };
 
         await this.interact(rgQuery);

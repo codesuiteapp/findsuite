@@ -295,7 +295,7 @@ export class Everything {
       }
     } else {
       let results = await vscode.window.showQuickPick(items, {
-        title: `Everything ${mesg} :: Results <${items.length}> Limits <${limit}> :: ${isOpen ? 'Open File' : ''}`,
+        title: `Everything ${mesg} :: Results <${items.length}> Limits <${limit}>${isOpen ? ' :: Open File' : ''}`,
         placeHolder: txt,
         canPickMany: true,
         matchOnDetail: true,
