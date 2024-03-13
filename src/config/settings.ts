@@ -22,6 +22,7 @@ export interface EverythingConfig extends EverythingConfigProperty {
     title: string;
     canPickMany?: boolean;
     mesg?: string;
+    buttonType?: 'file' | 'workspace';
 }
 
 export type FindSuitePropertyType = "everythingConfig";

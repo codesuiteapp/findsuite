@@ -315,10 +315,6 @@
           "when": "isWindows"
         },
         {
-          "command": "findsuite.everything#codeWorkspaceNew",
-          "when": "isWindows"
-        },
-        {
           "command": "findsuite.everything#diff",
           "when": "isWindows"
         },
@@ -360,11 +356,6 @@
       {
         "command": "findsuite.fdCodeWs",
         "title": "Open Workspace from code-ws via Fd",
-        "category": "FindSuite"
-      },
-      {
-        "command": "findsuite.fdCodeWsNew",
-        "title": "Open Workspace in New Window from code-ws via Fd",
         "category": "FindSuite"
       },
       {
@@ -453,11 +444,6 @@
         "category": "FindSuite"
       },
       {
-        "command": "findsuite.everything#codeWorkspaceNew",
-        "title": "Open Workspace in New Window from code-ws",
-        "category": "FindSuite"
-      },
-      {
         "command": "findsuite.everything#diff",
         "title": "Everything Diff",
         "category": "FindSuite"
@@ -503,11 +489,6 @@
         "command": "findsuite.fdCodeWs",
         "key": "ctrl+shift+w",
         "mac": "cmd+shift+w"
-      },
-      {
-        "command": "findsuite.fdCodeWsNew",
-        "key": "ctrl+k ctrl+shift+w",
-        "mac": "cmd+k cmd+shift+w"
       },
       {
         "command": "findsuite.fd#diff",
@@ -567,11 +548,6 @@
       {
         "command": "findsuite.everything#codeWorkspace",
         "key": "ctrl+alt+w",
-        "when": "isWindows"
-      },
-      {
-        "command": "findsuite.everything#codeWorkspaceNew",
-        "key": "ctrl+alt+shift+w",
         "when": "isWindows"
       },
       {

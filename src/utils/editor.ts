@@ -112,3 +112,8 @@ export function copyClipboardWithFile(file: any, append: boolean = false) {
     const fullname = path.join(file.path, file.name);
     copyClipboard(fullname, 1, append);
 }
+
+export async function openWorkspace(file: string, isNew: boolean = true) {
+    let uri = vscode.Uri.file(file);
+    await vscode.commands.executeCommand('vscode.openFolder', uri, isNew);
+}

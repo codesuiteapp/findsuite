@@ -5,7 +5,7 @@ export interface RgQuery {
     opt: string;
     srchPath: string | undefined;
     replaceQuery: boolean;
-    skipQuote: boolean;
+    // skipQuote: boolean;
     isMany: boolean;
 }
 
@@ -14,7 +14,7 @@ export const rgInitQuery: RgQuery = {
     opt: '',
     srchPath: undefined,
     replaceQuery: false,
-    skipQuote: true,
+    // skipQuote: true,
     isMany: true
 };
 
@@ -51,7 +51,6 @@ export interface QuickPickItemRgData extends QuickPickItem {
     end: number;
     option: string;
     replaceQuery: boolean;
-    skipQuote: boolean;
 }
 
 export interface RgSummaryData {

@@ -21,12 +21,21 @@ const emptyRgData: QuickPickItemResults<QuickPickItemRgData> = {
     items: []
 };
 
+const sepRgData = {
+    label: '',
+    kind: vscode.QuickPickItemKind.Separator,
+    start: 0,
+    end: 0,
+    line_number: 0,
+    option: '',
+    replaceQuery: false
+};
+
 export class RipgrepSearch {
 
     private _workspaceFolders: string[];
 
     private rgProgram;
-    private query: string[] = [];
     private rgDefOption: string;
 
     private _currentDecoration: vscode.TextEditorDecorationType | null = null;
@@ -84,7 +93,7 @@ export class RipgrepSearch {
                 const result = await this.fetchGrepItems(quote([this.rgProgram]), quickPick.value, rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
-                quickPick.title = `RipGrep: ${rgQuery.title} <${this.query}> :: Results <${result.total}>`;
+                quickPick.title = `RipGrep: ${rgQuery.title} <${quickPick.value}> :: Results <${result.total}>`;
             } catch (error: any) {
                 console.log(`fetchGrepItems() - Error: ${error.message}`);
                 logger.error(`fetchGrepItems() - Error: ${error.message}`);
@@ -236,7 +245,7 @@ export class RipgrepSearch {
     }
 
     private replaceQuery(txt: string) {
-        const chars = /([\\\/\(\)\[\]\{\}\?\+\*\|\^\$\.'"])/g;
+        const chars = /([\\\/\(\)\[\]\{\}\?\+\*\|\^\$\.\-'"])/g;
         const lineChars = /(\r\n|\n)/g;
         return txt.replace(chars, '\\$1').replace(lineChars, ' ').trim();
     }
@@ -289,20 +298,10 @@ export class RipgrepSearch {
                             end: data.submatches[0].end,
                             line_number: Number(data.line_number ?? 1),
                             option: rgQuery.opt,
-                            replaceQuery: rgQuery.replaceQuery,
-                            skipQuote: rgQuery.skipQuote
+                            replaceQuery: rgQuery.replaceQuery
                         };
                     } else {
-                        return {
-                            label: '',
-                            kind: vscode.QuickPickItemKind.Separator,
-                            start: 0,
-                            end: 0,
-                            line_number: 0,
-                            option: '',
-                            replaceQuery: false,
-                            skipQuote: false
-                        };
+                        return sepRgData;
                     }
                 });
 

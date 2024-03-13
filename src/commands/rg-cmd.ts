@@ -61,11 +61,11 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
     );
 }
 
-async function preferExecuteQuery(rg: RipgrepSearch, rgQuery: { title: string; srchPath: string | undefined; isMany: boolean; opt: string; replaceQuery: boolean; skipQuote: boolean; }) {
+async function preferExecuteQuery(rg: RipgrepSearch, rgQuery: { title: string; srchPath: string | undefined; isMany: boolean; opt: string; replaceQuery: boolean; }) {
     const prefer = FindSuiteSettings.rgInputPreferType;
     if (prefer === 'Input') {
         await rg.execute(rgQuery);
     } else {
         await rg.interact(rgQuery);
     }
-};
+}

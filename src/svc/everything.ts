@@ -3,10 +3,10 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from '../config/settings';
-import { searchButtons } from '../model/button';
+import { searchButtons, wsButtons } from '../model/button';
 import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
-import { copyClipboardWithFile, getSelectionText } from '../utils/editor';
+import { copyClipboardWithFile, getSelectionText, openWorkspace } from '../utils/editor';
 import logger from '../utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
 
@@ -117,11 +117,16 @@ export class Everything {
         response.on('end', () => {
           try {
             const files: any[] = JSON.parse(body).results as EverythingResponse[];
+            const buttons = config?.buttonType === 'workspace' ? wsButtons : searchButtons;
+            let label: string;
+            if (config?.buttonType === 'workspace') {
+              label = '$(record) ';
+            }
             files.forEach(f => {
-              f.label = f.type === 'file' ? '$(file)' : '$(folder)';
+              f.label = label ? label + f.name.split('.').shift() : f.type === 'file' ? '$(file)' : '$(folder)';
               f.description = `${f.name} ${f.type === 'file' ? '(' + formatBytes(f.size) + ')' : ''}`;
               f.detail = `${path.join(f.path, f.name)}`;
-              f.buttons = searchButtons;
+              f.buttons = buttons;
             });
             resolve(files);
           } catch (e: any) {
@@ -161,7 +166,7 @@ export class Everything {
     }
   }
 
-  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string, canPickMany?: boolean, mesg?: string }) {
+  private makeEverythingConfig(extraConfig: { title: string, sort: string, query: string, canPickMany?: boolean, mesg?: string, buttonType?: 'file' | 'workspace' }) {
     let config: EverythingConfig | undefined = {
       ...defEverythingConfig,
       ...extraConfig
@@ -216,14 +221,6 @@ export class Everything {
         title: 'Search Folder (1/2)',
         query: 'folder:'
       });
-    } else if (filterType === 'code-workspace') {
-      extraConfig = this.makeEverythingConfig({
-        sort: 'name',
-        title: 'Open new window with workspace',
-        query: 'ext:code-workspace',
-        mesg: '<code-workspace>'
-      });
-      query = '__EMPTY__';
     } else if (filterType === 'workspace') {
       if (!this._workspaceFolders || this._workspaceFolders.length === 0) {
         notifyMessageWithTimeout('Workspace is not exist');
@@ -280,7 +277,7 @@ export class Everything {
     }
     const limit = FindSuiteSettings.limitOpenFile;
 
-    if (config.filterType === 'folder' || config.filterType === 'folderFiles' || config.filterType === 'code-workspace') {
+    if (config.filterType === 'folder' || config.filterType === 'folderFiles') {
       const item = await vscode.window.showQuickPick(items, {
         title: `Everything ${mesg} :: Results <${items.length}> :: Open`,
         placeHolder: txt,
@@ -309,6 +306,51 @@ export class Everything {
     }
 
     return undefined;
+  }
+
+  public async executeCodeWorkspace() {
+    const config = this.makeEverythingConfig({
+      sort: 'name',
+      title: 'Open new window with workspace',
+      query: 'ext:code-workspace',
+      mesg: '<code-workspace>',
+      buttonType: 'workspace'
+    });
+
+    const mesg = '<Code-Workspace>';
+    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg}`, async () => {
+      return await this.searchInEverything(config, '');
+    });
+
+    if (items === undefined) {
+      return;
+    }
+
+    const quickPick = vscode.window.createQuickPick<QuickPickItem>();
+    quickPick.title = `Everything ${mesg} :: Results <${items.length}>`;
+    quickPick.placeholder = 'Select to Open workspace';
+    quickPick.matchOnDetail = true;
+    quickPick.matchOnDescription = true;
+    quickPick.items = items;
+
+    quickPick.onDidAccept(async (event) => {
+      const item = quickPick.selectedItems[0] as QuickPickItem;
+      if (!item) {
+        return;
+      }
+
+      await openWorkspace(item.detail!, false);
+      quickPick.dispose();
+    });
+
+    quickPick.onDidTriggerItemButton(async (e) => {
+      if (e.button.tooltip === 'Window') {
+        await openWorkspace(e.item.detail!, true);
+        quickPick.dispose();
+      }
+    });
+
+    quickPick.show();
   }
 
   public async interact(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {

@@ -52,13 +52,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             if (!checkPlatform(isWin)) {
                 return;
             }
-            openWorkspaceWithFile(everything, false);
-        })
-        , commands.registerCommand('findsuite.everything#codeWorkspaceNew', async () => {
-            if (!checkPlatform(isWin)) {
-                return;
-            }
-            openWorkspaceWithFile(everything);
+            await everything.executeCodeWorkspace();
         })
         , commands.registerCommand('findsuite.everything#diff', async () => {
             if (!checkPlatform(isWin)) {
@@ -114,12 +108,4 @@ function checkPlatform(isWin: boolean) {
         notifyMessageWithTimeout('This feature requires Windows.');
     }
     return isWin;
-}
-
-async function openWorkspaceWithFile(everything: Everything, isNew: boolean = true) {
-    const result = await everything.execute("code-workspace", false);
-    if (result && !Array.isArray(result)) {
-        let uri = Uri.file(result.detail!);
-        await commands.executeCommand('vscode.openFolder', uri, isNew);
-    }
 }

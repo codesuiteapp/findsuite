@@ -20,6 +20,13 @@ export const addClipBtn: QuickInputButton = {
     tooltip: 'Add to clipboard'
 };
 
+export const windowBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('window'),
+    tooltip: 'Window'
+};
+
 export const searchButtons = [addClipBtn, viewBtn, copyBtn];
+
+export const wsButtons = [windowBtn];
 
 export const rgHeaderButtons = [addClipBtn, diffBtn, copyBtn];

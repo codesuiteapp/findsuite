@@ -6,9 +6,10 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
+import { wsButtons } from "../model/button";
 import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
-import { getSelectionText } from "../utils/editor";
+import { getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
 
@@ -48,7 +49,7 @@ export class FdFind {
             txt = await vscode.window.showInputBox({
                 title: `Fd:: ${fdQuery.title ?? 'Search name'}`,
                 placeHolder: 'Please enter filename to search',
-                prompt: fdQuery.fileType === 'file' ? 'Usage: [Filename] or [-g "**/*.sh"]' : ''
+                prompt: fdQuery.fileType === 'file' ? 'Usage: [Filename] or [-g "**/*.txt"]' : ''
             }).then(res => {
                 return res ?? '';
             });
@@ -67,10 +68,6 @@ export class FdFind {
         } else if (fdQuery.fileType === 'fileWs') {
             cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
             mesg = '<Files in Workspace>';
-        } else if (fdQuery.fileType === 'fileCodeWs') {
-            cmd = `${this.fdProgram} -a -g "**/*.code-workspace" ${fdQuery.opt} ${this.fdDefOption} --full-path ${this.getPlatformPath()}`;
-            fdQuery.fileType = 'file';
-            mesg = '<Code-Workspace>';
         } else {
             let command = [this.fdProgram, txt].join(' ');
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
@@ -124,12 +121,69 @@ export class FdFind {
                 return selectedItem;
             }
         }
-
         return;
+    }
+
+    public async executeCodeWorkspace() {
+        try {
+            this.checkingProgram();
+        } catch (error: any) {
+            notifyMessageWithTimeout(error.message);
+            return;
+        }
+
+        let cmd = `${this.fdProgram} -a -g "**/*.code-workspace" -t f ${this.fdDefOption} --full-path ${this.getPlatformPath()}`;
+        const mesg = '<Code-Workspace>';
+
+        const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
+        console.log(`cmd <${cmdOpt}>`);
+
+        const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
+            return await this.fdItems(cmdOpt, 'code-workspace');
+        });
+        if (!result) {
+            return;
+        }
+
+        const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem>();
+        quickPick.title = `Fd ${mesg} :: Results <${result.total}>`;
+        quickPick.placeholder = 'Select to Open workspace';
+        quickPick.matchOnDetail = true;
+        quickPick.matchOnDescription = true;
+        quickPick.items = result.items;
+
+        quickPick.onDidAccept(async () => {
+            const item = quickPick.selectedItems[0] as vscode.QuickPickItem;
+            if (!item) {
+                return;
+            }
+
+            await openWorkspace(item.detail!, false);
+            quickPick.dispose();
+        });
+
+        quickPick.onDidTriggerItemButton(async (e) => {
+            if (e.button.tooltip === 'Window') {
+                await openWorkspace(e.item.detail!, true);
+                quickPick.dispose();
+            }
+        });
+
+        quickPick.show();
     }
 
     private async fdItems(cmd: string, fileType: string): Promise<QuickPickItemResults<vscode.QuickPickItem>> {
         logger.debug('fd():', cmd);
+        let buttons;
+        let label: string;
+        if (fileType === 'dir') {
+            label = '$(dir)';
+        } else if (fileType === 'code-workspace') {
+            label = '$(record)';
+            buttons = wsButtons;
+        } else {
+            label = '$(file)';
+        }
         return new Promise((resolve, reject) => {
             cp.exec(cmd, { cwd: ".", maxBuffer: MAX_BUF_SIZE }, (err, stdout, stderr) => {
                 console.log(`error <${err}> stderr <${stderr}>`);
@@ -157,13 +211,14 @@ export class FdFind {
                         }
                         currentDir = dirName;
                     }
+                    const desc = path.basename(line);
 
-                    const baseName = path.basename(line);
-                    const label = fileType === 'dir' ? '$(folder)' : '$(file)';
-                    const description = baseName;
-                    const detail = line;
-
-                    results.push({ label, description, detail });
+                    results.push({
+                        label: fileType === 'code-workspace' ? label + ' ' + desc.split('.').shift() : label,
+                        description: desc,
+                        detail: line,
+                        buttons: wsButtons
+                    });
                     total++;
                 });
                 return resolve({ total: total, items: results });
