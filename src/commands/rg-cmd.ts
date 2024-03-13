@@ -37,6 +37,13 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
                 isMany: false
             });
         })
+        , commands.registerCommand('findsuite.rgre', async () => {
+            await rg.execute({
+                ...rgInitQuery,
+                title: 'Regex',
+                prompt: 'Usage: (Get|Post)'
+            }, undefined, true);
+        })
         , commands.registerCommand('findsuite.rg1', async () => {
             const rgQuery: RgQuery = {
                 ...rgInitQuery,
@@ -61,7 +68,7 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
     );
 }
 
-async function preferExecuteQuery(rg: RipgrepSearch, rgQuery: { title: string; srchPath: string | undefined; isMany: boolean; opt: string; replaceQuery: boolean; }) {
+async function preferExecuteQuery(rg: RipgrepSearch, rgQuery: { title: string; srchPath: string | undefined; isMany: boolean; opt: string; replaceQuery: boolean; prompt: string }) {
     const prefer = FindSuiteSettings.rgInputPreferType;
     if (prefer === 'Input') {
         await rg.execute(rgQuery);

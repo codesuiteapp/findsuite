@@ -5,8 +5,8 @@ export interface RgQuery {
     opt: string;
     srchPath: string | undefined;
     replaceQuery: boolean;
-    // skipQuote: boolean;
     isMany: boolean;
+    prompt: string;
 }
 
 export const rgInitQuery: RgQuery = {
@@ -14,7 +14,7 @@ export const rgInitQuery: RgQuery = {
     opt: '',
     srchPath: undefined,
     replaceQuery: false,
-    // skipQuote: true,
+    prompt: '',
     isMany: true
 };
 

@@ -77,7 +77,7 @@ export class FdFind {
         const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
         console.log(`cmd <${cmdOpt}>`);
 
-        const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
+        const result = await notifyWithProgress(`Searching ${mesg?.trim()}`, async () => {
             return await this.fdItems(cmdOpt, fdQuery.fileType);
         });
         if (result === undefined) {

@@ -59,7 +59,7 @@ export class Everything {
           return;
         }
 
-        const result = await notifyWithProgress(`Searching <${item}>`, async () => {
+        const result = await notifyWithProgress(`Searching <${item?.trim()}>`, async () => {
           return await this.searchInEverything(option!, item, FindSuiteSettings.count * 5);
         });
         if (result === undefined) {
@@ -268,7 +268,7 @@ export class Everything {
     }
 
     let mesg = config.mesg ?? `${txt ? '<' + txt + '>' : ''}`;
-    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg}`, async () => {
+    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg?.trim()}`, async () => {
       return await this.searchInEverything(config, txt);
     });
 
@@ -318,7 +318,7 @@ export class Everything {
     });
 
     const mesg = '<Code-Workspace>';
-    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg}`, async () => {
+    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg?.trim()}`, async () => {
       return await this.searchInEverything(config, '');
     });
 

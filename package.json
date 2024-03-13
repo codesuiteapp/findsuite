@@ -404,6 +404,11 @@
         "category": "FindSuite"
       },
       {
+        "command": "findsuite.rgre",
+        "title": "Ripgrep Using Regex",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.rgWithEverything",
         "title": "Ripgrep via Everything (Like everything | rg)",
         "category": "FindSuite"

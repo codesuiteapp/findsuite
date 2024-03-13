@@ -147,7 +147,7 @@ export class RipgrepSearch {
         quickPick.show();
     }
 
-    public async execute(rgQuery: RgQuery, query: string | undefined = undefined) {
+    public async execute(rgQuery: RgQuery, query: string | undefined = undefined, isRegex: boolean = false) {
         try {
             this.checkingProgram();
         } catch (error: any) {
@@ -159,23 +159,24 @@ export class RipgrepSearch {
         if (!txt) {
             txt = await vscode.window.showInputBox({
                 title: `RipGrep: Text to search`,
-                placeHolder: 'Please enter filename to search'
+                placeHolder: 'Please enter filename to search',
+                prompt: rgQuery.prompt
             }).then(res => {
                 return res ?? '';
             });
         }
 
-        await this.executeItem(rgQuery, txt);
+        await this.executeItem(rgQuery, txt, isRegex);
     }
 
-    private async executeItem(rgQuery: RgQuery, txt: string | undefined = undefined) {
-        if (!txt) {
+    private async executeItem(rgQuery: RgQuery, query: string | undefined = undefined, isRegex: boolean = false) {
+        if (!query) {
             this.notifyEmptyQuery('Ripgrep: Query is empty');
             return;
         }
 
-        const result = await notifyWithProgress(`Searching <${txt}>`, async () => {
-            return await this.fetchGrepItems(this.rgProgram, txt, rgQuery);
+        const result = await notifyWithProgress(`Searching <${query?.trim()}>`, async () => {
+            return await this.fetchGrepItems(this.rgProgram, query, rgQuery, isRegex);
         });
         if (result === undefined) {
             return;
@@ -184,7 +185,7 @@ export class RipgrepSearch {
         if (rgQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
                 title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
-                placeHolder: txt,
+                placeHolder: query,
                 canPickMany: true,
                 matchOnDetail: true,
                 matchOnDescription: true
@@ -198,7 +199,54 @@ export class RipgrepSearch {
         } else {
             await vscode.window.showQuickPick<QuickPickItemRgData>(result.items, {
                 title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
-                placeHolder: txt,
+                placeHolder: query,
+                ignoreFocusOut: true,
+                matchOnDetail: true,
+                matchOnDescription: true,
+                onDidSelectItem: async (item: QuickPickItemRgData) => {
+                    await this.openChoiceFile(item, { preserveFocus: true, preview: true });
+                }
+            }).then(async (item) => {
+                if (item) {
+                    await this.openChoiceFile(item);
+                } else if (vscode.window.activeTextEditor) {
+                    this.clearDecoration(vscode.window.activeTextEditor);
+                }
+            });
+        }
+    }
+
+    private async executeRegex(rgQuery: RgQuery, query: string | undefined = undefined) {
+        if (!query) {
+            this.notifyEmptyQuery('Ripgrep: Query is empty');
+            return;
+        }
+
+        const result = await notifyWithProgress(`Searching <${query?.trim()}>`, async () => {
+            return await this.fetchGrepItems(this.rgProgram, query, rgQuery);
+        });
+        if (result === undefined) {
+            return;
+        }
+
+        if (rgQuery.isMany) {
+            const items = await vscode.window.showQuickPick(result.items, {
+                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
+                placeHolder: query,
+                canPickMany: true,
+                matchOnDetail: true,
+                matchOnDescription: true
+            });
+
+            if (items) {
+                items.forEach(async (item) => {
+                    await this.openChoiceFile(item);
+                });
+            }
+        } else {
+            await vscode.window.showQuickPick<QuickPickItemRgData>(result.items, {
+                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
+                placeHolder: query,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
                 matchOnDescription: true,
@@ -250,12 +298,12 @@ export class RipgrepSearch {
         return txt.replace(chars, '\\$1').replace(lineChars, ' ').trim();
     }
 
-    private async fetchGrepItems(command: string, query: string, rgQuery: RgQuery): Promise<QuickPickItemResults<QuickPickItemRgData>> {
+    private async fetchGrepItems(command: string, query: string, rgQuery: RgQuery, isRegex: boolean = false): Promise<QuickPickItemResults<QuickPickItemRgData>> {
         if (!rgQuery.opt) {
             rgQuery.opt = this.rgDefOption;
         }
         const excludes = FindSuiteSettings.rgExcludePatterns.length > 0 ? '-g "!{' + FindSuiteSettings.rgExcludePatterns.join(',') + '}"' : '';
-        const cmd = `${command} "${this.replaceQuery(query)}" -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? quote(this._workspaceFolders)} --json`;
+        const cmd = `${command} "${isRegex ? query : this.replaceQuery(query)}" -n ${rgQuery.opt} ${excludes} ${rgQuery.srchPath ?? quote(this._workspaceFolders)} --json`;
         console.log(`ripgrep(): ${cmd}`);
         logger.debug(`ripgrep(): ${cmd}`);
 
