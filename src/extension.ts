@@ -12,7 +12,7 @@ import { notifyMessageWithTimeout } from "./utils/vsc";
 import { vscExtension } from "./vsc-ns";
 
 export function activate(context: ExtensionContext) {
-  vscExtension.favoriteFiles = registerFavor(context);
+  vscExtension.favoriteManager = registerFavor(context);
   const fd = new FdFind(context);
   const rg = new RipgrepSearch(context);
   let everything: Everything | undefined;

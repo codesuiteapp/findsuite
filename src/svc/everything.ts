@@ -431,7 +431,7 @@ export class Everything {
       } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
         const file = e.item as any;
         const filePath = path.join(file.path, file.name);
-        vscExtension.favoriteFiles.addItem(filePath);
+        vscExtension.favoriteManager.addItem(filePath);
       }
     });
 

@@ -4,36 +4,35 @@ import { favorButtons, favorHeaderButtons, favorUndelButtons } from "../model/bu
 import { FavoriteEntry, FavoritesEntries, QuickPickFavorItem } from "../model/favorites";
 import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
-import { FavoriteManager } from '../svc/favorite-files';
+import { FavoriteManager } from '../svc/favorite-manager';
 import { openFile } from "../utils/editor";
 import { notifyMessageWithTimeout } from "../utils/vsc";
 
 export function registerFavor(context: ExtensionContext) {
-    const favoriteFiles = FavoriteManager.getInstance(context);
+    const favoriteManager = FavoriteManager.getInstance(context);
     context.subscriptions.push(
         commands.registerCommand('findsuite.favorites', async () => {
-            openFavorites(favoriteFiles, undefined);
+            openFavorites(favoriteManager, undefined);
         })
         , commands.registerCommand('findsuite.favoritesFile', async () => {
-            openFavorites(favoriteFiles, "file");
+            openFavorites(favoriteManager, "file");
         })
         , commands.registerCommand('findsuite.clearFavorites', async () => {
-            favoriteFiles.clearAllFiles();
-            notifyMessageWithTimeout('Clear Favorites');
+            favoriteManager.clearAllFiles();
         })
         , commands.registerCommand('findsuite.addFavorite', async () => {
             const e = window.activeTextEditor;
             if (e) {
                 const uri = e.document.uri;
-                favoriteFiles.addItem(uri.fsPath);
+                favoriteManager.addItem(uri.fsPath);
             }
         })
     );
 
-    return favoriteFiles;
+    return favoriteManager;
 }
 
-function openFavorites(favoriteFiles: FavoriteManager, fileType: string | undefined = undefined) {
+function openFavorites(favoriteManager: FavoriteManager, fileType: string | undefined = undefined) {
     const quickPick = window.createQuickPick<QuickPickFavorItem>();
     quickPick.title = `Favorite Files`;
     quickPick.placeholder = 'Select file';
@@ -41,7 +40,7 @@ function openFavorites(favoriteFiles: FavoriteManager, fileType: string | undefi
     quickPick.matchOnDetail = true;
     quickPick.matchOnDescription = true;
     quickPick.buttons = favorHeaderButtons;
-    quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteEntries, fileType);
+    quickPick.items = convertFileAsPickItem(favoriteManager.favoriteEntries, fileType);
 
     quickPick.onDidAccept(async () => {
         const items = quickPick.selectedItems as QuickPickFavorItem[];
@@ -60,11 +59,11 @@ function openFavorites(favoriteFiles: FavoriteManager, fileType: string | undefi
         if (e.tooltip === Constants.DIFF_BUTTON) {
             await showMultipleDiffs2(items, 'file');
         } else if (e.tooltip === Constants.OPEN_FAVORITE_BUTTON) {
-            await openFile(favoriteFiles.filePath);
+            await openFile(favoriteManager.filePath);
             quickPick.dispose();
         } else if (e.tooltip === Constants.REFRESH_BUTTON) {
-            favoriteFiles.refresh();
-            quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteEntries, fileType);
+            favoriteManager.refresh();
+            quickPick.items = convertFileAsPickItem(favoriteManager.favoriteEntries, fileType);
         }
     });
 
@@ -73,14 +72,14 @@ function openFavorites(favoriteFiles: FavoriteManager, fileType: string | undefi
         if (e.button.tooltip === Constants.VIEW_BUTTON) {
             await openChoiceFile(e.item);
         } else if (e.button.tooltip === Constants.SHIELD_BUTTON) {
-            favoriteFiles.update(e.item.id!);
+            favoriteManager.update(e.item.id!);
             reload = true;
         } else if (e.button.tooltip === Constants.REMOVE_BUTTON) {
-            favoriteFiles.update(e.item.id!, true);
+            favoriteManager.update(e.item.id!, true);
             reload = true;
         }
         if (reload) {
-            quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteEntries, fileType);
+            quickPick.items = convertFileAsPickItem(favoriteManager.favoriteEntries, fileType);
         }
     });
 

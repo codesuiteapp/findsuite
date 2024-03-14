@@ -1,5 +1,5 @@
 import { ExtensionContext } from "vscode";
-import { FavoriteManager } from './svc/favorite-files';
+import { FavoriteManager } from './svc/favorite-manager';
 
 export namespace vscExtension {
 
@@ -7,6 +7,6 @@ export namespace vscExtension {
 
     export let globalHomeDir: string;
 
-    export let favoriteFiles: FavoriteManager;
+    export let favoriteManager: FavoriteManager;
 
 }

@@ -27,7 +27,7 @@ export class FdFind {
 
     private _checked: boolean = false;
 
-    private favoriteFiles = vscExtension.favoriteFiles;
+    private favoriteFiles = vscExtension.favoriteManager;
 
     constructor(private context: vscode.ExtensionContext) {
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
