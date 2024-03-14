@@ -1,15 +1,15 @@
 import path from "path";
 import { ExtensionContext, QuickPickItem, QuickPickItemKind, commands, window, workspace } from "vscode";
-import { favorButtons, favorHeaderButtons } from "../model/button";
-import { FavoritesEntries } from "../model/favorites";
+import { favorButtons, favorHeaderButtons, favorUndelButtons } from "../model/button";
+import { FavoriteEntry, FavoritesEntries, QuickPickFavorItem } from "../model/favorites";
 import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
-import { FavoriteFiles } from '../svc/favorite-files';
+import { FavoriteManager } from '../svc/favorite-files';
 import { openFile } from "../utils/editor";
 import { notifyMessageWithTimeout } from "../utils/vsc";
 
 export function registerFavor(context: ExtensionContext) {
-    const favoriteFiles = FavoriteFiles.getInstance(context);
+    const favoriteFiles = FavoriteManager.getInstance(context);
     context.subscriptions.push(
         commands.registerCommand('findsuite.favorites', async () => {
             openFavorites(favoriteFiles, undefined);
@@ -26,7 +26,6 @@ export function registerFavor(context: ExtensionContext) {
             if (e) {
                 const uri = e.document.uri;
                 favoriteFiles.addItem(uri.fsPath);
-                notifyMessageWithTimeout(`Add to Favorites <${path.basename(uri.fsPath)}>`);
             }
         })
     );
@@ -34,18 +33,18 @@ export function registerFavor(context: ExtensionContext) {
     return favoriteFiles;
 }
 
-function openFavorites(favoriteFiles: FavoriteFiles, fileType: string | undefined = undefined) {
-    const quickPick = window.createQuickPick<QuickPickItem>();
+function openFavorites(favoriteFiles: FavoriteManager, fileType: string | undefined = undefined) {
+    const quickPick = window.createQuickPick<QuickPickFavorItem>();
     quickPick.title = `Favorite Files`;
     quickPick.placeholder = 'Select file';
     quickPick.canSelectMany = fileType === 'file' ? false : true;
     quickPick.matchOnDetail = true;
     quickPick.matchOnDescription = true;
     quickPick.buttons = favorHeaderButtons;
-    quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteFiles, fileType);
+    quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteEntries, fileType);
 
     quickPick.onDidAccept(async () => {
-        const items = quickPick.selectedItems as QuickPickItem[];
+        const items = quickPick.selectedItems as QuickPickFavorItem[];
         if (!items || items.length === 0) {
             return;
         }
@@ -57,23 +56,31 @@ function openFavorites(favoriteFiles: FavoriteFiles, fileType: string | undefine
     });
 
     quickPick.onDidTriggerButton(async (e) => {
-        const items = quickPick.selectedItems as unknown as QuickPickItem[];
+        const items = quickPick.selectedItems as unknown as QuickPickFavorItem[];
         if (e.tooltip === Constants.DIFF_BUTTON) {
             await showMultipleDiffs2(items, 'file');
-        } else if (e.tooltip === Constants.REFRESH_BUTTON) {
-            favoriteFiles.refresh();
-            quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteFiles, fileType);
         } else if (e.tooltip === Constants.OPEN_FAVORITE_BUTTON) {
             await openFile(favoriteFiles.filePath);
             quickPick.dispose();
+        } else if (e.tooltip === Constants.REFRESH_BUTTON) {
+            favoriteFiles.refresh();
+            quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteEntries, fileType);
         }
     });
 
     quickPick.onDidTriggerItemButton(async (e) => {
+        let reload = false;
         if (e.button.tooltip === Constants.VIEW_BUTTON) {
             await openChoiceFile(e.item);
+        } else if (e.button.tooltip === Constants.SHIELD_BUTTON) {
+            favoriteFiles.update(e.item.id!);
+            reload = true;
         } else if (e.button.tooltip === Constants.REMOVE_BUTTON) {
-            favoriteFiles.delete(e.item.description!);
+            favoriteFiles.update(e.item.id!, true);
+            reload = true;
+        }
+        if (reload) {
+            quickPick.items = convertFileAsPickItem(favoriteFiles.favoriteEntries, fileType);
         }
     });
 
@@ -85,17 +92,21 @@ async function openChoiceFile(item: QuickPickItem) {
     await window.showTextDocument(doc);
 }
 
-function convertFileAsPickItem(items: FavoritesEntries, fileType: string | undefined = undefined): readonly QuickPickItem[] {
-    const quickItems: QuickPickItem[] = [];
-
+function convertFileAsPickItem(favorEntries: FavoritesEntries, fileType: string | undefined = undefined): readonly QuickPickFavorItem[] {
+    let quickItems: QuickPickFavorItem[] = [];
     let total = 0;
     if (fileType === undefined || fileType === 'dir') {
-        const dirs = items.dir;
-        dirs.forEach((favor, index) => {
+        const dirs = favorEntries.directories;
+        dirs.forEach((entry, index) => {
             quickItems.push({
-                label: `$(folder) ${favor.name}`,
-                description: favor.path,
-                buttons: favorButtons,
+                label: ':: Directory ::',
+                kind: QuickPickItemKind.Separator
+            });
+            quickItems.push({
+                label: `$(folder) ${entry.name}`,
+                description: entry.path,
+                buttons: entry.protect ? favorButtons : favorUndelButtons,
+                id: entry.id
             });
             total++;
 
@@ -114,20 +125,34 @@ function convertFileAsPickItem(items: FavoritesEntries, fileType: string | undef
     });
 
     if (fileType === undefined || fileType === 'file') {
-        const files = items.files;
-        files.forEach((favor, index) => {
-            quickItems.push({
-                label: `$(file-code) ${favor.name}`,
-                description: favor.path,
-                buttons: favorButtons,
-            });
-            total++;
+        const categoriesMap = new Map<string, FavoriteEntry[]>();
 
-            if (total % 5 === 0 && index !== files.length - 1) {
-                quickItems.push({
-                    label: '',
-                    kind: QuickPickItemKind.Separator
-                });
+        favorEntries.files.forEach(entry => {
+            const category = entry.category;
+            if (!categoriesMap.has(category)) {
+                categoriesMap.set(category, []);
+            }
+            categoriesMap.get(category)?.push(entry);
+        });
+
+        const categories = Array.from(categoriesMap.keys()).sort();
+        categories.forEach(category => {
+            quickItems.push({
+                label: `:: ${category} ::`,
+                kind: QuickPickItemKind.Separator
+            });
+            const sortedEntries = categoriesMap.get(category)?.sort((a, b) => {
+                if (a.name < b.name) { return -1; }
+                if (a.name > b.name) { return 1; }
+                return 0;
+            });
+            if (sortedEntries) {
+                quickItems = quickItems.concat(sortedEntries.map(entry => ({
+                    label: '$(file-code) ' + entry.name,
+                    description: entry.path,
+                    buttons: entry.protect ? favorButtons : favorUndelButtons,
+                    id: entry.id
+                })));
             }
         });
     }

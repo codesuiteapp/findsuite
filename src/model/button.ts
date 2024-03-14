@@ -26,14 +26,19 @@ export const windowBtn: QuickInputButton = {
     tooltip: Constants.WINDOW_BUTTON
 };
 
-export const starBtn: QuickInputButton = {
-    iconPath: new ThemeIcon('star'),
+export const heartBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('heart'),
     tooltip: Constants.FAVORITE_BUTTON
 };
 
 export const removeBtn: QuickInputButton = {
     iconPath: new ThemeIcon('trash'),
     tooltip: Constants.REMOVE_BUTTON
+};
+
+export const shieldBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('shield'),
+    tooltip: Constants.SHIELD_BUTTON
 };
 
 export const refreshBtn: QuickInputButton = {
@@ -46,16 +51,18 @@ export const openFavorBtn: QuickInputButton = {
     tooltip: Constants.OPEN_FAVORITE_BUTTON
 };
 
-export const searchButtons = [starBtn, addClipBtn, viewBtn, copyBtn];
+export const searchButtons = [copyBtn, addClipBtn, viewBtn, heartBtn];
 
-export const fdButtons = [starBtn, addClipBtn, viewBtn, copyBtn];
+export const fdButtons = [copyBtn, addClipBtn, viewBtn, heartBtn];
 
 export const wsButtons = [windowBtn];
 
 export const favorButtons = [viewBtn, removeBtn];
 
+export const favorUndelButtons = [viewBtn, shieldBtn];
+
 export const favorHeaderButtons = [diffBtn, openFavorBtn, refreshBtn];
 
 export const rgHeaderButtons = [addClipBtn, diffBtn, copyBtn];
 
-export const fdHeaderButtons = [starBtn];
+export const fdHeaderButtons = [heartBtn];

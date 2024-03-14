@@ -204,7 +204,6 @@ export class FdFind {
                 copyClipboardFilePath(e.item.detail!, true);
             } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
                 this.favoriteFiles.addItem(e.item.detail!);
-                notifyMessageWithTimeout('Added on Favorites');
             }
         });
 

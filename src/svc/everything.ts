@@ -432,7 +432,6 @@ export class Everything {
         const file = e.item as any;
         const filePath = path.join(file.path, file.name);
         vscExtension.favoriteFiles.addItem(filePath);
-        notifyMessageWithTimeout(`Add to Favorites <${path.basename(filePath)}>`);
       }
     });
 

@@ -22,6 +22,8 @@ export namespace Constants {
 
     export const OPEN_FAVORITE_BUTTON = 'Open Favorites';
 
+    export const SHIELD_BUTTON = 'Pinned';
+
     export const REMOVE_BUTTON = 'Remove';
 
     export const VIEW_BUTTON = 'View';
