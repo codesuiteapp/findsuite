@@ -29,7 +29,7 @@ export type FindSuitePropertyType = "everythingConfig";
 
 export default class FindSuiteSettings {
 
-    private static readonly extensionName = "utocode.findsuite";
+    private static readonly extensionName = "findsuite";
 
     private static readonly compiledSchemas = new Map<string, ajv.ValidateFunction>();
 
@@ -107,6 +107,33 @@ export default class FindSuiteSettings {
 
     public static getProperty(key: string): string | undefined {
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key);
+    }
+
+    public static get pathWin32Favorites(): string {
+        const key = 'path.favorites.win32';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get pathMacFavorites(): string {
+        const key = 'path.favorites.mac';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
+    }
+
+    public static get pathLinuxFavorites(): string {
+        const key = 'path.favorites.linux';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
+            ??
+            '';
     }
 
     public static get compareExternalEnabled(): boolean {

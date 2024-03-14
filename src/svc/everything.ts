@@ -9,6 +9,8 @@ import { formatBytes } from '../utils/converter';
 import { copyClipboardWithFile, getSelectionText, openWorkspace } from '../utils/editor';
 import logger from '../utils/logger';
 import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
+import { vscExtension } from '../vsc-ns';
+import { Constants } from './constants';
 
 const defEverythingConfig: EverythingConfig = {
   enabled: true,
@@ -344,7 +346,7 @@ export class Everything {
     });
 
     quickPick.onDidTriggerItemButton(async (e) => {
-      if (e.button.tooltip === 'Window') {
+      if (e.button.tooltip === Constants.WINDOW_BUTTON) {
         await openWorkspace(e.item.detail!, true);
         quickPick.dispose();
       }
@@ -420,12 +422,17 @@ export class Everything {
     });
 
     quickPick.onDidTriggerItemButton(async (e) => {
-      if (e.button.tooltip === 'View') {
+      if (e.button.tooltip === Constants.VIEW_BUTTON) {
         await this.openFile(e.item);
-      } else if (e.button.tooltip === 'Copy') {
+      } else if (e.button.tooltip === Constants.COPY_BUTTON) {
         copyClipboardWithFile(e.item);
-      } else if (e.button.tooltip === 'Add to clipboard') {
+      } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
         copyClipboardWithFile(e.item, true);
+      } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
+        const file = e.item as any;
+        const filePath = path.join(file.path, file.name);
+        vscExtension.favoriteFiles.addItem(filePath);
+        notifyMessageWithTimeout(`Add to Favorites <${path.basename(filePath)}>`);
       }
     });
 

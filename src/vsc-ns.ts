@@ -1,5 +1,5 @@
 import { ExtensionContext } from "vscode";
-import { FavoriteFiles } from "./svc/favorite-files";
+import { FavoriteFiles } from './svc/favorite-files';
 
 export namespace vscExtension {
 

@@ -42,7 +42,7 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
             const rgQuery = {
                 ...rgInitQuery,
                 title: 'Favorites',
-                srchPath: `${vscExtension.favoriteFiles.getAllFiles().join(' ')}`
+                srchPath: `${vscExtension.favoriteFiles.getItems().join(' ')}`
             };
 
             await rg.interact(rgQuery);

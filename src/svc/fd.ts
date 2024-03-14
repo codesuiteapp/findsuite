@@ -13,6 +13,7 @@ import { copyClipboardFilePath, getSelectionText, openWorkspace } from "../utils
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
+import { Constants } from "./constants";
 
 const MAX_BUF_SIZE = 200 * 1024 * 1024;
 
@@ -195,14 +196,14 @@ export class FdFind {
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {
-            if (e.button.tooltip === 'View') {
+            if (e.button.tooltip === Constants.VIEW_BUTTON) {
                 await this.openChoiceFile(e.item);
-            } else if (e.button.tooltip === 'Copy') {
+            } else if (e.button.tooltip === Constants.COPY_BUTTON) {
                 copyClipboardFilePath(e.item.detail!);
-            } else if (e.button.tooltip === 'Add to clipboard') {
+            } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.detail!, true);
-            } else if (e.button.tooltip === 'Favorite') {
-                this.favoriteFiles.addFile(e.item.detail!);
+            } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
+                this.favoriteFiles.addItem(e.item.detail!);
                 notifyMessageWithTimeout('Added on Favorites');
             }
         });
@@ -249,7 +250,7 @@ export class FdFind {
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {
-            if (e.button.tooltip === 'Window') {
+            if (e.button.tooltip === Constants.WINDOW_BUTTON) {
                 await openWorkspace(e.item.detail!, true);
                 quickPick.dispose();
             }

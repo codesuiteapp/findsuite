@@ -12,6 +12,7 @@ import { notifyWithProgress, showInfoMessageWithTimeout } from "../ui/ui";
 import { copyClipboardFilePath, copyClipboardFiles, getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
 import { notifyMessageWithTimeout } from "../utils/vsc";
+import { Constants } from "./constants";
 import { showMultipleDiffs2 } from "./diff";
 
 const MAX_BUF_SIZE = 200000 * 1024;
@@ -118,21 +119,21 @@ export class RipgrepSearch {
 
         quickPick.onDidTriggerButton(async (e) => {
             const items = quickPick.selectedItems as unknown as vscode.QuickPickItem[];
-            if (e.tooltip === 'Diff') {
+            if (e.tooltip === Constants.DIFF_BUTTON) {
                 await showMultipleDiffs2(items, 'file');
-            } else if (e.tooltip === 'Copy') {
+            } else if (e.tooltip === Constants.COPY_BUTTON) {
                 copyClipboardFiles(items);
-            } else if (e.tooltip === 'Add to clipboard') {
+            } else if (e.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFiles(items, true);
             }
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {
-            if (e.button.tooltip === 'View') {
+            if (e.button.tooltip === Constants.VIEW_BUTTON) {
                 await this.openChoiceFile(e.item);
-            } else if (e.button.tooltip === 'Copy') {
+            } else if (e.button.tooltip === Constants.COPY_BUTTON) {
                 copyClipboardFilePath(e.item.description!);
-            } else if (e.button.tooltip === 'Add to clipboard') {
+            } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.description!, true);
             }
         });

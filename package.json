@@ -47,6 +47,21 @@
       "type": "object",
       "title": "Find Suite",
       "properties": {
+        "findsuite.path.favorites.win32": {
+          "type": "string",
+          "default": "",
+          "description": "%path.favorites.win32.description%"
+        },
+        "findsuite.path.favorites.darwin": {
+          "type": "string",
+          "default": "",
+          "description": "%path.favorites.darwin.description%"
+        },
+        "findsuite.path.favorites.linux": {
+          "type": "string",
+          "default": "",
+          "description": "%path.favorites.linux.description%"
+        },
         "findsuite.compare.external.enabled": {
           "type": "boolean",
           "default": false,
@@ -331,12 +346,94 @@
           "command": "findsuite.everything",
           "when": "isWindows"
         }
+      ],
+      "editor/context": [
+        {
+          "submenu": "findsuite.submenu",
+          "group": "findsuite"
+        }
+      ],
+      "findsuite.submenu": [
+        {
+          "command": "findsuite.everything#codeWorkspace",
+          "title": "%everything#codeWorkspace.title%",
+          "group": "everything@10",
+          "when": "isWindows"
+        },
+        {
+          "command": "findsuite.rgWithEverything",
+          "title": "%rgWithEverything.title%",
+          "group": "everything@20",
+          "when": "isWindows"
+        },
+        {
+          "command": "findsuite.rgWithEverythingFolder",
+          "title": "%rgWithEverythingFolder.title%",
+          "group": "everything@30",
+          "when": "isWindows"
+        },
+        {
+          "command": "findsuite.favorites",
+          "title": "%favorites.title%",
+          "group": "favorites@10"
+        },
+        {
+          "command": "findsuite.addFavorite",
+          "title": "%addFavorite.title%",
+          "group": "favorites@20"
+        },
+        {
+          "command": "findsuite.rgFavorites",
+          "title": "%rgFavorites.title%",
+          "group": "favorites@30"
+        },
+        {
+          "command": "findsuite.rgws",
+          "title": "%rgws.title%",
+          "group": "rg@10"
+        },
+        {
+          "command": "findsuite.rgre",
+          "title": "%rgre.title%",
+          "group": "rg@20"
+        },
+        {
+          "command": "findsuite.rgWithFd",
+          "title": "%rgWithFd.title%",
+          "group": "rg@50"
+        },
+        {
+          "command": "findsuite.rgWithFdDir",
+          "title": "%rgWithFdDir.title%",
+          "group": "rg@60"
+        },
+        {
+          "command": "findsuite.fdCodeWs",
+          "title": "%fdCodeWs.title%",
+          "group": "fd@10"
+        },
+        {
+          "command": "findsuite.fd#diffWs",
+          "title": "%fd#diffWs.title%",
+          "group": "fd@20"
+        }
       ]
     },
+    "submenus": [
+      {
+        "id": "findsuite.submenu",
+        "label": "FindSuite"
+      }
+    ],
     "commands": [
       {
         "command": "findsuite.favorites",
-        "title": "List Favorite Files",
+        "title": "Favorites List",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.favoritesFile",
+        "title": "Favorites Only File",
         "category": "FindSuite"
       },
       {
@@ -421,7 +518,7 @@
       },
       {
         "command": "findsuite.rgFavorites",
-        "title": "Ripgrep in Favorites",
+        "title": "Ripgrep in Favorites (Like fd -t | rg)",
         "category": "FindSuite"
       },
       {
@@ -491,6 +588,18 @@
       }
     ],
     "keybindings": [
+      {
+        "command": "findsuite.favorites",
+        "key": "shift+f11",
+        "mac": "shift+f11",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "findsuite.favoritesFile",
+        "key": "alt+shift+p",
+        "mac": "cmd+ctrl+p",
+        "when": "editorTextFocus"
+      },
       {
         "command": "findsuite.fdFile",
         "key": "ctrl+alt+f7",
