@@ -179,6 +179,7 @@ export class FdFind {
         const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem>();
         quickPick.title = `Fd ${mesg} :: Results <${result.total}>`;
         quickPick.placeholder = txt;
+        quickPick.canSelectMany = fdQuery.isMany;
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
         quickPick.buttons = searchHeaderButtons;

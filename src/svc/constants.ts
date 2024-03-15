@@ -14,6 +14,8 @@ export namespace Constants {
 
     export const ADD_CLIP_BUTTON = 'Add to clipboard';
 
+    export const CLOSE_BUTTON = 'Close';
+
     export const COPY_BUTTON = 'Copy';
 
     export const DIFF_BUTTON = 'Diff';

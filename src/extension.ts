@@ -1,6 +1,7 @@
 import { platform } from "node:process";
 import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
 import { registerEverything, registerFd, registerRg } from "./commands";
+import { registerEditor } from "./commands/editor";
 import { registerFavor } from "./commands/favorite-cmd";
 import { fdInitQuery } from "./model/fd";
 import { Constants } from "./svc/constants";
@@ -19,6 +20,7 @@ export function activate(context: ExtensionContext) {
 
   registerFd(context, fd);
   registerRg(context, rg);
+  registerEditor(context);
 
   if (platform === 'win32') {
     everything = new Everything();

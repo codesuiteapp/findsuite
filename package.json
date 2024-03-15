@@ -360,6 +360,26 @@
       ],
       "findsuite.submenu": [
         {
+          "command": "findsuite.editors",
+          "title": "%editors.title%",
+          "group": "editors@10"
+        },
+        {
+          "command": "findsuite.favorites",
+          "title": "%favorites.title%",
+          "group": "editors@20"
+        },
+        {
+          "command": "findsuite.addFavorite",
+          "title": "%addFavorite.title%",
+          "group": "editors@30"
+        },
+        {
+          "command": "findsuite.rgFavorites",
+          "title": "%rgFavorites.title%",
+          "group": "editors@40"
+        },
+        {
           "command": "findsuite.everything#codeWorkspace",
           "title": "%everything#codeWorkspace.title%",
           "group": "everything@10",
@@ -376,21 +396,6 @@
           "title": "%rgWithEverythingFolder.title%",
           "group": "everything@30",
           "when": "isWindows"
-        },
-        {
-          "command": "findsuite.favorites",
-          "title": "%favorites.title%",
-          "group": "favorites@10"
-        },
-        {
-          "command": "findsuite.addFavorite",
-          "title": "%addFavorite.title%",
-          "group": "favorites@20"
-        },
-        {
-          "command": "findsuite.rgFavorites",
-          "title": "%rgFavorites.title%",
-          "group": "favorites@30"
         },
         {
           "command": "findsuite.rgws",
@@ -431,6 +436,11 @@
       }
     ],
     "commands": [
+      {
+        "command": "findsuite.editors",
+        "title": "Active Editor List",
+        "category": "FindSuite"
+      },
       {
         "command": "findsuite.favorites",
         "title": "Favorites List",

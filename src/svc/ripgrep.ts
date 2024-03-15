@@ -138,7 +138,7 @@ export class RipgrepSearch {
                 copyClipboardFilePath(e.item.description!);
             } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.description!, true);
-            } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
+            } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
                 vscExtension.favoriteManager.addItem(e.item.description!);
             }
         });

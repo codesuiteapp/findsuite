@@ -6,6 +6,11 @@ export const addClipBtn: QuickInputButton = {
     tooltip: Constants.ADD_CLIP_BUTTON
 };
 
+export const closeBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('close'),
+    tooltip: Constants.CLOSE_BUTTON
+};
+
 export const copyBtn: QuickInputButton = {
     iconPath: new ThemeIcon('files'),
     tooltip: Constants.COPY_BUTTON
@@ -83,3 +88,7 @@ export const rgHeaderButtons = [favorWindowBtn, addClipBtn, diffBtn, copyBtn];
 export const searchHeaderButtons = [favorWindowBtn];
 
 export const fdHeaderButtons = [heartBtn];
+
+export const editorButtons = [viewBtn, copyBtn, addClipBtn, heartBtn, closeBtn];
+
+export const editorHeaderButtons = [diffBtn, favorWindowBtn];

@@ -1,4 +1,5 @@
 {
+  "editors.title": "Active Editor List",
   "favorites.title": "Favorites List",
   "addFavorite.title": "Add to Favorite Files",
   "fdCodeWs.title": "Open Workspace from code-ws via Fd",
