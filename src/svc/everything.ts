@@ -3,12 +3,12 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { QuickPickItem, ViewColumn } from 'vscode';
 import FindSuiteSettings, { EverythingConfig } from '../config/settings';
-import { searchButtons, wsButtons } from '../model/button';
+import { searchButtons, searchHeaderButtons, wsButtons } from '../model/button';
 import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
 import { copyClipboardWithFile, getSelectionText, openWorkspace } from '../utils/editor';
 import logger from '../utils/logger';
-import { notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
+import { executeFavoriteWindow, notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
 import { vscExtension } from '../vsc-ns';
 import { Constants } from './constants';
 
@@ -118,19 +118,30 @@ export class Everything {
 
         response.on('end', () => {
           try {
-            const files: any[] = JSON.parse(body).results as EverythingResponse[];
             const buttons = config?.buttonType === 'workspace' ? wsButtons : searchButtons;
             let label: string;
             if (config?.buttonType === 'workspace') {
               label = '$(record) ';
             }
+
+            const files: any[] = JSON.parse(body).results as EverythingResponse[];
+            let previousDirectory: string | null = null;
+            const entries: QuickPickItem[] = [];
             files.forEach(f => {
+              const currentDirectory = path.dirname(path.join(f.path, f.name));
+              if (previousDirectory && currentDirectory !== previousDirectory) {
+                entries.push({ label: `:: ${path.basename(currentDirectory)} ::`, kind: vscode.QuickPickItemKind.Separator });
+              }
+
               f.label = label ? label + f.name.split('.').shift() : f.type === 'file' ? '$(file)' : '$(folder)';
               f.description = `${f.name} ${f.type === 'file' ? '(' + formatBytes(f.size) + ')' : ''}`;
               f.detail = `${path.join(f.path, f.name)}`;
               f.buttons = buttons;
+
+              entries.push(f);
+              previousDirectory = currentDirectory;
             });
-            resolve(files);
+            resolve(entries);
           } catch (e: any) {
             reject(new Error(`Failed to decode Everything response as JSON, body data: ${body}`));
           }
@@ -333,6 +344,7 @@ export class Everything {
     quickPick.placeholder = 'Select to Open workspace';
     quickPick.matchOnDetail = true;
     quickPick.matchOnDescription = true;
+    quickPick.buttons = searchHeaderButtons;
     quickPick.items = items;
 
     quickPick.onDidAccept(async (event) => {
@@ -345,10 +357,87 @@ export class Everything {
       quickPick.dispose();
     });
 
+    quickPick.onDidTriggerButton(async (e) => {
+      if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+        await executeFavoriteWindow();
+      }
+    });
+
     quickPick.onDidTriggerItemButton(async (e) => {
       if (e.button.tooltip === Constants.WINDOW_BUTTON) {
         await openWorkspace(e.item.detail!, true);
         quickPick.dispose();
+      }
+    });
+
+    quickPick.show();
+  }
+
+  public async execute1(filterType: string) {
+    let config: EverythingConfig = this.makeEverythingConfig({
+      sort: 'date_modified',
+      title: 'Open Files',
+      query: 'files:'
+    });
+
+    let txt = getSelectionText();
+    if (txt === '__EMPTY__') {
+      txt = '';
+    } else if (!txt) {
+      txt = await vscode.window.showInputBox({
+        title: `Everything:: ${config.title ?? 'Enter filename to search'}`,
+        prompt: `Usage: ${config?.description ?? ''}`,
+        placeHolder: `${config?.description ?? 'Please enter filename to search'}`
+      }).then(res => {
+        return res ?? '';
+      });
+    }
+
+    let mesg = config.mesg ?? `${txt ? '<' + txt + '>' : ''}`;
+    const items: QuickPickItem[] | undefined = await notifyWithProgress(`Searching ${mesg?.trim()}`, async () => {
+      return await this.searchInEverything(config, txt);
+    });
+
+    if (items === undefined) {
+      return;
+    }
+
+    const quickPick = vscode.window.createQuickPick<QuickPickItem>();
+    quickPick.title = `Everything ${mesg} :: Results <${items.length}>`;
+    quickPick.placeholder = 'Select to Open file';
+    quickPick.matchOnDetail = true;
+    quickPick.matchOnDescription = true;
+    quickPick.buttons = searchHeaderButtons;
+    quickPick.items = items;
+
+    quickPick.onDidAccept(async (event) => {
+      const item = quickPick.selectedItems[0] as QuickPickItem;
+      if (!item) {
+        return;
+      }
+
+      await openWorkspace(item.detail!, false);
+      quickPick.dispose();
+    });
+
+    quickPick.onDidTriggerButton(async (e) => {
+      // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
+      if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+        await executeFavoriteWindow();
+      }
+    });
+
+    quickPick.onDidTriggerItemButton(async (e) => {
+      if (e.button.tooltip === Constants.VIEW_BUTTON) {
+        await this.openFile(e.item);
+      } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+        copyClipboardWithFile(e.item);
+      } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
+        copyClipboardWithFile(e.item, true);
+      } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
+        const file = e.item as any;
+        const filePath = path.join(file.path, file.name);
+        vscExtension.favoriteManager.addItem(filePath);
       }
     });
 

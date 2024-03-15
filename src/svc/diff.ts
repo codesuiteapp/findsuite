@@ -3,16 +3,11 @@ import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { showInfoMessageWithTimeout } from "../ui/ui";
 import logger from "../utils/logger";
-
-export async function diff(src: string, dst: string, cmd: string = 'vscode.diff') {
-    const uri1 = vscode.Uri.file(src);
-    const uri2 = vscode.Uri.file(dst);
-    vscode.commands.executeCommand(cmd, uri1, uri2);
-}
+import { executeDiffWindow } from "../utils/vsc";
 
 export async function multipleDiffs(files: string[]) {
     for (let i = 0; i < files.length; i += 2) {
-        await diff(files[i], files[i + 1]);
+        await executeDiffWindow(files[i], files[i + 1]);
     }
 }
 
@@ -38,7 +33,7 @@ export async function showMultipleDiffs2(files: vscode.QuickPickItem[], diffType
     if (external && prog) {
         await executeDiff(files[0].description!, files[1].description!, prog, FindSuiteSettings.compareExternalOption);
     } else {
-        await diff(files[0].description!, files[1].description!);
+        await executeDiffWindow(files[0].description!, files[1].description!);
     }
 }
 
@@ -59,7 +54,7 @@ export async function showMultipleDiffs(files: vscode.QuickPickItem[], diffType:
         if (external && prog) {
             await executeDiff(files[i].detail!, files[i + 1].detail!, prog, FindSuiteSettings.compareExternalOption);
         } else {
-            await diff(files[i].detail!, files[i + 1].detail!);
+            await executeDiffWindow(files[i].detail!, files[i + 1].detail!);
         }
     }
 }

@@ -5,13 +5,14 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { rgHeaderButtons, searchButtons } from "../model/button";
+import { rgHeaderButtons, searchButtons, searchHeaderButtons } from "../model/button";
 import { QuickPickItemResults } from "../model/fd";
 import { QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
 import { notifyWithProgress, showInfoMessageWithTimeout } from "../ui/ui";
-import { copyClipboardFilePath, copyClipboardFiles, getSelectionText } from "../utils/editor";
+import { copyClipboardFilePath, copyClipboardFiles, copyClipboardWithFile, getSelectionText } from "../utils/editor";
 import logger from "../utils/logger";
-import { notifyMessageWithTimeout } from "../utils/vsc";
+import { executeFavoriteWindow, notifyMessageWithTimeout } from "../utils/vsc";
+import { vscExtension } from "../vsc-ns";
 import { Constants } from "./constants";
 import { showMultipleDiffs2 } from "./diff";
 
@@ -125,6 +126,8 @@ export class RipgrepSearch {
                 copyClipboardFiles(items);
             } else if (e.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFiles(items, true);
+            } else if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+                await executeFavoriteWindow();
             }
         });
 
@@ -135,12 +138,91 @@ export class RipgrepSearch {
                 copyClipboardFilePath(e.item.description!);
             } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.description!, true);
+            } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
+                vscExtension.favoriteManager.addItem(e.item.description!);
             }
         });
 
         quickPick.onDidHide(() => {
             const e = vscode.window.activeTextEditor;
             e && this.clearDecoration(e);
+        });
+
+        quickPick.show();
+    }
+
+    public async execute1(rgQuery: RgQuery, query: string | undefined = undefined, isRegex: boolean = false) {
+        try {
+            this.checkingProgram();
+        } catch (error: any) {
+            notifyMessageWithTimeout(error.message);
+            return;
+        }
+
+        let txt = query ?? getSelectionText(true);
+        if (!txt) {
+            txt = await vscode.window.showInputBox({
+                title: `RipGrep: Text to search`,
+                placeHolder: 'Please enter filename to search',
+                prompt: rgQuery.prompt
+            }).then(res => {
+                return res ?? '';
+            });
+        }
+
+        if (!txt) {
+            this.notifyEmptyQuery('Ripgrep: Query is empty');
+            return;
+        }
+
+        const result = await notifyWithProgress(`Searching <${txt?.trim()}>`, async () => {
+            return await this.fetchGrepItems(this.rgProgram, txt, rgQuery, isRegex);
+        });
+        if (result === undefined) {
+            return;
+        }
+
+        const quickPick = vscode.window.createQuickPick<QuickPickItemRgData>();
+        quickPick.title = `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`;
+        quickPick.placeholder = query;
+        quickPick.canSelectMany = rgQuery.isMany;
+        quickPick.matchOnDetail = true;
+        quickPick.matchOnDescription = true;
+        quickPick.buttons = searchHeaderButtons;
+        quickPick.items = result.items;
+
+        quickPick.onDidAccept(async () => {
+            const items = quickPick.selectedItems as QuickPickItemRgData[];
+            if (!items || items.length === 0) {
+                return;
+            }
+
+            if (vscode.window.activeTextEditor) {
+                this.clearDecoration(vscode.window.activeTextEditor);
+            }
+            items.forEach(async (item) => {
+                await this.openChoiceFile(item);
+            });
+            quickPick.dispose();
+        });
+
+        quickPick.onDidTriggerButton(async (e) => {
+            // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
+            if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+                await executeFavoriteWindow();
+            }
+        });
+
+        quickPick.onDidTriggerItemButton(async (e) => {
+            if (e.button.tooltip === Constants.VIEW_BUTTON) {
+                await this.openChoiceFile(e.item);
+            } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+                copyClipboardFilePath(e.item.description!);
+            } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
+                copyClipboardFilePath(e.item.description!, true);
+            } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
+                vscExtension.favoriteManager.addItem(e.item.description!);
+            }
         });
 
         quickPick.show();
@@ -330,7 +412,6 @@ export class RipgrepSearch {
                         return false;
                     } else if (json.type === 'begin') {
                         total++;
-                        return false;
                     }
                     return true;
                 }).map((json) => {
@@ -348,7 +429,15 @@ export class RipgrepSearch {
                             replaceQuery: rgQuery.replaceQuery
                         };
                     } else {
-                        return sepRgData;
+                        return {
+                            label: data?.path ? `:: ${path.basename(data.path.text)} ::` : '',
+                            kind: vscode.QuickPickItemKind.Separator,
+                            start: 0,
+                            end: 0,
+                            line_number: 0,
+                            option: '',
+                            replaceQuery: false
+                        };
                     }
                 });
 
@@ -357,7 +446,7 @@ export class RipgrepSearch {
                     summary = JSON.parse(lines[lines.length - 1]) as RgSummaryData;
                 }
 
-                console.log(`summary <${total} / ${summary?.data.stats.matches ?? 0}>`);
+                console.log(`ripgrep(): summary <${total} / ${summary?.data.stats.matches ?? 0}>`);
                 return resolve({ total: total, items: results });
             });
         });

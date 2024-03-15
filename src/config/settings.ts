@@ -109,6 +109,15 @@ export default class FindSuiteSettings {
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key);
     }
 
+    public static get categoryFavorites(): string[] {
+        const key = 'category.favorites';
+        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string[]>(key)
+            ??
+            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string[]>(key)?.defaultValue
+            ??
+            [];
+    }
+
     public static get pathWin32Favorites(): string {
         const key = 'path.favorites.win32';
         return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)

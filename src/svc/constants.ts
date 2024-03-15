@@ -20,6 +20,8 @@ export namespace Constants {
 
     export const FAVORITE_BUTTON = 'Favorite';
 
+    export const OPEN_FAVORITE_DIR_BUTTON = 'Open Favorites Dir';
+
     export const OPEN_FAVORITE_BUTTON = 'Open Favorites';
 
     export const SHIELD_BUTTON = 'Pinned';
@@ -31,5 +33,7 @@ export namespace Constants {
     export const REFRESH_BUTTON = 'Refresh';
 
     export const WINDOW_BUTTON = 'Window';
+
+    export const FAVOR_WINDOW_BUTTON = 'Favorite Window';
 
 }

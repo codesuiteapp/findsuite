@@ -4,7 +4,7 @@ import path from "path";
 import { v4 as uuidv4 } from 'uuid';
 import { ExtensionContext } from 'vscode';
 import FindSuiteSettings from '../config/settings';
-import { FavoritesEntries, emptyFavorEntries } from '../model/favorites';
+import { FavoritesEntries } from '../model/favorites';
 import { notifyMessageWithTimeout } from '../utils/vsc';
 import { Constants } from './constants';
 
@@ -50,8 +50,25 @@ export class FavoriteManager {
         ];
     }
 
+    getCategories(): string[] {
+        return FindSuiteSettings.categoryFavorites;
+    }
+
+    getPrimary() {
+        let primary = this.favoriteEntries?.primary;
+        if (!primary) {
+            const fav = FindSuiteSettings.categoryFavorites;
+            if (fav && fav.length > 0) {
+                primary = fav[0];
+            } else {
+                primary = '';
+            }
+        }
+        return primary;
+    }
+
     clearAllFiles(): void {
-        this._favoriteEntries = emptyFavorEntries;
+        this._favoriteEntries = this.makeEmptyFavorEntries();
         this.saveToFile();
         notifyMessageWithTimeout(`All files cleared.`);
         console.log(`All files cleared.`);
@@ -79,8 +96,8 @@ export class FavoriteManager {
             id: uuidv4(),
             name: path.basename(fileName),
             path: fileName,
-            category: 'default',
-            protect: stats.isDirectory() ? false : true
+            category: stats.isDirectory() ? '' : this.getPrimary(),
+            protect: stats.isDirectory() ? true : false
         });
 
         console.log(`${fileName} added to favorites.`);
@@ -103,15 +120,16 @@ export class FavoriteManager {
 
         if (!fs.existsSync(fileName)) {
             console.log(`File <${fileName}> does not exist. Created.`);
+            this._favoriteEntries = this.makeEmptyFavorEntries();
             this.saveToFile();
-            return emptyFavorEntries;
+            return this._favoriteEntries;
         }
 
         const data = fs.readFileSync(fileName, 'utf8');
         if (data) {
             return JSON.parse(data) as FavoritesEntries;
         } else {
-            return emptyFavorEntries;
+            return this._favoriteEntries;
         }
     }
 
@@ -119,20 +137,30 @@ export class FavoriteManager {
         const files = this._favoriteEntries.files;
         const index = files.findIndex(it => it.id === fileId);
         if (index !== -1) {
+            let filename = '';
             if (isDelete) {
-                files.splice(index, 1);
+                const entries = files.splice(index, 1);
+                if (entries && entries.length > 0) {
+                    filename = entries[0].name;
+                }
             } else {
                 files[index].protect = !files[index].protect;
+                filename = files[index].name;
             }
-            notifyMessageWithTimeout(`File ${fileId} ${isDelete ? 'removed' : 'unprotected'} from favorites.`);
+            notifyMessageWithTimeout(`File ${filename} ${isDelete ? 'removed' : 'unprotected'} from favorites.`);
         } else {
             console.log(`<${fileId}> is not in the favoriteEntries.files.`);
             const index1 = this._favoriteEntries.directories.findIndex(it => it.id === fileId);
             if (index1 !== -1) {
+                let filename = '';
                 if (isDelete) {
-                    this._favoriteEntries.directories.splice(index1, 1);
+                    const entries = this._favoriteEntries.directories.splice(index1, 1);
+                    if (entries && entries.length > 0) {
+                        filename = entries[0].name;
+                    }
                 } else {
                     this._favoriteEntries.directories[index1].protect = !this._favoriteEntries.directories[index1].protect;
+                    filename = this._favoriteEntries.directories[index1].name;
                 }
                 notifyMessageWithTimeout(`Directory ${fileId} ${isDelete ? 'removed' : 'unprotected'} from favorites.`);
             }
@@ -142,6 +170,14 @@ export class FavoriteManager {
 
     public refresh() {
         this._favoriteEntries = this.loadFromFile(this._filePath);
+    }
+
+    private makeEmptyFavorEntries() {
+        return {
+            files: [],
+            directories: [],
+            primary: this.getPrimary()
+        };
     }
 
     private getPlatformPath() {

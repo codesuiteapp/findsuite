@@ -6,12 +6,12 @@ import path from "path";
 import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { fdButtons, wsButtons } from "../model/button";
+import { fdButtons, searchHeaderButtons, wsButtons } from "../model/button";
 import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
 import { copyClipboardFilePath, getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
-import { notifyMessageWithTimeout } from "../utils/vsc";
+import { executeFavoriteWindow, notifyMessageWithTimeout } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
 import { Constants } from "./constants";
 
@@ -27,7 +27,7 @@ export class FdFind {
 
     private _checked: boolean = false;
 
-    private favoriteFiles = vscExtension.favoriteManager;
+    private favoriteManager = vscExtension.favoriteManager;
 
     constructor(private context: vscode.ExtensionContext) {
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
@@ -181,6 +181,7 @@ export class FdFind {
         quickPick.placeholder = txt;
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
+        quickPick.buttons = searchHeaderButtons;
         quickPick.items = result.items;
 
         quickPick.onDidAccept(async () => {
@@ -195,6 +196,13 @@ export class FdFind {
             quickPick.dispose();
         });
 
+        quickPick.onDidTriggerButton(async (e) => {
+            // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
+            if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+                await executeFavoriteWindow();
+            }
+        });
+
         quickPick.onDidTriggerItemButton(async (e) => {
             if (e.button.tooltip === Constants.VIEW_BUTTON) {
                 await this.openChoiceFile(e.item);
@@ -203,7 +211,7 @@ export class FdFind {
             } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.detail!, true);
             } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
-                this.favoriteFiles.addItem(e.item.detail!);
+                this.favoriteManager.addItem(e.item.detail!);
             }
         });
 
@@ -236,6 +244,7 @@ export class FdFind {
         quickPick.placeholder = 'Select to Open workspace';
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
+        quickPick.buttons = searchHeaderButtons;
         quickPick.items = result.items;
 
         quickPick.onDidAccept(async () => {
@@ -246,6 +255,13 @@ export class FdFind {
 
             await openWorkspace(item.detail!, false);
             quickPick.dispose();
+        });
+
+        quickPick.onDidTriggerButton(async (e) => {
+            // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
+            if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+                await executeFavoriteWindow();
+            }
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {
@@ -291,7 +307,7 @@ export class FdFind {
                     const dirName = path.dirname(line);
                     if (dirName !== currentDir) {
                         if (currentDir !== undefined) {
-                            results.push({ label: '', kind: vscode.QuickPickItemKind.Separator });
+                            results.push({ label: `:: ${path.basename(dirName)} ::`, kind: vscode.QuickPickItemKind.Separator });
                         }
                         currentDir = dirName;
                     }

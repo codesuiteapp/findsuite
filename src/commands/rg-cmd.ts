@@ -8,7 +8,14 @@ import { vscExtension } from "../vsc-ns";
 export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
     context.subscriptions.push(
         commands.registerCommand('findsuite.rg', async () => {
-            await preferExecuteQuery(rg, rgInitQuery);
+            await rg.execute1(rgInitQuery);
+        })
+        , commands.registerCommand('findsuite.rgre', async () => {
+            await rg.execute1({
+                ...rgInitQuery,
+                title: 'Regex',
+                prompt: 'Usage: (Get|Post)'
+            }, undefined, true);
         })
         , commands.registerCommand('findsuite.rgDirectory', async () => {
             const rgQuery = {
@@ -18,7 +25,7 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
                 isMany: false
             };
 
-            await preferExecuteQuery(rg, rgQuery);
+            await rg.execute1(rgQuery);
         })
         , commands.registerCommand('findsuite.rgws', async () => {
             const rgQuery = {
@@ -28,7 +35,7 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
                 isMany: false
             };
 
-            await preferExecuteQuery(rg, rgQuery);
+            await rg.execute1(rgQuery);
         })
         , commands.registerCommand('findsuite.rgFile', async () => {
             await rg.interact({
@@ -46,13 +53,6 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
             };
 
             await rg.interact(rgQuery);
-        })
-        , commands.registerCommand('findsuite.rgre', async () => {
-            await rg.execute({
-                ...rgInitQuery,
-                title: 'Regex',
-                prompt: 'Usage: (Get|Post)'
-            }, undefined, true);
         })
         , commands.registerCommand('findsuite.rg1', async () => {
             const rgQuery: RgQuery = {

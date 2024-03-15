@@ -2,11 +2,12 @@ import { ExtensionContext, Uri, commands } from "vscode";
 import { fdInitQuery } from "../model/fd";
 import { showMultipleDiffs } from "../svc/diff";
 import { FdFind } from "../svc/fd";
+import { executeFdWindow } from "../utils/vsc";
 
 export function registerFd(context: ExtensionContext, fd: FdFind) {
     context.subscriptions.push(
-        commands.registerCommand('findsuite.fd', async () => {
-            await fd.execute1({ ...fdInitQuery, ...{ opt: '-t f' } });
+        commands.registerCommand('findsuite.fd', async (dirs) => {
+            await fd.execute1({ ...fdInitQuery, ...{ opt: '-t f', srchPath: dirs } });
         })
         , commands.registerCommand('findsuite.fdFile', async () => {
             await fd.execute1({ ...fdInitQuery, ...{ opt: '-t f', isMany: false } });
@@ -20,7 +21,8 @@ export function registerFd(context: ExtensionContext, fd: FdFind) {
         , commands.registerCommand('findsuite.fdFolder', async () => {
             const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Search Directory', opt: '-t d', fileType: 'dir', isMany: false } }, false);
             if (result) {
-                await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', srchPath: Array.isArray(result) ? result[0].detail! : result.detail } });
+                // await fd.execute({ ...fdInitQuery, ...{ opt: '-t f', srchPath: Array.isArray(result) ? result[0].detail! : result.detail } });
+                await executeFdWindow(Array.isArray(result) ? result[0].detail! : result.detail!);
             }
         })
         , commands.registerCommand('findsuite.fd#diff', async () => {

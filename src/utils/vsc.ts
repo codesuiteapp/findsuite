@@ -1,4 +1,3 @@
-import path from 'path';
 import * as vscode from 'vscode';
 import { Constants } from '../svc/constants';
 import { showInfoMessageWithTimeout } from '../ui/ui';
@@ -44,10 +43,6 @@ export function getExtensionSetting() {
 
 export function getUserSetting(section: string, resource?: vscode.Uri | null | undefined) {
     return vscode.workspace.getConfiguration(section, resource);
-}
-
-export function executeCommand(command: string, ...rest: any[]): Thenable<any> {
-    return vscode.commands.executeCommand(command, ...rest);
 }
 
 export function onWillSaveTextDocument(listener: (e: vscode.TextDocumentWillSaveEvent) => any, thisArgs?: any) {
@@ -130,16 +125,33 @@ export function showOpenDialog(options: vscode.OpenDialogOptions) {
     return vscode.window.showOpenDialog(options);
 }
 
-export function openFolder(uri?: vscode.Uri, newWindow?: boolean) {
-    return executeCommand('vscode.openFolder', uri, newWindow);
-}
-
-export function registerCommand(context: vscode.ExtensionContext, name: string,
-    callback: (...args: any[]) => any, thisArg?: any) {
+export function registerCommand(context: vscode.ExtensionContext, name: string, callback: (...args: any[]) => any, thisArg?: any) {
     const disposable = vscode.commands.registerCommand(name, callback, thisArg);
     context.subscriptions.push(disposable);
 }
 
 export function addWorkspaceFolder(...workspaceFoldersToAdd: { uri: vscode.Uri; name?: string }[]) {
     return vscode.workspace.updateWorkspaceFolders(0, 0, ...workspaceFoldersToAdd);
+}
+
+export function executeCommand(command: string, ...rest: any[]): Thenable<any> {
+    return vscode.commands.executeCommand(command, ...rest);
+}
+
+export function openFolder(uri?: vscode.Uri, newWindow?: boolean) {
+    return executeCommand('vscode.openFolder', uri, newWindow);
+}
+
+export async function executeDiffWindow(src: string, dst: string, cmd: string = 'vscode.diff') {
+    const uri1 = vscode.Uri.file(src);
+    const uri2 = vscode.Uri.file(dst);
+    await vscode.commands.executeCommand(cmd, uri1, uri2);
+}
+
+export async function executeFavoriteWindow() {
+    await vscode.commands.executeCommand('findsuite.favorites');
+}
+
+export async function executeFdWindow(filename?: string) {
+    await vscode.commands.executeCommand('findsuite.fd', filename);
 }

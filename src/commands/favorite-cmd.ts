@@ -1,18 +1,21 @@
 import path from "path";
 import { ExtensionContext, QuickPickItem, QuickPickItemKind, commands, window, workspace } from "vscode";
-import { favorButtons, favorHeaderButtons, favorUndelButtons } from "../model/button";
+import { favorButtons, favorDirButtons, favorHeaderButtons, favorShieldButtons, favorShieldDirButtons } from "../model/button";
 import { FavoriteEntry, FavoritesEntries, QuickPickFavorItem } from "../model/favorites";
 import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
 import { FavoriteManager } from '../svc/favorite-manager';
 import { openFile } from "../utils/editor";
-import { notifyMessageWithTimeout } from "../utils/vsc";
+import { executeFdWindow } from "../utils/vsc";
 
 export function registerFavor(context: ExtensionContext) {
     const favoriteManager = FavoriteManager.getInstance(context);
     context.subscriptions.push(
         commands.registerCommand('findsuite.favorites', async () => {
             openFavorites(favoriteManager, undefined);
+        })
+        , commands.registerCommand('findsuite.favoritesFileinDir', async () => {
+            openFavoritesDir(favoriteManager, "dir");
         })
         , commands.registerCommand('findsuite.favoritesFile', async () => {
             openFavorites(favoriteManager, "file");
@@ -32,11 +35,27 @@ export function registerFavor(context: ExtensionContext) {
     return favoriteManager;
 }
 
+async function openFavoritesDir(favoriteManager: FavoriteManager, fileType: string | undefined = undefined) {
+    const items = convertFileAsPickItem(favoriteManager.favoriteEntries, fileType);
+    const msg = fileType === 'file' ? 'File' : 'Dir';
+    const item = await window.showQuickPick(items, {
+        title: `Favorite ${msg}s`,
+        placeHolder: `Select ${msg}`,
+        matchOnDetail: true,
+        matchOnDescription: true
+    }).then(async (item) => {
+        if (item) {
+            await executeFdWindow(item.description!);
+        }
+    });
+}
+
 function openFavorites(favoriteManager: FavoriteManager, fileType: string | undefined = undefined) {
     const quickPick = window.createQuickPick<QuickPickFavorItem>();
-    quickPick.title = `Favorite Files`;
-    quickPick.placeholder = 'Select file';
-    quickPick.canSelectMany = fileType === 'file' ? false : true;
+    const msg = fileType === undefined ? 'Directory or File' : fileType === 'file' ? 'File' : 'Dir';
+    quickPick.title = `Favorite ${msg}s`;
+    quickPick.placeholder = `Select ${msg}`;
+    quickPick.canSelectMany = fileType === undefined || fileType === 'file' ? true : false;
     quickPick.matchOnDetail = true;
     quickPick.matchOnDescription = true;
     quickPick.buttons = favorHeaderButtons;
@@ -71,6 +90,9 @@ function openFavorites(favoriteManager: FavoriteManager, fileType: string | unde
         let reload = false;
         if (e.button.tooltip === Constants.VIEW_BUTTON) {
             await openChoiceFile(e.item);
+        } else if (e.button.tooltip === Constants.OPEN_FAVORITE_DIR_BUTTON) {
+            await executeFdWindow(e.item.description!);
+            quickPick.dispose();
         } else if (e.button.tooltip === Constants.SHIELD_BUTTON) {
             favoriteManager.update(e.item.id!);
             reload = true;
@@ -95,16 +117,17 @@ function convertFileAsPickItem(favorEntries: FavoritesEntries, fileType: string 
     let quickItems: QuickPickFavorItem[] = [];
     let total = 0;
     if (fileType === undefined || fileType === 'dir') {
+        quickItems.push({
+            label: ':: Directory ::',
+            kind: QuickPickItemKind.Separator
+        });
+
         const dirs = favorEntries.directories;
         dirs.forEach((entry, index) => {
             quickItems.push({
-                label: ':: Directory ::',
-                kind: QuickPickItemKind.Separator
-            });
-            quickItems.push({
-                label: `$(folder) ${entry.name}`,
+                label: `$(${entry.protect ? 'lock' : 'folder'}) ${entry.name} `,
                 description: entry.path,
-                buttons: entry.protect ? favorButtons : favorUndelButtons,
+                buttons: entry.protect ? favorShieldDirButtons : favorDirButtons,
                 id: entry.id
             });
             total++;
@@ -147,9 +170,9 @@ function convertFileAsPickItem(favorEntries: FavoritesEntries, fileType: string 
             });
             if (sortedEntries) {
                 quickItems = quickItems.concat(sortedEntries.map(entry => ({
-                    label: '$(file-code) ' + entry.name,
+                    label: `$(${entry.protect ? 'lock' : entry.category === favorEntries.primary ? 'tag' : 'file-code'}) ` + entry.name,
                     description: entry.path,
-                    buttons: entry.protect ? favorButtons : favorUndelButtons,
+                    buttons: entry.protect ? favorShieldButtons : favorButtons,
                     id: entry.id
                 })));
             }

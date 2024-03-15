@@ -9,6 +9,7 @@ export interface FavoriteEntry {
 }
 
 export interface FavoritesEntries {
+    primary: string;
     files: FavoriteEntry[];
     directories: FavoriteEntry[];
 }
@@ -16,8 +17,3 @@ export interface FavoritesEntries {
 export interface QuickPickFavorItem extends QuickPickItem {
     id?: string;
 }
-
-export const emptyFavorEntries = {
-    files: [],
-    directories: []
-};

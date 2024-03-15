@@ -11,6 +11,7 @@
   "rgWithEverything.title": "Ripgrep via Everything (Like everything | rg)",
   "rgWithEverythingFolder.title": "Ripgrep via Everything Folder (Like everything | rg)",
   "everything#codeWorkspace.title": "Open Workspace from code-ws",
+  "category.favorites.description": "Describe the category of the favorites",
   "path.favorites.win32.description": "Describe the location of the favorites file in Windows",
   "path.favorites.darwin.description": "Describe the location of the favorites file in MacOS",
   "path.favorites.linux.description": "Describe the location of the favorites file in Linux",

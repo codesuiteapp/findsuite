@@ -30,7 +30,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.2.3",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.49.0"
   },
@@ -47,6 +47,11 @@
       "type": "object",
       "title": "Find Suite",
       "properties": {
+        "findsuite.category.favorites": {
+          "type": "array",
+          "default": [],
+          "description": "%category.favorites.description%"
+        },
         "findsuite.path.favorites.win32": {
           "type": "string",
           "default": "",
@@ -437,6 +442,11 @@
         "category": "FindSuite"
       },
       {
+        "command": "findsuite.favoritesFileinDir",
+        "title": "Favorites files in Directory",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.clearFavorites",
         "title": "Clear Favorite Files",
         "category": "FindSuite"
@@ -591,14 +601,17 @@
       {
         "command": "findsuite.favorites",
         "key": "shift+f11",
-        "mac": "shift+f11",
-        "when": "editorTextFocus"
+        "mac": "shift+f11"
+      },
+      {
+        "command": "findsuite.favoritesFileinDir",
+        "key": "alt+shift+f11",
+        "mac": "cmd+shift+f11"
       },
       {
         "command": "findsuite.favoritesFile",
         "key": "alt+shift+p",
-        "mac": "cmd+ctrl+p",
-        "when": "editorTextFocus"
+        "mac": "cmd+ctrl+p"
       },
       {
         "command": "findsuite.fdFile",
@@ -639,6 +652,11 @@
         "command": "findsuite.rgWithFdDir",
         "key": "ctrl+shift+f7",
         "mac": "cmd+shift+f7"
+      },
+      {
+        "command": "findsuite.rgFavorites",
+        "key": "ctrl+alt+f11",
+        "mac": "cmd+ctrl+f11"
       },
       {
         "command": "findsuite.rgws",

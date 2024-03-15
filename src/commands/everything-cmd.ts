@@ -13,31 +13,37 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             if (!checkPlatform(isWin)) {
                 return;
             }
-            await everything.execute('files');
+            await everything.execute1('files');
+        })
+        , commands.registerCommand('findsuite.everything#path', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.execute1("path");
+        })
+        , commands.registerCommand('findsuite.everything#folder', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.execute1("folder");
+        })
+        , commands.registerCommand('findsuite.everything#workspace', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.execute1("workspace");
+        })
+        , commands.registerCommand('findsuite.everything#codeWorkspace', async () => {
+            if (!checkPlatform(isWin)) {
+                return;
+            }
+            await everything.executeCodeWorkspace();
         })
         , commands.registerCommand('findsuite.incrementalEverything', async () => {
             if (!checkPlatform(isWin)) {
                 return;
             }
             await everything.interact('files');
-        })
-        , commands.registerCommand('findsuite.everything#folder', async () => {
-            if (!checkPlatform(isWin)) {
-                return;
-            }
-            await everything.execute("folder");
-        })
-        , commands.registerCommand('findsuite.everything#workspace', async () => {
-            if (!checkPlatform(isWin)) {
-                return;
-            }
-            await everything.execute("workspace");
-        })
-        , commands.registerCommand('findsuite.everything#path', async () => {
-            if (!checkPlatform(isWin)) {
-                return;
-            }
-            await everything.execute("path");
         })
         , commands.registerCommand('findsuite.everything#folderFiles', async () => {
             if (!checkPlatform(isWin)) {
@@ -47,12 +53,6 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             if (result && !Array.isArray(result)) {
                 await everything.execute("path", true, result.detail + ' files:');
             }
-        })
-        , commands.registerCommand('findsuite.everything#codeWorkspace', async () => {
-            if (!checkPlatform(isWin)) {
-                return;
-            }
-            await everything.executeCodeWorkspace();
         })
         , commands.registerCommand('findsuite.everything#diff', async () => {
             if (!checkPlatform(isWin)) {
