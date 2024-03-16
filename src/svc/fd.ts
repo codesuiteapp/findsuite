@@ -11,7 +11,7 @@ import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
 import { copyClipboardFilePath, getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
-import { executeFavoriteWindow, notifyMessageWithTimeout } from "../utils/vsc";
+import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
 import { Constants } from "./constants";
 
@@ -207,7 +207,7 @@ export class FdFind {
         quickPick.onDidTriggerItemButton(async (e) => {
             if (e.button.tooltip === Constants.VIEW_BUTTON) {
                 await this.openChoiceFile(e.item);
-            } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+            } else if (e.button.tooltip === Constants.CLIP_COPY_BUTTON) {
                 copyClipboardFilePath(e.item.detail!);
             } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.detail!, true);
@@ -262,6 +262,8 @@ export class FdFind {
             // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
             if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
                 await executeFavoriteWindow();
+            } else if (e.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
+                await executeHistoryWindow();
             }
         });
 
@@ -291,13 +293,13 @@ export class FdFind {
                 if (stderr) {
                     logger.error(stderr);
                     notifyMessageWithTimeout(stderr);
-                    return resolve({ total: 0, items: [] });
+                    return resolve({ total: 0, matches: 0, items: [] });
                 }
                 const lines = Array.from(new Set(stdout.split(/\n/).filter((l) => l !== "")));
                 console.log(`fd:: results <${lines?.length ?? 0}>`);
 
                 if (!lines.length) {
-                    return resolve({ total: 0, items: [] });
+                    return resolve({ total: 0, matches: 0, items: [] });
                 }
 
                 let total = 0;
@@ -322,7 +324,7 @@ export class FdFind {
                     });
                     total++;
                 });
-                return resolve({ total: total, items: results });
+                return resolve({ total: total, matches: total, items: results });
             });
         });
     }

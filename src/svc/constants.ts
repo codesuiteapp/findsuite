@@ -10,13 +10,17 @@ export namespace Constants {
 
     export const FAVOR_MAX = 50;
 
+    export const HISTORY_MAX = 5;
+
     export const FAVORITE_DATA_FILE = 'favorites.json';
 
-    export const ADD_CLIP_BUTTON = 'Add to clipboard';
+    export const HISTORY_DATA_FILE = 'historys.json';
+
+    export const ADD_CLIP_BUTTON = 'Append to clipboard';
 
     export const CLOSE_BUTTON = 'Close';
 
-    export const COPY_BUTTON = 'Copy';
+    export const CLIP_COPY_BUTTON = 'Copy Clipboard';
 
     export const DIFF_BUTTON = 'Diff';
 
@@ -26,7 +30,7 @@ export namespace Constants {
 
     export const OPEN_FAVORITE_BUTTON = 'Open Favorites';
 
-    export const SHIELD_BUTTON = 'Pinned';
+    export const SHIELD_BUTTON = 'Shield';
 
     export const REMOVE_BUTTON = 'Remove';
 
@@ -36,6 +40,9 @@ export namespace Constants {
 
     export const WINDOW_BUTTON = 'Window';
 
+    export const RG_WINDOW_BUTTON = 'Ripgrep';
+
     export const FAVOR_WINDOW_BUTTON = 'Favorite Window';
 
+    export const HISTORY_WINDOW_BUTTON = 'History Window';
 }

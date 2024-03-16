@@ -1,8 +1,8 @@
-import { QuickInputButton, ThemeIcon } from "vscode";
+import { QuickInputButton, QuickInputButtons, ThemeIcon } from "vscode";
 import { Constants } from "../svc/constants";
 
 export const addClipBtn: QuickInputButton = {
-    iconPath: new ThemeIcon('add'),
+    iconPath: new ThemeIcon('replace'),
     tooltip: Constants.ADD_CLIP_BUTTON
 };
 
@@ -12,8 +12,8 @@ export const closeBtn: QuickInputButton = {
 };
 
 export const copyBtn: QuickInputButton = {
-    iconPath: new ThemeIcon('files'),
-    tooltip: Constants.COPY_BUTTON
+    iconPath: new ThemeIcon('clippy'),
+    tooltip: Constants.CLIP_COPY_BUTTON
 };
 
 export const diffBtn: QuickInputButton = {
@@ -61,13 +61,23 @@ export const refreshBtn: QuickInputButton = {
     tooltip: Constants.REFRESH_BUTTON
 };
 
+export const rgWindowBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('preview'),
+    tooltip: Constants.RG_WINDOW_BUTTON
+};
+
 export const favorWindowBtn: QuickInputButton = {
     iconPath: new ThemeIcon('multiple-windows'),
     tooltip: Constants.FAVOR_WINDOW_BUTTON
 };
 
+export const historyWindowBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('history'),
+    tooltip: Constants.HISTORY_WINDOW_BUTTON
+};
 
-export const searchButtons = [copyBtn, addClipBtn, viewBtn, heartBtn];
+
+export const searchButtons = [viewBtn, copyBtn, addClipBtn, heartBtn];
 
 export const fdButtons = [copyBtn, addClipBtn, viewBtn, heartBtn];
 
@@ -81,14 +91,20 @@ export const favorDirButtons = [openFavorDirBtn, removeBtn];
 
 export const favorShieldDirButtons = [openFavorDirBtn, shieldBtn];
 
-export const favorHeaderButtons = [diffBtn, openFavorBtn, refreshBtn];
+export const favorHeaderButtons = [rgWindowBtn, diffBtn, openFavorBtn, refreshBtn];
 
-export const rgHeaderButtons = [favorWindowBtn, addClipBtn, diffBtn, copyBtn];
+export const rgHeaderButtons = [historyWindowBtn, favorWindowBtn, addClipBtn, diffBtn, copyBtn];
 
-export const searchHeaderButtons = [favorWindowBtn];
+export const searchHeaderButtons = [historyWindowBtn, favorWindowBtn];
 
 export const fdHeaderButtons = [heartBtn];
 
 export const editorButtons = [viewBtn, copyBtn, addClipBtn, heartBtn, closeBtn];
 
-export const editorHeaderButtons = [diffBtn, favorWindowBtn];
+export const editorHeaderButtons = [closeBtn, diffBtn, favorWindowBtn];
+
+export const historyHeaderButtons = [rgWindowBtn, favorWindowBtn];
+
+export const hisDetailHeaderButtons = [QuickInputButtons.Back, favorWindowBtn];
+
+export const historyButtons = [removeBtn];

@@ -312,6 +312,10 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "findsuite.rgHistoryDetail",
+          "when": "false"
+        },
+        {
           "command": "findsuite.rgWithEverything",
           "when": "isWindows"
         },
@@ -517,6 +521,16 @@
         "category": "FindSuite"
       },
       {
+        "command": "findsuite.rgHistory",
+        "title": "Ripgrep in History List",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.rgHistoryDetail",
+        "title": "Ripgrep in History Detail",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.rg",
         "title": "Ripgrep",
         "category": "FindSuite"
@@ -667,6 +681,11 @@
         "command": "findsuite.rgFavorites",
         "key": "ctrl+alt+f11",
         "mac": "cmd+ctrl+f11"
+      },
+      {
+        "command": "findsuite.rgHistory",
+        "key": "ctrl+alt+y",
+        "mac": "cmd+ctrl+y"
       },
       {
         "command": "findsuite.rgws",

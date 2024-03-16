@@ -8,7 +8,7 @@ import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
 import { copyClipboardWithFile, getSelectionText, openWorkspace } from '../utils/editor';
 import logger from '../utils/logger';
-import { executeFavoriteWindow, notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
+import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
 import { vscExtension } from '../vsc-ns';
 import { Constants } from './constants';
 
@@ -424,13 +424,15 @@ export class Everything {
       // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
       if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
         await executeFavoriteWindow();
+      } else if (e.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
+        await executeHistoryWindow();
       }
     });
 
     quickPick.onDidTriggerItemButton(async (e) => {
       if (e.button.tooltip === Constants.VIEW_BUTTON) {
         await this.openFile(e.item);
-      } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+      } else if (e.button.tooltip === Constants.CLIP_COPY_BUTTON) {
         copyClipboardWithFile(e.item);
       } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
         copyClipboardWithFile(e.item, true);
@@ -513,7 +515,7 @@ export class Everything {
     quickPick.onDidTriggerItemButton(async (e) => {
       if (e.button.tooltip === Constants.VIEW_BUTTON) {
         await this.openFile(e.item);
-      } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+      } else if (e.button.tooltip === Constants.CLIP_COPY_BUTTON) {
         copyClipboardWithFile(e.item);
       } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
         copyClipboardWithFile(e.item, true);

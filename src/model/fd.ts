@@ -16,5 +16,6 @@ export const fdInitQuery: FdQuery = {
 
 export interface QuickPickItemResults<T> {
     total: number;
+    matches: number;
     items: T[];
 }

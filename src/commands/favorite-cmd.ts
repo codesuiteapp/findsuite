@@ -5,8 +5,8 @@ import { FavoriteEntry, FavoritesEntries, QuickPickFavorItem } from "../model/fa
 import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
 import { FavoriteManager } from '../svc/favorite-manager';
-import { openFile } from "../utils/editor";
-import { executeFdWindow } from "../utils/vsc";
+import { getIconByExt, openFile } from "../utils/editor";
+import { executeFdWindow, executeRgWindow } from "../utils/vsc";
 
 export function registerFavor(context: ExtensionContext) {
     const favoriteManager = FavoriteManager.getInstance(context);
@@ -83,6 +83,8 @@ function openFavorites(favoriteManager: FavoriteManager, fileType: string | unde
         } else if (e.tooltip === Constants.REFRESH_BUTTON) {
             favoriteManager.refresh();
             quickPick.items = convertFileAsPickItem(favoriteManager.favoriteEntries, fileType);
+        } else if (e.tooltip === Constants.RG_WINDOW_BUTTON) {
+            await executeRgWindow();
         }
     });
 
@@ -170,7 +172,7 @@ function convertFileAsPickItem(favorEntries: FavoritesEntries, fileType: string 
             });
             if (sortedEntries) {
                 quickItems = quickItems.concat(sortedEntries.map(entry => ({
-                    label: `$(${entry.protect ? 'lock' : entry.category === favorEntries.primary ? 'tag' : 'file-code'}) ` + entry.name,
+                    label: `${entry.protect ? '$(lock)' : entry.category === favorEntries.primary ? '$(tag)' : ''} ${getIconByExt(path.extname(entry.path))} ` + entry.name,
                     description: entry.path,
                     buttons: entry.protect ? favorShieldButtons : favorButtons,
                     id: entry.id

@@ -26,6 +26,7 @@ export function activate(context: ExtensionContext) {
     everything = new Everything();
     registerEverything(context, everything, rg);
   }
+  // vscExtension.historyManager = HistoryManager.getInstance(context);
 
   context.subscriptions.push(
     commands.registerCommand('findsuite.rgWithFd', async () => {

@@ -148,10 +148,22 @@ export async function executeDiffWindow(src: string, dst: string, cmd: string = 
     await vscode.commands.executeCommand(cmd, uri1, uri2);
 }
 
-export async function executeFavoriteWindow() {
-    await vscode.commands.executeCommand('findsuite.favorites');
+export async function executeFavoriteWindow(...rest: any[]) {
+    await executeCommand('findsuite.favorites', ...rest);
+}
+
+export async function executeHistoryWindow(...rest: any[]) {
+    await executeCommand('findsuite.rgHistory', ...rest);
+}
+
+export async function executeRgWindow(...rest: any[]) {
+    await executeCommand('findsuite.rgws', ...rest);
+}
+
+export async function executeHistoryDetailWindow(...rest: any[]) {
+    await executeCommand('findsuite.rgHistoryDetail', ...rest);
 }
 
 export async function executeFdWindow(filename?: string) {
-    await vscode.commands.executeCommand('findsuite.fd', filename);
+    await executeCommand('findsuite.fd', filename);
 }

@@ -45,12 +45,17 @@ export interface RipgrepMatchData {
 
 }
 
+export interface QuickPickItemData<T> extends QuickPickItem {
+    id: string;
+    model: T;
+}
+
 export interface QuickPickItemRgData extends QuickPickItem {
     line_number: number;
     start: number;
     end: number;
-    option: string;
-    replaceQuery: boolean;
+    // option: string;
+    // replaceQuery: boolean;
 }
 
 export interface RgSummaryData {

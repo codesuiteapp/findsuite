@@ -3,15 +3,16 @@ import * as fs from 'fs';
 import { arch, platform } from "node:process";
 import path from "path";
 import { quote } from "shell-quote";
+import { v4 as uuidv4 } from 'uuid';
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { rgHeaderButtons, searchButtons, searchHeaderButtons } from "../model/button";
 import { QuickPickItemResults } from "../model/fd";
 import { QuickPickItemRgData, RgQuery, RgSummaryData, rgInitQuery } from "../model/ripgrep";
 import { notifyWithProgress, showInfoMessageWithTimeout } from "../ui/ui";
-import { copyClipboardFilePath, copyClipboardFiles, copyClipboardWithFile, getSelectionText } from "../utils/editor";
+import { copyClipboardFilePath, copyClipboardFiles, getSelectionText, openRevealFile } from "../utils/editor";
 import logger from "../utils/logger";
-import { executeFavoriteWindow, notifyMessageWithTimeout } from "../utils/vsc";
+import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
 import { Constants } from "./constants";
 import { showMultipleDiffs2 } from "./diff";
@@ -20,17 +21,8 @@ const MAX_BUF_SIZE = 200000 * 1024;
 
 const emptyRgData: QuickPickItemResults<QuickPickItemRgData> = {
     total: 0,
+    matches: 0,
     items: []
-};
-
-const sepRgData = {
-    label: '',
-    kind: vscode.QuickPickItemKind.Separator,
-    start: 0,
-    end: 0,
-    line_number: 0,
-    option: '',
-    replaceQuery: false
 };
 
 export class RipgrepSearch {
@@ -93,7 +85,7 @@ export class RipgrepSearch {
                 const result = await this.fetchGrepItems(this.rgProgram, quickPick.value, rgQuery);
                 quickPick.items = result.items;
                 // quickPick.items = await this.fetchGrepItems([this.rgPath, item.option, quote([...item.label.split(/\s/)]), rgQuery.srchPath].join(' '), '', path);
-                quickPick.title = `RipGrep: ${rgQuery.title} <${quickPick.value}> :: Results <${result.total}>`;
+                quickPick.title = `RipGrep: ${rgQuery.title} <${quickPick.value}> :: Files <${result.total}>`;
             } catch (error: any) {
                 console.log(`fetchGrepItems() - Error: ${error.message}`);
                 logger.error(`fetchGrepItems() - Error: ${error.message}`);
@@ -122,19 +114,21 @@ export class RipgrepSearch {
             const items = quickPick.selectedItems as unknown as vscode.QuickPickItem[];
             if (e.tooltip === Constants.DIFF_BUTTON) {
                 await showMultipleDiffs2(items, 'file');
-            } else if (e.tooltip === Constants.COPY_BUTTON) {
+            } else if (e.tooltip === Constants.CLIP_COPY_BUTTON) {
                 copyClipboardFiles(items);
             } else if (e.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFiles(items, true);
             } else if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
                 await executeFavoriteWindow();
+            } else if (e.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
+                await executeHistoryWindow();
             }
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {
             if (e.button.tooltip === Constants.VIEW_BUTTON) {
                 await this.openChoiceFile(e.item);
-            } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+            } else if (e.button.tooltip === Constants.CLIP_COPY_BUTTON) {
                 copyClipboardFilePath(e.item.description!);
             } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.description!, true);
@@ -164,7 +158,7 @@ export class RipgrepSearch {
             txt = await vscode.window.showInputBox({
                 title: `RipGrep: Text to search`,
                 placeHolder: 'Please enter filename to search',
-                prompt: rgQuery.prompt
+                prompt: rgQuery.prompt,
             }).then(res => {
                 return res ?? '';
             });
@@ -182,9 +176,31 @@ export class RipgrepSearch {
             return;
         }
 
+        const historyMap = vscExtension._historyMap;
+        const historyMayArray = historyMap.values();
+        const existEntry = Array.from(historyMayArray).find(entry => entry.query === txt);
+        if (existEntry) {
+            console.log(`exist:: id <${existEntry.id}>`);
+            historyMap.delete(existEntry.id);
+        }
+
+        if (historyMap.size >= Constants.HISTORY_MAX) {
+            const historyEntries = Array.from(historyMayArray).sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+            const entry = historyEntries.shift();
+            entry && historyMap.delete(entry?.id);
+        }
+
+        const id = uuidv4();
+        historyMap.set(id, {
+            id,
+            query: txt,
+            timestamp: new Date(),
+            total: result.total,
+            fileEntries: result.items,
+        });
+
         const quickPick = vscode.window.createQuickPick<QuickPickItemRgData>();
-        quickPick.title = `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`;
-        quickPick.placeholder = query;
+        quickPick.title = `RipGrep: Text <${rgQuery.title}> :: Files <${result.total}> Matches <${result.matches}>`;
         quickPick.canSelectMany = rgQuery.isMany;
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
@@ -210,13 +226,15 @@ export class RipgrepSearch {
             // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
             if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
                 await executeFavoriteWindow();
+            } else if (e.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
+                await executeHistoryWindow();
             }
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {
             if (e.button.tooltip === Constants.VIEW_BUTTON) {
                 await this.openChoiceFile(e.item);
-            } else if (e.button.tooltip === Constants.COPY_BUTTON) {
+            } else if (e.button.tooltip === Constants.CLIP_COPY_BUTTON) {
                 copyClipboardFilePath(e.item.description!);
             } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
                 copyClipboardFilePath(e.item.description!, true);
@@ -297,6 +315,80 @@ export class RipgrepSearch {
         }
     }
 
+    public async executeWs(rgQuery: RgQuery, query: string | undefined = undefined, isRegex: boolean = false) {
+        try {
+            this.checkingProgram();
+        } catch (error: any) {
+            notifyMessageWithTimeout(error.message);
+            return;
+        }
+
+        const quickPick = vscode.window.createQuickPick<QuickPickItemRgData>();
+        quickPick.title = `RipGrep: Text`;
+        quickPick.placeholder = query ?? getSelectionText(true);
+        quickPick.value = query ?? getSelectionText(true);
+        quickPick.canSelectMany = rgQuery.isMany;
+        quickPick.ignoreFocusOut = true;
+        quickPick.matchOnDetail = true;
+        quickPick.matchOnDescription = true;
+        quickPick.buttons = searchHeaderButtons;
+        // quickPick.items = convertQuickPickItem(vscExtension.historyManager.historyMap);
+
+        quickPick.onDidChangeValue(async (item) => {
+            if (!item || item === "") {
+                return;
+            }
+
+            const result = await notifyWithProgress(`Searching <${item}>`, async () => {
+                return await this.fetchGrepItems(this.rgProgram, item, rgQuery, isRegex);
+            });
+            if (result !== undefined) {
+                quickPick.items = result.items;
+                quickPick.title = `Ripgrep: <${item}> :: Results <${result.total}>`;
+            }
+        });
+
+        quickPick.onDidChangeActive(async (item) => {
+            console.log(`item <${item}>`);
+        });
+
+        quickPick.onDidAccept(async () => {
+            const items = quickPick.selectedItems as QuickPickItemRgData[];
+            if (!items || items.length === 0) {
+                return;
+            }
+
+            if (vscode.window.activeTextEditor) {
+                this.clearDecoration(vscode.window.activeTextEditor);
+            }
+            items.forEach(async (item) => {
+                await this.openChoiceFile(item);
+            });
+            quickPick.dispose();
+        });
+
+        quickPick.onDidTriggerButton(async (e) => {
+            // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
+            if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+                await executeFavoriteWindow();
+            }
+        });
+
+        quickPick.onDidTriggerItemButton(async (e) => {
+            if (e.button.tooltip === Constants.VIEW_BUTTON) {
+                await this.openChoiceFile(e.item);
+            } else if (e.button.tooltip === Constants.CLIP_COPY_BUTTON) {
+                copyClipboardFilePath(e.item.description!);
+            } else if (e.button.tooltip === Constants.ADD_CLIP_BUTTON) {
+                copyClipboardFilePath(e.item.description!, true);
+            } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
+                vscExtension.favoriteManager.addItem(e.item.description!);
+            }
+        });
+
+        quickPick.show();
+    }
+
     private async executeRegex(rgQuery: RgQuery, query: string | undefined = undefined) {
         if (!query) {
             this.notifyEmptyQuery('Ripgrep: Query is empty');
@@ -312,7 +404,7 @@ export class RipgrepSearch {
 
         if (rgQuery.isMany) {
             const items = await vscode.window.showQuickPick(result.items, {
-                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
+                title: `RipGrep: Text <${rgQuery.title}> :: Files <${result.total}>`,
                 placeHolder: query,
                 canPickMany: true,
                 matchOnDetail: true,
@@ -326,7 +418,7 @@ export class RipgrepSearch {
             }
         } else {
             await vscode.window.showQuickPick<QuickPickItemRgData>(result.items, {
-                title: `RipGrep: Text <${rgQuery.title}> :: Results <${result.total}>`,
+                title: `RipGrep: Text <${rgQuery.title}> :: Files <${result.total}>`,
                 placeHolder: query,
                 ignoreFocusOut: true,
                 matchOnDetail: true,
@@ -397,14 +489,15 @@ export class RipgrepSearch {
                     return resolve(emptyRgData);
                 }
                 const lines: string[] = stdout.split(/\n/).filter((l) => l !== "");
-                console.log(`ripgrep(): results <${lines?.length}>`);
-                logger.debug(`ripgrep(): results <${lines?.length}>`);
+                console.log(`ripgrep(): lines <${lines?.length}>`);
+                logger.debug(`ripgrep(): lines <${lines?.length}>`);
 
                 if (!lines.length) {
                     return resolve(emptyRgData);
                 }
 
                 let total = 0;
+                let matches = 0;
                 const results = lines.map((line) => {
                     return JSON.parse(line);
                 }).filter((json) => {
@@ -417,6 +510,7 @@ export class RipgrepSearch {
                 }).map((json) => {
                     const data = json.data;
                     if (json.type === 'match') {
+                        matches++;
                         return {
                             label: `$(file) ${path.basename(data.path.text)}:${data.line_number}:${data.submatches[0].start}`,
                             description: FindSuiteSettings.isWindows ? data.path.text.replace(/\\\\/g, '\\') : data.path.text.replace(/\\/g, '/'),
@@ -425,8 +519,6 @@ export class RipgrepSearch {
                             start: data.submatches[0].start,
                             end: data.submatches[0].end,
                             line_number: Number(data.line_number ?? 1),
-                            option: rgQuery.opt,
-                            replaceQuery: rgQuery.replaceQuery
                         };
                     } else {
                         return {
@@ -435,8 +527,6 @@ export class RipgrepSearch {
                             start: 0,
                             end: 0,
                             line_number: 0,
-                            option: '',
-                            replaceQuery: false
                         };
                     }
                 });
@@ -446,8 +536,8 @@ export class RipgrepSearch {
                     summary = JSON.parse(lines[lines.length - 1]) as RgSummaryData;
                 }
 
-                console.log(`ripgrep(): summary <${total} / ${summary?.data.stats.matches ?? 0}>`);
-                return resolve({ total: total, items: results });
+                console.log(`ripgrep(): summary <${total} / ${summary?.data.stats.matches ?? 0} / ${matches}>`);
+                return resolve({ total: total, matches: matches, items: results });
             });
         });
     }
@@ -459,24 +549,19 @@ export class RipgrepSearch {
     }
 
     private async openChoiceFile(item: QuickPickItemRgData, options?: vscode.TextDocumentShowOptions) {
-        const doc = await vscode.workspace.openTextDocument(item.description!);
-        const editor = await vscode.window.showTextDocument(doc, options);
-        this.clearDecoration(editor);
-
-        if (!vscode.window.activeTextEditor) {
+        const editor = await openRevealFile(item, options);
+        if (!editor) {
             vscode.window.showErrorMessage("No active editor");
             return;
         }
-
-        const line = item.line_number - 1;
-        const selection = new vscode.Selection(~~line, item.start, ~~line, item.start);
-        editor.selection = selection;
-        editor.revealRange(selection, vscode.TextEditorRevealType.InCenter);
+        this.clearDecoration(editor);
 
         if (options) {
             this.currentDecoration = vscode.window.createTextEditorDecorationType({
                 backgroundColor: this._bgColor
             });
+
+            const line = item.line_number - 1;
             const range = new vscode.Range(line, item.start, line, item.end);
             editor.setDecorations(this.currentDecoration, [range]);
         }
@@ -579,3 +664,13 @@ export class RipgrepSearch {
     }
 
 }
+
+// function convertQuickPickItem(_historyMap: Map<string, HistoryEntry<HistoryFileEntry[]>>): readonly QuickPickItemRgData[] {
+//     const items: QuickPickItemRgData[] = [];
+//     for (const [k, v] of _historyMap.entries()) {
+//         items.push(...{
+//             ...v.fileEntries
+//         });
+//     }
+//     return items;
+// }

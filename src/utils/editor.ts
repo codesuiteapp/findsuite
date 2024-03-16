@@ -49,6 +49,22 @@ export async function openEditorWithNew(languageId: string = 'xml') {
     return vscode.window.activeTextEditor;
 }
 
+export async function openRevealFile(item: QuickPickItemRgData, options?: vscode.TextDocumentShowOptions) {
+    const doc = await vscode.workspace.openTextDocument(item.description!);
+    const editor = await vscode.window.showTextDocument(doc, options);
+
+    if (!vscode.window.activeTextEditor) {
+        vscode.window.showErrorMessage("No active editor");
+        return;
+    }
+
+    const line = item.line_number - 1;
+    const selection = new vscode.Selection(~~line, item.start, ~~line, item.start);
+    editor.selection = selection;
+    editor.revealRange(selection, vscode.TextEditorRevealType.InCenter);
+    return editor;
+}
+
 export async function openFile(filepath: string, makeFile: boolean = false) {
     if (!fs.existsSync(filepath) && makeFile) {
         fs.writeFileSync(filepath, '', 'utf8');
@@ -116,4 +132,26 @@ export function copyClipboardWithFile(file: any, append: boolean = false) {
 export async function openWorkspace(file: string, isNew: boolean = true) {
     let uri = vscode.Uri.file(file);
     await vscode.commands.executeCommand('vscode.openFolder', uri, isNew);
+}
+
+export function getIconByExt(extension: string) {
+    let icon = '$(file-code)';
+    if (extension === '.java' || extension === '.jsp' || extension === '.kt') {
+        icon = '$(coffee)';
+    } else if (extension === '.dart' || extension === '.c' || extension === '.h' || extension === '.cpp' || extension === '.js' || extension === '.jsx' || extension === '.ts' || extension === '.tsx' || extension === '.groovy' || extension === '.go' || extension === '.py' || extension === '.html' || extension === '.htm' || extension === '.xml' || extension === '.rs') {
+        icon = '$(code)';
+    } else if (extension === '.sh' || extension === '.ksh' || extension === '.bash' || extension === '.jkssh' || extension === '.jsh' || extension === '.cmd' || extension === '.ps1' || extension === '.bat') {
+        icon = '$(console)';
+    } else if (extension === '.sql' || extension === '.csv' || extension === '.ini') {
+        icon = '$(database)';
+    } else if (extension === '.txt') {
+        icon = '$(file-txt)';
+    } else if (extension === '.json' || extension === '.yml' || extension === '.yaml') {
+        icon = '$(json)';
+    } else if (extension === '.properties' || extension === '.cfg') {
+        icon = '$(gear)';
+    } else if (extension === '.git' || extension === '.gitignore' || extension === '.vscodeignore') {
+        icon = '$(exclude)';
+    }
+    return icon;
 }
