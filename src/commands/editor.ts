@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import path from "path";
-import { ExtensionContext, QuickPickItem, QuickPickItemKind, commands, window, workspace } from "vscode";
+import { ExtensionContext, QuickPickItem, QuickPickItemKind, TextDocument, commands, window, workspace } from "vscode";
 import { editorButtons, editorHeaderButtons } from "../model/button";
 import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
@@ -23,13 +23,16 @@ export function getOpenEditors(): QuickPickItem[] {
 
     const activeEditor = window.activeTextEditor;
     const current = activeEditor?.document.uri.fsPath;
-    const editors = workspace.textDocuments;
+    const editors = workspace.textDocuments.filter(doc => !doc.isClosed);
+    console.log(`editors <${editors?.length}>`);
+
     editors.forEach(d => {
         const fspath = d.uri.fsPath;
-        if (!fs.existsSync(fspath) || fspath.startsWith('\\settings') || fspath.startsWith('\\')) {
-            console.log(`filename <${fspath}>`);
+        if (!fs.existsSync(fspath) || fspath.startsWith('\\settings') || fspath.startsWith('\\') || d.isClosed) {
+            console.log(`filename <${fspath}> closed <${d.isClosed}>`);
             return;
         }
+        console.log(`fspath <${fspath}> closed <${d.isClosed}>`);
 
         const extension = path.extname(fspath);
         const label = `${current === fspath ? '$(sync~spin)' : ''} ${getIconByExt(extension)} ${path.basename(fspath)}`;
@@ -62,8 +65,7 @@ function openFavorites() {
     quickPick.buttons = editorHeaderButtons;
     quickPick.ignoreFocusOut = true;
     quickPick.items = getOpenEditors();
-    //quickPick.title = `Editor List ${quickPick.items?.length > 0 ? ':: <' + quickPick.items.length + '>' : ''}`;
-    quickPick.title = `Editor List`;
+    quickPick.title = `Editor List ${quickPick.items?.length > 0 ? ':: <' + quickPick.items.filter(it => it.kind !== QuickPickItemKind.Separator).length + '>' : ''}`;
 
     quickPick.onDidAccept(async () => {
         const items = quickPick.selectedItems as QuickPickItem[];
@@ -71,6 +73,7 @@ function openFavorites() {
             return;
         }
 
+        console.log(`items <${items?.length}>`);
         if (items[0].description) {
             await switchEditor(items[0].description);
         }
@@ -91,11 +94,13 @@ function openFavorites() {
             await executeHistoryWindow();
         } else if (e.tooltip === Constants.CLOSE_BUTTON) {
             items.forEach(async (item) => {
-                const document = await workspace.openTextDocument(item.description!);
-                await window.showTextDocument(document);
-                await commands.executeCommand('workbench.action.closeActiveEditor');
+                workspace.textDocuments.filter(d => !d.isClosed && d.fileName === item.description!).forEach(d => {
+                    window.showTextDocument(d).then(async (e) => {
+                        return await commands.executeCommand('workbench.action.closeActiveEditor');
+                    });
+                });
             });
-            quickPick.items = getOpenEditors();
+            quickPick.dispose();
         }
     });
 
@@ -109,11 +114,10 @@ function openFavorites() {
         } else if (e.button.tooltip === Constants.FAVORITE_BUTTON) {
             vscExtension.favoriteManager.addItem(e.item.description!);
         } else if (e.button.tooltip === Constants.CLOSE_BUTTON) {
-            const document = await workspace.openTextDocument(e.item.description!);
-            await window.showTextDocument(document);
-            await commands.executeCommand('workbench.action.closeActiveEditor');
+            const document = workspace.textDocuments.filter(d => !d.isClosed).find(doc => doc.fileName === e.item.description!);
+            await closeDocument(document);
+            quickPick.items = getOpenEditors();
         }
-        quickPick.items = getOpenEditors();
     });
 
     quickPick.show();
@@ -122,4 +126,16 @@ function openFavorites() {
 async function switchEditor(filename: string) {
     const document = await workspace.openTextDocument(filename);
     await window.showTextDocument(document);
+}
+
+async function closeDocument(document: TextDocument | undefined) {
+    if (document) {
+        try {
+            window.showTextDocument(document, { preserveFocus: true }).then(async (e) => {
+                await commands.executeCommand('workbench.action.closeActiveEditor');
+            });
+        } catch (error: any) {
+            console.error(`error: ${error.message}`);
+        }
+    }
 }
