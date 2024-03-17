@@ -1,8 +1,9 @@
 # Change Log
 
-### [0.3.0] - 2024-03-15
+### [0.3.0] - 2024-03-17
 
 - A few bug fixes
+- Add Function: Favorite List, History List, Context Menu
 
 ### [0.2.3] - 2024-03-13
 
