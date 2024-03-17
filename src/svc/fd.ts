@@ -9,7 +9,7 @@ import FindSuiteSettings from "../config/settings";
 import { fdButtons, searchHeaderButtons, wsButtons } from "../model/button";
 import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
-import { copyClipboardFilePath, getSelectionText, openWorkspace } from "../utils/editor";
+import { copyClipboardFilePath, getIconByExt, getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
 import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
@@ -198,7 +198,6 @@ export class FdFind {
         });
 
         quickPick.onDidTriggerButton(async (e) => {
-            // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
             if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
                 await executeFavoriteWindow();
             }
@@ -228,11 +227,10 @@ export class FdFind {
         }
 
         let cmd = `${this.fdProgram} -a -g "**/*.code-workspace" -t f ${this.fdDefOption} --full-path ${this.getPlatformPath()}`;
-        const mesg = '<Code-Workspace>';
-
         const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
         console.log(`cmd <${cmdOpt}>`);
 
+        const mesg = '<Code-Workspace>';
         const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
             return await this.fdItems(cmdOpt, 'code-workspace', wsButtons);
         });
@@ -310,14 +308,14 @@ export class FdFind {
                     const dirName = path.dirname(line);
                     if (dirName !== currentDir) {
                         if (currentDir !== undefined) {
-                            results.push({ label: `:: ${path.basename(dirName)} ::`, kind: vscode.QuickPickItemKind.Separator });
+                            results.push({ label: `:: ${dirName} ::`, kind: vscode.QuickPickItemKind.Separator });
                         }
                         currentDir = dirName;
                     }
                     const desc = path.basename(line);
 
                     results.push({
-                        label: fileType === 'code-workspace' ? label + ' ' + desc.split('.').shift() : label,
+                        label: fileType === 'code-workspace' ? label + ' ' + desc.split('.').shift() : getIconByExt(path.extname(desc)),
                         description: desc,
                         detail: line,
                         buttons: buttons

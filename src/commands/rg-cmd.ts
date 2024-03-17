@@ -90,15 +90,6 @@ export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
     );
 }
 
-// async function preferExecuteQuery(rg: RipgrepSearch, rgQuery: { title: string; srchPath: string | undefined; isMany: boolean; opt: string; replaceQuery: boolean; prompt: string }) {
-//     const prefer = FindSuiteSettings.rgInputPreferType;
-//     if (prefer === 'Input') {
-//         await rg.execute1(rgQuery);
-//     } else {
-//         await rg.interact(rgQuery);
-//     }
-// }
-
 function openHistoryDetailWindow(model: HistoryFileEntry[], total: string) {
     const quickPick = window.createQuickPick<QuickPickItemRgData>();
     quickPick.matchOnDetail = true;
@@ -122,13 +113,6 @@ function openHistoryDetailWindow(model: HistoryFileEntry[], total: string) {
         if (button === QuickInputButtons.Back) {
             quickPick.dispose();
             await executeHistoryWindow();
-            // const items = quickPick.selectedItems as unknown as HistoryFileEntry[];
-            // if (e.tooltip === Constants.DIFF_BUTTON) {
-            //     await showMultipleDiffs2(items, 'file');
-            // } else if (e.tooltip === Constants.COPY_BUTTON) {
-            //     copyClipboardFiles(items);
-            // } else if (e.tooltip === Constants.ADD_CLIP_BUTTON) {
-            //     copyClipboardFiles(items, true);
         } else if (button.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
             await executeFavoriteWindow();
         }

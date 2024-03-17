@@ -10,7 +10,7 @@ export namespace Constants {
 
     export const FAVOR_MAX = 50;
 
-    export const HISTORY_MAX = 5;
+    export const HISTORY_MAX = 15;
 
     export const FAVORITE_DATA_FILE = 'favorites.json';
 

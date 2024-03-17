@@ -243,15 +243,6 @@
           ],
           "description": "%rg.excludePatterns.description%"
         },
-        "findsuite.rg.input.preferType": {
-          "type": "string",
-          "enum": [
-            "Input",
-            "Incremental"
-          ],
-          "default": "Input",
-          "description": "%rg.input.preferType.description%"
-        },
         "findsuite.rg.internal.enabled": {
           "type": "boolean",
           "default": true,
@@ -363,11 +354,6 @@
         }
       ],
       "findsuite.submenu": [
-        {
-          "command": "findsuite.editors",
-          "title": "%editors.title%",
-          "group": "editors@10"
-        },
         {
           "command": "findsuite.favorites",
           "title": "%favorites.title%",

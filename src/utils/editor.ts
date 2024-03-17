@@ -135,7 +135,7 @@ export async function openWorkspace(file: string, isNew: boolean = true) {
 }
 
 export function getIconByExt(extension: string) {
-    let icon = '$(file-code)';
+    let icon = '$(file)';
     if (extension === '.java' || extension === '.jsp' || extension === '.kt') {
         icon = '$(coffee)';
     } else if (extension === '.dart' || extension === '.c' || extension === '.h' || extension === '.cpp' || extension === '.js' || extension === '.jsx' || extension === '.ts' || extension === '.tsx' || extension === '.groovy' || extension === '.go' || extension === '.py' || extension === '.html' || extension === '.htm' || extension === '.xml' || extension === '.rs') {
@@ -144,14 +144,20 @@ export function getIconByExt(extension: string) {
         icon = '$(console)';
     } else if (extension === '.sql' || extension === '.csv' || extension === '.ini') {
         icon = '$(database)';
-    } else if (extension === '.txt') {
-        icon = '$(file-txt)';
     } else if (extension === '.json' || extension === '.yml' || extension === '.yaml') {
         icon = '$(json)';
     } else if (extension === '.properties' || extension === '.cfg') {
         icon = '$(gear)';
-    } else if (extension === '.git' || extension === '.gitignore' || extension === '.vscodeignore') {
+    } else if (extension === '.git' || extension === '.gitignore' || extension === '.gitkeep' || extension === '.vscodeignore') {
         icon = '$(exclude)';
+    } else if (extension === '.jar' || extension === '.war' || extension === '.ear') {
+        icon = '$(file-binary)';
+    } else if (extension === '.pdf') {
+        icon = '$(file-pdf)';
+    } else if (extension === '.md') {
+        icon = '$(file-code)';
+    } else if (extension === '.txt' || extension === '.text') {
+        icon = '$(file-txt)';
     }
     return icon;
 }
