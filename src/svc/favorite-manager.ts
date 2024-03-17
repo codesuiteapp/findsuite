@@ -29,10 +29,10 @@ export class FavoriteManager {
     constructor(protected context: ExtensionContext) {
         let localPath = this.getPlatformPath();
         if (!localPath) {
-            localPath = this.context.extensionPath;
+            localPath = path.join(this.context.extensionPath, '.vscode');
         }
         this._filePath = path.join(localPath, Constants.FAVORITE_DATA_FILE);
-        console.log(`filePath <${this._filePath}>`);
+        console.log(`filePath <${this._filePath}> localPath <${localPath}>`);
         this._favoriteEntries = this.loadFromFile(this._filePath);
     }
 
@@ -119,7 +119,7 @@ export class FavoriteManager {
         console.log(`loadFromFile(): fileName <${fileName}>`);
 
         if (!fs.existsSync(fileName)) {
-            console.log(`File <${fileName}> does not exist. Created.`);
+            console.log(`Created. File <${fileName}> does not exist.`);
             this._favoriteEntries = this.makeEmptyFavorEntries();
             this.saveToFile();
             return this._favoriteEntries;
