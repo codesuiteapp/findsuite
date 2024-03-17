@@ -629,8 +629,8 @@
       },
       {
         "command": "findsuite.favoritesFileinDir",
-        "key": "alt+shift+f11",
-        "mac": "cmd+shift+f11"
+        "key": "ctrl+alt+f11",
+        "mac": "cmd+ctrl+f11"
       },
       {
         "command": "findsuite.favoritesFile",
@@ -679,8 +679,8 @@
       },
       {
         "command": "findsuite.rgFavorites",
-        "key": "ctrl+alt+f11",
-        "mac": "cmd+ctrl+f11"
+        "key": "ctrl+shift+f11",
+        "mac": "cmd+shift+f11"
       },
       {
         "command": "findsuite.rgHistory",
