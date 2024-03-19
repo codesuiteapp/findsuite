@@ -308,7 +308,8 @@ export class FdFind {
                     const dirName = path.dirname(line);
                     if (dirName !== currentDir) {
                         if (currentDir !== undefined) {
-                            results.push({ label: `:: ${dirName} ::`, kind: vscode.QuickPickItemKind.Separator });
+                            const shortDir = dirName?.split(path.sep).pop();
+                            results.push({ label: `:: ${shortDir} ::`, kind: vscode.QuickPickItemKind.Separator });
                         }
                         currentDir = dirName;
                     }

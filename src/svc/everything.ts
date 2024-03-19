@@ -190,23 +190,11 @@ export class Everything {
 
   public async execute(filterType: string, isOpen: boolean = true, query: string | undefined = undefined) {
     let extraConfig: EverythingConfig;
-    if (filterType === 'files') {
-      extraConfig = this.makeEverythingConfig({
-        sort: 'date_modified',
-        title: 'Open Files',
-        query: 'files:'
-      });
-    } else if (filterType === 'filesPipe') {
+    if (filterType === 'filesPipe') {
       extraConfig = this.makeEverythingConfig({
         sort: 'date_modified',
         title: 'Select Files and Rg (Like everything | rg)',
         query: 'files:'
-      });
-    } else if (filterType === 'folder') {
-      extraConfig = this.makeEverythingConfig({
-        sort: 'date_modified',
-        title: 'Open Folder',
-        query: 'folder:'
       });
     } else if (filterType === 'folderPipe') {
       extraConfig = this.makeEverythingConfig({
@@ -245,15 +233,6 @@ export class Everything {
         query: 'path:' + this._workspaceFolders.join('|') + ' files:',
         canPickMany: true,
         mesg: '<Files in Workspace>'
-      });
-      if (query) {
-        query = '__EMPTY__';
-      }
-    } else if (filterType === 'path') {
-      extraConfig = this.makeEverythingConfig({
-        sort: 'name',
-        title: 'Open Folder',
-        query: 'path:' + (query ?? '')
       });
       if (query) {
         query = '__EMPTY__';
@@ -373,14 +352,47 @@ export class Everything {
     quickPick.show();
   }
 
-  public async execute1(filterType: string) {
-    let config: EverythingConfig = this.makeEverythingConfig({
-      sort: 'date_modified',
-      title: 'Open Files',
-      query: 'files:'
-    });
+  public async execute1(filterType: string, query: string | undefined = undefined) {
+    let config: EverythingConfig;
+    if (filterType === 'folder') {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Open Folder',
+        query: 'folder:'
+      });
+    } else if (filterType === 'workspace') {
+      if (!this._workspaceFolders || this._workspaceFolders.length === 0) {
+        notifyMessageWithTimeout('Workspace is not exist');
+        return;
+      }
+      config = this.makeEverythingConfig({
+        sort: 'name',
+        title: 'Open Files',
+        query: 'path:' + this._workspaceFolders.join('|') + ' files:',
+        canPickMany: true,
+        mesg: '<Files in Workspace>'
+      });
+      if (query) {
+        query = '__EMPTY__';
+      }
+    } else if (filterType === 'path') {
+      config = this.makeEverythingConfig({
+        sort: 'name',
+        title: 'Open Folder',
+        query: 'path:' + (query ?? '')
+      });
+      if (query) {
+        query = '__EMPTY__';
+      }
+    } else {
+      config = this.makeEverythingConfig({
+        sort: 'date_modified',
+        title: 'Open Files',
+        query: 'files:'
+      });
+    }
 
-    let txt = getSelectionText();
+    let txt = query ?? getSelectionText();
     if (txt === '__EMPTY__') {
       txt = '';
     } else if (!txt) {

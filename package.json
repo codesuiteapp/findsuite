@@ -30,7 +30,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.3.0",
+  "version": "0.3.1",
   "engines": {
     "vscode": "^1.55.0"
   },
@@ -757,7 +757,7 @@
     "eslint": "^8.56.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
-    "webpack": "^5.90.2",
+    "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {

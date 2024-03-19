@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.3.1] - 2024-03-20
+
+- A few bug fixes
+
 ### [0.3.0] - 2024-03-17
 
 - A few bug fixes

@@ -51,7 +51,7 @@ export function registerEverything(context: ExtensionContext, everything: Everyt
             }
             const result = await everything.execute("folderFiles", false);
             if (result && !Array.isArray(result)) {
-                await everything.execute("path", true, result.detail + ' files:');
+                await everything.execute1("path", result.detail + ' files:');
             }
         })
         , commands.registerCommand('findsuite.everything#diff', async () => {

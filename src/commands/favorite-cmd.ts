@@ -127,7 +127,7 @@ function convertFileAsPickItem(favorEntries: FavoritesEntries, fileType: string 
         const dirs = favorEntries.directories;
         dirs.forEach((entry, index) => {
             quickItems.push({
-                label: `$(${entry.protect ? 'lock' : 'folder'}) ${entry.name} `,
+                label: `${entry.protect ? '$(lock) ' : ''}$(folder) ${entry.name}`,
                 description: entry.path,
                 buttons: entry.protect ? favorShieldDirButtons : favorDirButtons,
                 id: entry.id
