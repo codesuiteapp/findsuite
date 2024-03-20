@@ -6,7 +6,7 @@ import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
 import { FavoriteManager } from '../svc/favorite-manager';
 import { getIconByExt, openFile } from "../utils/editor";
-import { executeFdWindow, executeRgWindow } from "../utils/vsc";
+import { executeFdWindow, switchWindowByBtn } from "../utils/vsc";
 
 export function registerFavor(context: ExtensionContext) {
     const favoriteManager = FavoriteManager.getInstance(context);
@@ -73,18 +73,18 @@ function openFavorites(favoriteManager: FavoriteManager, fileType: string | unde
         quickPick.dispose();
     });
 
-    quickPick.onDidTriggerButton(async (e) => {
+    quickPick.onDidTriggerButton(async (button) => {
         const items = quickPick.selectedItems as unknown as QuickPickFavorItem[];
-        if (e.tooltip === Constants.DIFF_BUTTON) {
+        if (button.tooltip === Constants.DIFF_BUTTON) {
             await showMultipleDiffs2(items, 'file');
-        } else if (e.tooltip === Constants.OPEN_FAVORITE_BUTTON) {
+        } else if (button.tooltip === Constants.OPEN_FAVORITE_BUTTON) {
             await openFile(favoriteManager.filePath);
             quickPick.dispose();
-        } else if (e.tooltip === Constants.REFRESH_BUTTON) {
+        } else if (button.tooltip === Constants.REFRESH_BUTTON) {
             favoriteManager.refresh();
             quickPick.items = convertFileAsPickItem(favoriteManager.favoriteEntries, fileType);
-        } else if (e.tooltip === Constants.RG_WINDOW_BUTTON) {
-            await executeRgWindow();
+        } else {
+            await switchWindowByBtn(button);
         }
     });
 

@@ -1,4 +1,5 @@
 import { platform } from "node:process";
+import path from "path";
 import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
 import { registerEverything, registerFd, registerRg } from "./commands";
 import { registerEditor } from "./commands/editor";
@@ -26,29 +27,32 @@ export function activate(context: ExtensionContext) {
     everything = new Everything();
     registerEverything(context, everything, rg);
   }
-  // vscExtension.historyManager = HistoryManager.getInstance(context);
 
   context.subscriptions.push(
     commands.registerCommand('findsuite.rgWithFd', async () => {
-      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files and Rg (Like fd -t f | rg)', opt: '-t f' } }, false);
-      if (results) {
-        const list = Array.isArray(results) ? results : [results];
-        if (list.length > Constants.RG_LIMITS) {
-          notifyMessageWithTimeout(`The number <${list.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
+      const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Files and Rg (Like fd -t f | rg)', opt: '-t f' } }, false);
+      if (result) {
+        const results = Array.isArray(result) ? result : [result];
+        if (!results) {
+          return;
+        } else if (results.length > Constants.RG_LIMITS) {
+          notifyMessageWithTimeout(`The number <${results.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
           return;
         }
-        await rg.executeAfterFind(list);
+        await rg.executeAfterFind(results);
       }
     })
     , commands.registerCommand('findsuite.rgWithFdDir', async () => {
-      const results = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Directory and Rg (Like fd -t d | rg)', opt: '-t d' } }, false);
-      if (results) {
-        const list = Array.isArray(results) ? results : [results];
-        if (list.length > Constants.RG_LIMITS) {
-          notifyMessageWithTimeout(`The number <${list.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
+      const result = await fd.execute({ ...fdInitQuery, ...{ title: 'Select Directory and Rg (Like fd -t d | rg)', opt: '-t d' } }, false);
+      if (result) {
+        const results = Array.isArray(result) ? result : [result];
+        if (!results) {
+          return;
+        } else if (results.length > Constants.RG_LIMITS) {
+          notifyMessageWithTimeout(`The number <${results.length}> of inputs has been exceeded. Limits <${Constants.RG_LIMITS}>`);
           return;
         }
-        await rg.executeAfterFind(list);
+        await rg.executeAfterFind(results);
       }
     })
     , commands.registerCommand('findsuite.reveal#top', async () => {

@@ -11,7 +11,7 @@ import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
 import { copyClipboardFilePath, getIconByExt, getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
-import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout } from "../utils/vsc";
+import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout, switchWindowByBtn } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
 import { Constants } from "./constants";
 
@@ -197,10 +197,8 @@ export class FdFind {
             quickPick.dispose();
         });
 
-        quickPick.onDidTriggerButton(async (e) => {
-            if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
-                await executeFavoriteWindow();
-            }
+        quickPick.onDidTriggerButton(async (button) => {
+            await switchWindowByBtn(button);
         });
 
         quickPick.onDidTriggerItemButton(async (e) => {

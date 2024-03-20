@@ -91,9 +91,9 @@ export const favorDirButtons = [openFavorDirBtn, removeBtn];
 
 export const favorShieldDirButtons = [openFavorDirBtn, shieldBtn];
 
-export const favorHeaderButtons = [rgWindowBtn, diffBtn, openFavorBtn, refreshBtn];
+export const favorHeaderButtons = [diffBtn, historyWindowBtn, rgWindowBtn, openFavorBtn, refreshBtn];
 
-export const rgHeaderButtons = [historyWindowBtn, favorWindowBtn, addClipBtn, diffBtn, copyBtn];
+export const rgHeaderButtons = [diffBtn, historyWindowBtn, favorWindowBtn, addClipBtn, copyBtn];
 
 export const searchHeaderButtons = [historyWindowBtn, favorWindowBtn];
 

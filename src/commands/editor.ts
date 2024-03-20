@@ -5,7 +5,7 @@ import { editorButtons, editorHeaderButtons } from "../model/button";
 import { Constants } from "../svc/constants";
 import { showMultipleDiffs2 } from "../svc/diff";
 import { copyClipboardFilePath, copyClipboardFiles, getIconByExt } from "../utils/editor";
-import { executeFavoriteWindow, executeHistoryWindow } from "../utils/vsc";
+import { switchWindowByBtn } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
 
 export function registerEditor(context: ExtensionContext) {
@@ -80,19 +80,15 @@ function openFavorites() {
         quickPick.dispose();
     });
 
-    quickPick.onDidTriggerButton(async (e) => {
+    quickPick.onDidTriggerButton(async (button) => {
         const items = quickPick.selectedItems as unknown as QuickPickItem[];
-        if (e.tooltip === Constants.DIFF_BUTTON) {
+        if (button.tooltip === Constants.DIFF_BUTTON) {
             await showMultipleDiffs2(items, 'file');
-        } else if (e.tooltip === Constants.CLIP_COPY_BUTTON) {
+        } else if (button.tooltip === Constants.CLIP_COPY_BUTTON) {
             copyClipboardFiles(items);
-        } else if (e.tooltip === Constants.ADD_CLIP_BUTTON) {
+        } else if (button.tooltip === Constants.ADD_CLIP_BUTTON) {
             copyClipboardFiles(items, true);
-        } else if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
-            await executeFavoriteWindow();
-        } else if (e.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
-            await executeHistoryWindow();
-        } else if (e.tooltip === Constants.CLOSE_BUTTON) {
+        } else if (button.tooltip === Constants.CLOSE_BUTTON) {
             items.forEach(async (item) => {
                 workspace.textDocuments.filter(d => !d.isClosed && d.fileName === item.description!).forEach(d => {
                     window.showTextDocument(d).then(async (e) => {
@@ -101,6 +97,8 @@ function openFavorites() {
                 });
             });
             quickPick.dispose();
+        } else {
+            await switchWindowByBtn(button);
         }
     });
 

@@ -441,6 +441,15 @@ export class RipgrepSearch {
         notifyMessageWithTimeout(mesg);
     }
 
+    private makeRgPath(file: string) {
+        const stats = fs.statSync(file);
+        let filepath = file;
+        if (stats.isDirectory()) {
+            filepath += '.';
+        }
+        return filepath;
+    }
+
     public async executeAfterFind(results: vscode.QuickPickItem[]) {
         if (!results || results.length === 0) {
             notifyMessageWithTimeout('Results is empty');
@@ -459,7 +468,7 @@ export class RipgrepSearch {
             ...rgInitQuery,
             replaceQuery: true,
             opt: query,
-            srchPath: `${FindSuiteSettings.isWindows ? results.map(item => '"' + item.detail! + '"').join(' ') : results.map(item => quote([item.detail!])).join(' ')}`
+            srchPath: `${FindSuiteSettings.isWindows ? results.map(item => '"' + this.makeRgPath(item.detail!) + '"').join(' ') : results.map(item => quote([item.detail!])).join(' ')}`
         };
 
         await this.interact(rgQuery);
@@ -522,7 +531,7 @@ export class RipgrepSearch {
                         };
                     } else {
                         return {
-                            label: data?.path ? `:: ${path.basename(data.path.text)} ::` : '',
+                            label: data?.path ? `:: ${path.dirname(data.path.text).split(path.sep).pop()} ::` : '',
                             kind: vscode.QuickPickItemKind.Separator,
                             start: 0,
                             end: 0,

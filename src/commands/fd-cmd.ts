@@ -1,4 +1,4 @@
-import { ExtensionContext, Uri, commands } from "vscode";
+import { ExtensionContext, commands } from "vscode";
 import { fdInitQuery } from "../model/fd";
 import { showMultipleDiffs } from "../svc/diff";
 import { FdFind } from "../svc/fd";

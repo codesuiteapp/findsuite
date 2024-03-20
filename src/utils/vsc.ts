@@ -148,6 +148,10 @@ export async function executeDiffWindow(src: string, dst: string, cmd: string = 
     await vscode.commands.executeCommand(cmd, uri1, uri2);
 }
 
+export async function executeEverythingWindow(...rest: any[]) {
+    await executeCommand('findsuite.everything', ...rest);
+}
+
 export async function executeFavoriteWindow(...rest: any[]) {
     await executeCommand('findsuite.favorites', ...rest);
 }
@@ -166,4 +170,14 @@ export async function executeHistoryDetailWindow(...rest: any[]) {
 
 export async function executeFdWindow(filename?: string) {
     await executeCommand('findsuite.fd', filename);
+}
+
+export async function switchWindowByBtn(button: vscode.QuickInputButton) {
+    if (button.tooltip === Constants.RG_WINDOW_BUTTON) {
+        await executeRgWindow();
+    } else if (button.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
+        await executeFavoriteWindow();
+    } else if (button.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
+        await executeHistoryWindow();
+    }
 }

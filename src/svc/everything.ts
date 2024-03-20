@@ -8,7 +8,7 @@ import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
 import { copyClipboardWithFile, getSelectionText, openWorkspace } from '../utils/editor';
 import logger from '../utils/logger';
-import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout, showConfirmMessage } from '../utils/vsc';
+import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout, showConfirmMessage, switchWindowByBtn } from '../utils/vsc';
 import { vscExtension } from '../vsc-ns';
 import { Constants } from './constants';
 
@@ -379,7 +379,8 @@ export class Everything {
       config = this.makeEverythingConfig({
         sort: 'name',
         title: 'Open Folder',
-        query: 'path:' + (query ?? '')
+        query: 'path:' + (query ?? ''),
+        canPickMany: true
       });
       if (query) {
         query = '__EMPTY__';
@@ -417,28 +418,26 @@ export class Everything {
     const quickPick = vscode.window.createQuickPick<QuickPickItem>();
     quickPick.title = `Everything ${mesg} :: Results <${items.length}>`;
     quickPick.placeholder = 'Select to Open file';
+    quickPick.canSelectMany = config.canPickMany ?? false;
     quickPick.matchOnDetail = true;
     quickPick.matchOnDescription = true;
     quickPick.buttons = searchHeaderButtons;
     quickPick.items = items;
 
     quickPick.onDidAccept(async (event) => {
-      const item = quickPick.selectedItems[0] as QuickPickItem;
-      if (!item) {
+      const items = quickPick.selectedItems as QuickPickItem[];
+      if (!items) {
         return;
       }
 
-      await openWorkspace(item.detail!, false);
+      items.forEach(async (item) => {
+        await openWorkspace(item.detail!, false);
+      });
       quickPick.dispose();
     });
 
-    quickPick.onDidTriggerButton(async (e) => {
-      // const items = quickPick.selectedItems as unknown as vscode.QuickPickItem;
-      if (e.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
-        await executeFavoriteWindow();
-      } else if (e.tooltip === Constants.HISTORY_WINDOW_BUTTON) {
-        await executeHistoryWindow();
-      }
+    quickPick.onDidTriggerButton(async (button) => {
+      await switchWindowByBtn(button);
     });
 
     quickPick.onDidTriggerItemButton(async (e) => {

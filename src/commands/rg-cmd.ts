@@ -1,12 +1,12 @@
 import { ExtensionContext, QuickInputButtons, QuickPickItem, commands, window } from "vscode";
 import FindSuiteSettings from "../config/settings";
-import { historyHeaderButtons as hisDetailHeaderButtons, historyButtons, historyHeaderButtons } from "../model/button";
+import { hisDetailHeaderButtons, historyButtons, historyHeaderButtons } from "../model/button";
 import { HistoryFileEntry } from "../model/history";
 import { QuickPickItemData, QuickPickItemRgData, RgQuery, rgInitQuery } from "../model/ripgrep";
 import { Constants } from "../svc/constants";
 import { RipgrepSearch } from "../svc/ripgrep";
 import { copyClipboardFilePath, getEditorFsPath, openFile, openRevealFile } from "../utils/editor";
-import { executeFavoriteWindow, executeHistoryDetailWindow, executeHistoryWindow, executeRgWindow } from "../utils/vsc";
+import { executeFavoriteWindow, executeHistoryDetailWindow, executeHistoryWindow, executeRgWindow, switchWindowByBtn } from "../utils/vsc";
 import { vscExtension } from "../vsc-ns";
 
 export function registerRg(context: ExtensionContext, rg: RipgrepSearch) {
@@ -113,8 +113,8 @@ function openHistoryDetailWindow(model: HistoryFileEntry[], total: string) {
         if (button === QuickInputButtons.Back) {
             quickPick.dispose();
             await executeHistoryWindow();
-        } else if (button.tooltip === Constants.FAVOR_WINDOW_BUTTON) {
-            await executeFavoriteWindow();
+        } else {
+            await switchWindowByBtn(button);
         }
     });
 
