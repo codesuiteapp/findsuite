@@ -160,6 +160,7 @@ export class FdFind {
         } else if (fdQuery.fileType === 'fileWs') {
             cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
             mesg = '<Files in Workspace>';
+            fdQuery.wsPath = this._workspaceFolders[0] ?? '';
         } else {
             let command = [this.fdProgram, txt].join(' ');
             let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
@@ -170,7 +171,7 @@ export class FdFind {
         console.log(`cmd <${cmdOpt}>`);
 
         const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
-            return await this.fdItems(cmdOpt, fdQuery.fileType, fdButtons);
+            return await this.fdItems(cmdOpt, fdQuery.fileType, fdButtons, fdQuery.wsPath);
         });
         if (!result) {
             return;
@@ -273,7 +274,7 @@ export class FdFind {
         quickPick.show();
     }
 
-    private async fdItems(cmd: string, fileType: string, buttons: vscode.QuickInputButton[] | undefined = undefined): Promise<QuickPickItemResults<vscode.QuickPickItem>> {
+    private async fdItems(cmd: string, fileType: string, buttons: vscode.QuickInputButton[] | undefined = undefined, wsPath: string | undefined = undefined): Promise<QuickPickItemResults<vscode.QuickPickItem>> {
         logger.debug('fd():', cmd);
         let label: string;
         if (fileType === 'dir') {
@@ -314,8 +315,8 @@ export class FdFind {
                     const desc = path.basename(line);
 
                     results.push({
-                        label: fileType === 'code-workspace' ? label + ' ' + desc.split('.').shift() : getIconByExt(path.extname(desc)),
-                        description: desc,
+                        label: (fileType === 'code-workspace' ? label + ' ' + desc.split('.').shift() : getIconByExt(path.extname(desc))) + ' ' + desc,
+                        description: wsPath && line.startsWith(wsPath) ? line.substring(wsPath.length + 1) : line,
                         detail: line,
                         buttons: buttons
                     });
@@ -333,18 +334,11 @@ export class FdFind {
 
     private getFd(fdExtPath: string) {
         if (FindSuiteSettings.fdInternalEnabled) {
-            const fdVer = "9_0_0";
-            const basePath = `${fdExtPath}/bin/${fdVer}`;
-            switch (platform) {
-                case "win32":
-                    return `${fdExtPath}\\bin\\${fdVer}\\${platform}\\fd.exe`;
-                case "darwin":
-                    return `${basePath}/${platform}/fd`;
-                case "linux":
-                    return `${basePath}/${platform}/fd`;
-                default:
-                    return "fd";
+            let basePath = `${fdExtPath}/bin/${platform}/${Constants.fdVer}/fd`;
+            if (platform === 'win32') {
+                basePath = `${fdExtPath}\\bin\\${platform}\\${Constants.fdVer}\\fd.exe`;
             }
+            return basePath;
         } else {
             switch (platform) {
                 case "win32": return FindSuiteSettings.fdWin32Program;

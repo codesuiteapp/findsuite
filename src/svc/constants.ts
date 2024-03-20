@@ -2,6 +2,10 @@ export namespace Constants {
 
     export const EXTENSION_NAME = 'findsuite';
 
+    export const fdVer = "9_0_0";
+
+    export const rgVer = "14_1_0";
+
     export const MAX_BUFFER_SIZE = 1000;
 
     export const EMPTY_STRING = '_EMPTY_';

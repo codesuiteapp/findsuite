@@ -590,22 +590,15 @@ export class RipgrepSearch {
 
     private getRipgrep(rgExtPath: string) {
         if (FindSuiteSettings.rgInternalEnabled) {
-            const rgVer = "14_1_0";
-            const basePath = `${rgExtPath}/bin/${rgVer}`;
-            switch (platform) {
-                case "win32":
-                    return `${rgExtPath}\\bin\\${rgVer}\\${platform}\\rg.exe`;
-                case "darwin":
-                    return `${basePath}/${platform}/rg`;
-                case "linux":
-                    if (arch === "arm" || arch === "arm64") {
-                        return `${basePath}/${platform}-armv7/rg`;
-                    } else {
-                        return `${basePath}/${platform}/rg`;
-                    }
-                default:
-                    return "rg";
+            let basePath = `${rgExtPath}/bin/${platform}/${Constants.rgVer}/rg`;
+            if (platform === 'win32') {
+                basePath = `${rgExtPath}\\bin\\${platform}\\${Constants.rgVer}\\rg.exe`;
+            } else if (platform === 'linux') {
+                if (arch === "arm" || arch === "arm64") {
+                    basePath = `${basePath}/${platform}-armv7/rg`;
+                }
             }
+            return basePath;
         } else {
             switch (platform) {
                 case "win32": return FindSuiteSettings.rgWin32Program;
@@ -673,13 +666,3 @@ export class RipgrepSearch {
     }
 
 }
-
-// function convertQuickPickItem(_historyMap: Map<string, HistoryEntry<HistoryFileEntry[]>>): readonly QuickPickItemRgData[] {
-//     const items: QuickPickItemRgData[] = [];
-//     for (const [k, v] of _historyMap.entries()) {
-//         items.push(...{
-//             ...v.fileEntries
-//         });
-//     }
-//     return items;
-// }

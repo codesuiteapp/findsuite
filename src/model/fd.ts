@@ -4,6 +4,7 @@ export interface FdQuery {
     srchPath: string | undefined;
     fileType: 'file' | 'fileWs' | 'fileCodeWs' | 'dir' | 'diff' | 'diffWs';
     isMany: boolean;
+    wsPath: string;
 }
 
 export const fdInitQuery: FdQuery = {
@@ -11,7 +12,8 @@ export const fdInitQuery: FdQuery = {
     opt: '',
     fileType: 'file',
     srchPath: undefined,
-    isMany: true
+    isMany: true,
+    wsPath: ''
 };
 
 export interface QuickPickItemResults<T> {
