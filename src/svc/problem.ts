@@ -58,7 +58,7 @@ export class ProblemNavigator {
                 line = current;
             }
             items.push({
-                label: '$(book) ' + uri.path.split('/').pop() ?? '',
+                label: this.getLabel(d.severity, uri.path),
                 description: uri.fsPath.startsWith(this.workspaceFolder) ? uri.fsPath.substring(this.workspaceFolder.length + 1) : uri.fsPath,
                 detail: `(${d.source ?? path.extname(uri.fsPath).substring(1)}:${current}) ${vscode.DiagnosticSeverity[d.severity]}: ${d.message.split("\n")[0]}`,
                 model: d,
@@ -111,6 +111,11 @@ export class ProblemNavigator {
         quickPick.show();
     }
 
+    private getLabel(severity: number, path: string) {
+        const label = `$(${severity === 0 ? 'error' : 'warning'}) ${path.split('/').pop() ?? ''}`;
+        return label;
+    }
+
     public async showMarkerInFiles(filter: vscode.DiagnosticSeverity[]): Promise<void> {
         const filesDiagnostics = vscode.languages.getDiagnostics()
             .filter(([_, diagnostics]) => diagnostics.some(d => filter.includes(d.severity)))
@@ -149,7 +154,7 @@ export class ProblemNavigator {
                     line = current;
                 }
                 items.push({
-                    label: '$(book) ' + uri.path.split('/').pop() ?? '',
+                    label: this.getLabel(d.severity, uri.path),
                     description: uri.fsPath.startsWith(this.workspaceFolder) ? uri.fsPath.substring(this.workspaceFolder.length + 1) : uri.fsPath,
                     detail: `(${d.source ?? path.extname(uri.fsPath).substring(1)}:${current}) ${vscode.DiagnosticSeverity[d.severity]}: ${d.message.split("\n")[0]}`,
                     model: d,
