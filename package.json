@@ -30,7 +30,7 @@
     "fuzzy search",
     "fuzzy grep"
   ],
-  "version": "0.3.1",
+  "version": "0.3.2",
   "engines": {
     "vscode": "^1.55.0"
   },
@@ -607,6 +607,16 @@
         "category": "FindSuite"
       },
       {
+        "command": "findsuite.showErrorInFile",
+        "title": "Show Errors in File",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.showErrorInFiles",
+        "title": "Show Errors in Files",
+        "category": "FindSuite"
+      },
+      {
         "command": "findsuite.showMarkerInFiles",
         "title": "Show Problems in Files",
         "category": "FindSuite"
@@ -709,16 +719,32 @@
         "mac": "cmd+shift+0"
       },
       {
-        "command": "findsuite.showMarkerInFiles",
-        "key": "ctrl+alt+."
+        "command": "findsuite.showErrorInFile",
+        "key": "ctrl+alt+f12"
       },
       {
-        "command": "findsuite.nextErrorInFiles",
-        "key": "ctrl+alt+."
+        "command": "findsuite.showMarkerInFiles",
+        "key": "ctrl+alt+]"
+      },
+      {
+        "command": "findsuite.showErrorInFiles",
+        "key": "ctrl+alt+["
       },
       {
         "command": "findsuite.prevErrorInFiles",
-        "key": "ctrl+alt+,"
+        "key": "alt+oem_comma"
+      },
+      {
+        "command": "findsuite.nextErrorInFiles",
+        "key": "alt+oem_period"
+      },
+      {
+        "command": "findsuite.prevError",
+        "key": "ctrl+alt+oem_comma"
+      },
+      {
+        "command": "findsuite.nextError",
+        "key": "ctrl+alt+oem_period"
       },
       {
         "command": "findsuite.rgWithEverything",

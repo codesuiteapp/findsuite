@@ -74,6 +74,8 @@ export async function openRevealFile1(file: string, range: vscode.Range, options
         return;
     }
 
+    const selection = new vscode.Selection(~~range.start.line, range.start.character, ~~range.end.line, range.end.character);
+    editor.selection = selection;
     editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
     return editor;
 }

@@ -1,15 +1,114 @@
+import path from "path";
 import * as vscode from "vscode";
+import FindSuiteSettings from "../config/settings";
 import { QuickPickItemProblem } from "../model/problem";
 import { openRevealFile1 } from "../utils/editor";
 
 export class ProblemNavigator {
 
     private lastPosition: { position: vscode.Position, uri: vscode.Uri } | null = null;
+    private workspaceFolder: string;
 
-    constructor() { }
+    private _currentDecoration: vscode.TextEditorDecorationType | null = null;
+    private _bgColor!: string;
+
+    constructor() {
+        if (vscode.workspace.workspaceFolders) {
+            this.workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
+        } else {
+            this.workspaceFolder = '';
+        }
+        const currentTheme = vscode.window.activeColorTheme.kind;
+        this.bgColor = this.getColorForTheme(currentTheme);
+    }
 
     private sortMarkers(diagnostics: vscode.Diagnostic[]) {
         return diagnostics.sort((a, b) => a.range.start.isBefore(b.range.start) ? -1 : (a.range.start.isEqual(b.range.start) ? 0 : 1));
+    }
+
+    public async showMarkerInFile(filter: vscode.DiagnosticSeverity[]): Promise<void> {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+
+        const uri = editor.document.uri;
+        const diagnostics = vscode.languages.getDiagnostics(uri)
+            .filter(d => filter.includes(d.severity));
+
+        if (diagnostics.length === 0) {
+            vscode.window.showInformationMessage("No problems found matching the filter criteria.");
+            return;
+        }
+
+        const items: QuickPickItemProblem<vscode.Diagnostic>[] = [];
+        let lastUri = '';
+        let line = 0;
+        for (const d of diagnostics) {
+            lastUri = uri.toString();
+
+            const current = d.range.start.line + 1;
+            if (line !== current) {
+                items.push({
+                    label: '',
+                    kind: vscode.QuickPickItemKind.Separator,
+                    model: undefined,
+                    filepath: ''
+                });
+                line = current;
+            }
+            items.push({
+                label: '$(book) ' + uri.path.split('/').pop() ?? '',
+                description: uri.fsPath.startsWith(this.workspaceFolder) ? uri.fsPath.substring(this.workspaceFolder.length + 1) : uri.fsPath,
+                detail: `(${d.source ?? path.extname(uri.fsPath).substring(1)}:${current}) ${vscode.DiagnosticSeverity[d.severity]}: ${d.message.split("\n")[0]}`,
+                model: d,
+                filepath: uri.fsPath
+            });
+        }
+
+        const quickPick = vscode.window.createQuickPick<QuickPickItemProblem<vscode.Diagnostic>>();
+        quickPick.title = 'Problems :: ' + (filter.length > 1 ? 'Warning & ' : '') + 'Error';
+        quickPick.matchOnDetail = true;
+        quickPick.matchOnDescription = true;
+        quickPick.items = items;
+
+        quickPick.onDidChangeActive(async (items) => {
+            const selection = items[0] as QuickPickItemProblem<vscode.Diagnostic>;
+            if (selection.model) {
+                const editor = await openRevealFile1(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
+                if (editor) {
+                    if (this._currentDecoration === null || !this._currentDecoration) {
+                        this.currentDecoration = vscode.window.createTextEditorDecorationType({
+                            backgroundColor: this._bgColor
+                        });
+                    }
+                    editor.setDecorations(this.currentDecoration!, [selection.model.range]);
+                }
+            }
+        });
+
+        quickPick.onDidAccept(async () => {
+            const item = quickPick.selectedItems[0] as QuickPickItemProblem<vscode.Diagnostic>;
+            if (!item) {
+                return;
+            }
+
+            quickPick.dispose();
+            const e = vscode.window.activeTextEditor;
+            if (e) {
+                this.clearDecoration(e);
+            }
+        });
+
+        quickPick.onDidHide(async () => {
+            quickPick.dispose();
+            const e = vscode.window.activeTextEditor;
+            if (e) {
+                this.clearDecoration(e);
+            }
+        });
+
+        quickPick.show();
     }
 
     public async showMarkerInFiles(filter: vscode.DiagnosticSeverity[]): Promise<void> {
@@ -24,31 +123,43 @@ export class ProblemNavigator {
 
         const items: QuickPickItemProblem<vscode.Diagnostic>[] = [];
         let lastUri = '';
+        let line = 0;
         for (const [uri, diagnostics] of filesDiagnostics) {
             const diagnosticsFiltered = diagnostics.filter(d => filter.includes(d.severity));
             if (lastUri !== uri.toString() && items.length > 0) {
                 items.push({
                     label: `:: ${uri} ::`,
                     kind: vscode.QuickPickItemKind.Separator,
-                    model: undefined
+                    model: undefined,
+                    filepath: ''
                 });
             }
             lastUri = uri.toString();
 
-            const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri)?.name ?? '';
-            const relativePath = vscode.workspace.asRelativePath(uri, false).replace(workspaceFolder, "").replace(/^\//, "");
-            for (const diagnostic of diagnosticsFiltered) {
+            const relativePath = vscode.workspace.asRelativePath(uri, false).replace(this.workspaceFolder, "").replace(/^\//, "");
+            for (const d of diagnosticsFiltered) {
+                const current = d.range.start.line + 1;
+                if (line !== current) {
+                    items.push({
+                        label: '',
+                        kind: vscode.QuickPickItemKind.Separator,
+                        model: undefined,
+                        filepath: ''
+                    });
+                    line = current;
+                }
                 items.push({
-                    label: uri.path.split('/').pop() ?? '',
-                    description: uri.fsPath,
-                    detail: `${vscode.DiagnosticSeverity[diagnostic.severity]}: ${diagnostic.message.split("\n")[0]}`,
-                    model: diagnostic
+                    label: '$(book) ' + uri.path.split('/').pop() ?? '',
+                    description: uri.fsPath.startsWith(this.workspaceFolder) ? uri.fsPath.substring(this.workspaceFolder.length + 1) : uri.fsPath,
+                    detail: `(${d.source ?? path.extname(uri.fsPath).substring(1)}:${current}) ${vscode.DiagnosticSeverity[d.severity]}: ${d.message.split("\n")[0]}`,
+                    model: d,
+                    filepath: uri.fsPath
                 });
             }
         }
 
         const quickPick = vscode.window.createQuickPick<QuickPickItemProblem<vscode.Diagnostic>>();
-        quickPick.title = 'Problems';
+        quickPick.title = 'Problems :: ' + (filter.length > 1 ? 'Warning & ' : '') + 'Error';
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
         quickPick.items = items;
@@ -56,8 +167,15 @@ export class ProblemNavigator {
         quickPick.onDidChangeActive(async (items) => {
             const selection = items[0] as QuickPickItemProblem<vscode.Diagnostic>;
             if (selection.model) {
-                const file = selection.detail!;
-                openRevealFile1(file, selection.model.range, { preserveFocus: true, preview: true });
+                const editor = await openRevealFile1(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
+                if (editor) {
+                    if (this._currentDecoration === null || !this._currentDecoration) {
+                        this.currentDecoration = vscode.window.createTextEditorDecorationType({
+                            backgroundColor: this._bgColor
+                        });
+                    }
+                    editor.setDecorations(this.currentDecoration!, [selection.model.range]);
+                }
             }
         });
 
@@ -66,7 +184,20 @@ export class ProblemNavigator {
             if (!item) {
                 return;
             }
+
             quickPick.dispose();
+            const e = vscode.window.activeTextEditor;
+            if (e) {
+                this.clearDecoration(e);
+            }
+        });
+
+        quickPick.onDidHide(async () => {
+            quickPick.dispose();
+            const e = vscode.window.activeTextEditor;
+            if (e) {
+                this.clearDecoration(e);
+            }
         });
 
         quickPick.show();
@@ -190,6 +321,40 @@ export class ProblemNavigator {
         } else {
             return (marker.range.start.isAfterOrEqual(editor.selection.start) && marker.range.start.isBefore(soFarClosest.range.start)) ? marker : soFarClosest;
         }
+    }
+
+    private clearDecoration(editor: vscode.TextEditor) {
+        if (editor && this.currentDecoration) {
+            editor.setDecorations(this.currentDecoration, []);
+        }
+    }
+
+    public getColorForTheme(theme: vscode.ColorThemeKind) {
+        if (theme === vscode.ColorThemeKind.Light) {
+            return FindSuiteSettings.matchColorLightTheme;
+        } else {
+            return FindSuiteSettings.matchColorDarkTheme;
+        }
+    }
+
+    public setColorForTheme(theme: vscode.ColorThemeKind) {
+        this._bgColor = this.getColorForTheme(theme);
+    }
+
+    public get bgColor() {
+        return this._bgColor;
+    }
+
+    public set bgColor(value) {
+        this._bgColor = value;
+    }
+
+    public get currentDecoration(): vscode.TextEditorDecorationType | null {
+        return this._currentDecoration;
+    }
+
+    public set currentDecoration(value: vscode.TextEditorDecorationType | null) {
+        this._currentDecoration = value;
     }
 
 }

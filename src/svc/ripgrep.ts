@@ -645,6 +645,7 @@ export class RipgrepSearch {
     public get bgColor() {
         return this._bgColor;
     }
+
     public set bgColor(value) {
         this._bgColor = value;
     }
