@@ -65,6 +65,19 @@ export async function openRevealFile(item: QuickPickItemRgData, options?: vscode
     return editor;
 }
 
+export async function openRevealFile1(file: string, range: vscode.Range, options?: vscode.TextDocumentShowOptions) {
+    const doc = await vscode.workspace.openTextDocument(file);
+    const editor = await vscode.window.showTextDocument(doc, options);
+
+    if (!vscode.window.activeTextEditor) {
+        vscode.window.showErrorMessage("No active editor");
+        return;
+    }
+
+    editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+    return editor;
+}
+
 export async function openFile(filepath: string, makeFile: boolean = false) {
     if (!fs.existsSync(filepath) && makeFile) {
         fs.writeFileSync(filepath, '', 'utf8');

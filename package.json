@@ -605,6 +605,31 @@
         "command": "findsuite.reveal#center",
         "title": "Reveal to Center",
         "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.showMarkerInFiles",
+        "title": "Show Problems in Files",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.nextErrorInFiles",
+        "title": "Go to Next Problems in Files",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.prevErrorInFiles",
+        "title": "Go to Previous Problems in Files",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.nextError",
+        "title": "Go to Next Problems",
+        "category": "FindSuite"
+      },
+      {
+        "command": "findsuite.prevError",
+        "title": "Go to Previous Problems",
+        "category": "FindSuite"
       }
     ],
     "keybindings": [
@@ -682,6 +707,18 @@
         "command": "findsuite.rgFile",
         "key": "ctrl+alt+0",
         "mac": "cmd+shift+0"
+      },
+      {
+        "command": "findsuite.showMarkerInFiles",
+        "key": "ctrl+alt+."
+      },
+      {
+        "command": "findsuite.nextErrorInFiles",
+        "key": "ctrl+alt+."
+      },
+      {
+        "command": "findsuite.prevErrorInFiles",
+        "key": "ctrl+alt+,"
       },
       {
         "command": "findsuite.rgWithEverything",

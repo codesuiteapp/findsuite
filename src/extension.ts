@@ -1,7 +1,7 @@
 import { platform } from "node:process";
 import path from "path";
 import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
-import { registerEverything, registerFd, registerRg } from "./commands";
+import { registerEverything, registerFd, registerProblem, registerRg } from "./commands";
 import { registerEditor } from "./commands/editor";
 import { registerFavor } from "./commands/favorite-cmd";
 import { fdInitQuery } from "./model/fd";
@@ -19,6 +19,7 @@ export function activate(context: ExtensionContext) {
   const rg = new RipgrepSearch(context);
   let everything: Everything | undefined;
 
+  registerProblem(context);
   registerFd(context, fd);
   registerRg(context, rg);
   registerEditor(context);
