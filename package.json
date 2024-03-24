@@ -647,8 +647,7 @@
     "keybindings": [
       {
         "command": "findsuite.favorites",
-        "key": "shift+f11",
-        "mac": "shift+f11"
+        "key": "shift+f11"
       },
       {
         "command": "findsuite.favoritesFileinDir",
