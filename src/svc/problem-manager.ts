@@ -176,7 +176,7 @@ export class ProblemManager {
 
         quickPick.onDidChangeActive(async (items) => {
             const selection = items[0] as QuickPickItemProblem<vscode.Diagnostic>;
-            if (selection.model) {
+            if (selection && selection.model) {
                 const editor = await openRevealRangeFile(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
                 if (editor) {
                     if (this._currentDecoration === null || !this._currentDecoration) {
