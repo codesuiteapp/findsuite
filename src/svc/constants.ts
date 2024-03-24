@@ -49,4 +49,9 @@ export namespace Constants {
     export const FAVOR_WINDOW_BUTTON = 'Favorite Window';
 
     export const HISTORY_WINDOW_BUTTON = 'History Window';
+
+    export const ERROR_WINDOW_BUTTON = 'Error Window';
+
+    export const WARN_WINDOW_BUTTON = 'Warning Window';
+
 }

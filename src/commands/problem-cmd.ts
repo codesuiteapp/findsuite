@@ -2,28 +2,28 @@ import { DiagnosticSeverity, ExtensionContext, commands } from "vscode";
 import { ProblemManager } from "../svc/problem-manager";
 
 export function registerProblem(context: ExtensionContext) {
-    const problemNavigator = new ProblemManager();
+    const problemManager = new ProblemManager();
     context.subscriptions.push(
         commands.registerCommand('findsuite.showErrorInFile', async () => {
-            problemNavigator.showMarkerInFile([DiagnosticSeverity.Error]);
+            problemManager.showMarkerInFile([DiagnosticSeverity.Error]);
         }),
         commands.registerCommand('findsuite.showErrorInFiles', async () => {
-            problemNavigator.showMarkerInFiles([DiagnosticSeverity.Error]);
+            problemManager.showMarkerInFiles([DiagnosticSeverity.Error]);
         }),
         commands.registerCommand('findsuite.showMarkerInFiles', async () => {
-            problemNavigator.showMarkerInFiles([DiagnosticSeverity.Error, DiagnosticSeverity.Warning]);
+            problemManager.showMarkerInFiles([DiagnosticSeverity.Error, DiagnosticSeverity.Warning]);
         }),
         commands.registerCommand('findsuite.nextErrorInFiles', async () => {
-            problemNavigator.gotoNextMarkerInFiles([DiagnosticSeverity.Error], "next");
+            problemManager.gotoNextMarkerInFiles([DiagnosticSeverity.Error], "next");
         }),
         commands.registerCommand('findsuite.prevErrorInFiles', async () => {
-            problemNavigator.gotoNextMarkerInFiles([DiagnosticSeverity.Error], "prev");
+            problemManager.gotoNextMarkerInFiles([DiagnosticSeverity.Error], "prev");
         }),
         commands.registerCommand('findsuite.nextError', async () => {
-            problemNavigator.gotoMarkerInFile([DiagnosticSeverity.Error], "next");
+            problemManager.gotoMarkerInFile([DiagnosticSeverity.Error], "next");
         }),
         commands.registerCommand('findsuite.prevError', async () => {
-            problemNavigator.gotoMarkerInFile([DiagnosticSeverity.Error], "prev");
+            problemManager.gotoMarkerInFile([DiagnosticSeverity.Error], "prev");
         }),
     );
 }

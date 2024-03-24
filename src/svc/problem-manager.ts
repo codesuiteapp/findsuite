@@ -1,8 +1,11 @@
 import path from "path";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
+import { errorHeaderButtons, warnHeaderButtons } from "../model/button";
 import { QuickPickItemProblem } from "../model/problem";
 import { openRevealRangeFile } from "../utils/editor";
+import { executeCommand } from "../utils/vsc";
+import { Constants } from "./constants";
 
 export class ProblemManager {
 
@@ -133,7 +136,7 @@ export class ProblemManager {
             const diagnosticsFiltered = diagnostics.filter(d => filter.includes(d.severity));
             if (lastUri !== uri.toString() && items.length > 0) {
                 items.push({
-                    label: `:: ${uri} ::`,
+                    label: `:: ${path.basename(path.dirname(uri.toString()))} ::`,
                     kind: vscode.QuickPickItemKind.Separator,
                     model: undefined,
                     filepath: ''
@@ -153,6 +156,7 @@ export class ProblemManager {
                     });
                     line = current;
                 }
+
                 items.push({
                     label: this.getLabel(d.severity, uri.path),
                     description: uri.fsPath.startsWith(this.workspaceFolder) ? uri.fsPath.substring(this.workspaceFolder.length + 1) : uri.fsPath,
@@ -168,6 +172,7 @@ export class ProblemManager {
         quickPick.matchOnDetail = true;
         quickPick.matchOnDescription = true;
         quickPick.items = items;
+        quickPick.buttons = filter.length === 1 && filter[0] === vscode.DiagnosticSeverity.Error ? errorHeaderButtons : warnHeaderButtons;
 
         quickPick.onDidChangeActive(async (items) => {
             const selection = items[0] as QuickPickItemProblem<vscode.Diagnostic>;
@@ -181,6 +186,14 @@ export class ProblemManager {
                     }
                     editor.setDecorations(this.currentDecoration!, [selection.model.range]);
                 }
+            }
+        });
+
+        quickPick.onDidTriggerButton(async (button) => {
+            if (button.tooltip === Constants.ERROR_WINDOW_BUTTON) {
+                await executeCommand('findsuite.showErrorInFiles');
+            } else {
+                await executeCommand('findsuite.showMarkerInFiles');
             }
         });
 

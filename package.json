@@ -720,15 +720,18 @@
       },
       {
         "command": "findsuite.showErrorInFile",
-        "key": "ctrl+alt+f12"
+        "key": "ctrl+alt+f12",
+        "mac": "cmd+option+f12"
       },
       {
         "command": "findsuite.showMarkerInFiles",
-        "key": "ctrl+alt+]"
+        "key": "ctrl+alt+]",
+        "mac": "cmd+option+]"
       },
       {
         "command": "findsuite.showErrorInFiles",
-        "key": "ctrl+alt+["
+        "key": "ctrl+alt+[",
+        "mac": "cmd+option+["
       },
       {
         "command": "findsuite.prevErrorInFiles",
@@ -745,6 +748,16 @@
       {
         "command": "findsuite.nextError",
         "key": "ctrl+alt+oem_period"
+      },
+      {
+        "command": "findsuite.reveal#top",
+        "key": "ctrl+k ctrl+h",
+        "mac": "cmd+k ctrl+h"
+      },
+      {
+        "command": "findsuite.reveal#center",
+        "key": "ctrl+k ctrl+m",
+        "mac": "cmd+k ctrl+m"
       },
       {
         "command": "findsuite.rgWithEverything",
@@ -785,14 +798,6 @@
         "command": "findsuite.everything#diff",
         "key": "ctrl+k ctrl+alt+d",
         "when": "isWindows"
-      },
-      {
-        "command": "findsuite.reveal#top",
-        "key": "ctrl+k ctrl+h"
-      },
-      {
-        "command": "findsuite.reveal#center",
-        "key": "ctrl+k ctrl+m"
       }
     ]
   },

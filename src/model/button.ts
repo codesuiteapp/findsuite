@@ -76,6 +76,15 @@ export const historyWindowBtn: QuickInputButton = {
     tooltip: Constants.HISTORY_WINDOW_BUTTON
 };
 
+export const errorWindowBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('error'),
+    tooltip: Constants.ERROR_WINDOW_BUTTON
+};
+
+export const warnWindowBtn: QuickInputButton = {
+    iconPath: new ThemeIcon('warning'),
+    tooltip: Constants.WARN_WINDOW_BUTTON
+};
 
 export const searchButtons = [viewBtn, copyBtn, addClipBtn, heartBtn];
 
@@ -108,3 +117,7 @@ export const historyHeaderButtons = [rgWindowBtn, favorWindowBtn];
 export const hisDetailHeaderButtons = [QuickInputButtons.Back, favorWindowBtn];
 
 export const historyButtons = [removeBtn];
+
+export const errorHeaderButtons = [warnWindowBtn];
+
+export const warnHeaderButtons = [errorWindowBtn];
