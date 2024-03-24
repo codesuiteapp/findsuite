@@ -1,5 +1,4 @@
 import { platform } from "node:process";
-import path from "path";
 import { ConfigurationChangeEvent, ExtensionContext, TextEditorRevealType, commands, window, workspace } from "vscode";
 import { registerEverything, registerFd, registerProblem, registerRg } from "./commands";
 import { registerEditor } from "./commands/editor";
@@ -10,24 +9,34 @@ import { Everything } from "./svc/everything";
 import { FdFind } from "./svc/fd";
 import { RipgrepSearch } from "./svc/ripgrep";
 import { revealEditor } from "./utils/editor";
+import logger from "./utils/logger";
 import { notifyMessageWithTimeout } from "./utils/vsc";
 import { vscExtension } from "./vsc-ns";
 
 export function activate(context: ExtensionContext) {
+  logger.debug('activate(): start #1');
   vscExtension.favoriteManager = registerFavor(context);
+  logger.debug('activate(): start #2');
   const fd = new FdFind(context);
+  logger.debug('activate(): start #3');
   const rg = new RipgrepSearch(context);
-  let everything: Everything | undefined;
+  logger.debug('activate(): start #4');
 
   registerProblem(context);
+  logger.debug('activate(): start #5');
   registerFd(context, fd);
+  logger.debug('activate(): start #6');
   registerRg(context, rg);
+  logger.debug('activate(): start #7');
   registerEditor(context);
+  logger.debug('activate(): start #8');
 
+  let everything: Everything | undefined;
   if (platform === 'win32') {
     everything = new Everything();
     registerEverything(context, everything, rg);
   }
+  logger.debug('activate(): start #9');
 
   context.subscriptions.push(
     commands.registerCommand('findsuite.rgWithFd', async () => {
@@ -67,6 +76,7 @@ export function activate(context: ExtensionContext) {
     })
   );
 
+  logger.debug('activate(): finished');
   window.onDidChangeActiveColorTheme(theme => {
     rg.setColorForTheme(theme.kind);
   });

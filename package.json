@@ -32,7 +32,7 @@
     "problems matcher",
     "problems window"
   ],
-  "version": "0.3.3",
+  "version": "0.3.4",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -41,7 +41,9 @@
     "Programming Languages",
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "l10n": "./l10n",
   "contributes": {
