@@ -28,7 +28,9 @@
     "fuzzy fd",
     "fuzzy find",
     "fuzzy search",
-    "fuzzy grep"
+    "fuzzy grep",
+    "problems matcher",
+    "problems window"
   ],
   "version": "0.3.2",
   "engines": {
