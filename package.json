@@ -32,9 +32,9 @@
     "problems matcher",
     "problems window"
   ],
-  "version": "0.3.2",
+  "version": "0.3.3",
   "engines": {
-    "vscode": "^1.55.0"
+    "vscode": "^1.60.0"
   },
   "categories": [
     "Language Packs",
@@ -816,7 +816,7 @@
     "@types/node": "18.x",
     "@types/shell-quote": "^1.7.5",
     "@types/uuid": "^9.0.8",
-    "@types/vscode": "^1.55.0",
+    "@types/vscode": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "@vscode/test-cli": "^0.0.4",
