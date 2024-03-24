@@ -2,9 +2,9 @@ import path from "path";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { QuickPickItemProblem } from "../model/problem";
-import { openRevealFile1 } from "../utils/editor";
+import { openRevealRangeFile } from "../utils/editor";
 
-export class ProblemNavigator {
+export class ProblemManager {
 
     private lastPosition: { position: vscode.Position, uri: vscode.Uri } | null = null;
     private workspaceFolder: string;
@@ -75,7 +75,7 @@ export class ProblemNavigator {
         quickPick.onDidChangeActive(async (items) => {
             const selection = items[0] as QuickPickItemProblem<vscode.Diagnostic>;
             if (selection.model) {
-                const editor = await openRevealFile1(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
+                const editor = await openRevealRangeFile(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
                 if (editor) {
                     if (this._currentDecoration === null || !this._currentDecoration) {
                         this.currentDecoration = vscode.window.createTextEditorDecorationType({
@@ -172,7 +172,7 @@ export class ProblemNavigator {
         quickPick.onDidChangeActive(async (items) => {
             const selection = items[0] as QuickPickItemProblem<vscode.Diagnostic>;
             if (selection.model) {
-                const editor = await openRevealFile1(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
+                const editor = await openRevealRangeFile(selection.filepath, selection.model.range, { preserveFocus: true, preview: true });
                 if (editor) {
                     if (this._currentDecoration === null || !this._currentDecoration) {
                         this.currentDecoration = vscode.window.createTextEditorDecorationType({

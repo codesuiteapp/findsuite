@@ -1,8 +1,8 @@
 import { DiagnosticSeverity, ExtensionContext, commands } from "vscode";
-import { ProblemNavigator } from "../svc/problem";
+import { ProblemManager } from "../svc/problem-manager";
 
 export function registerProblem(context: ExtensionContext) {
-    const problemNavigator = new ProblemNavigator();
+    const problemNavigator = new ProblemManager();
     context.subscriptions.push(
         commands.registerCommand('findsuite.showErrorInFile', async () => {
             problemNavigator.showMarkerInFile([DiagnosticSeverity.Error]);

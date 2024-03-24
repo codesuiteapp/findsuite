@@ -65,7 +65,7 @@ export async function openRevealFile(item: QuickPickItemRgData, options?: vscode
     return editor;
 }
 
-export async function openRevealFile1(file: string, range: vscode.Range, options?: vscode.TextDocumentShowOptions) {
+export async function openRevealRangeFile(file: string, range: vscode.Range, options?: vscode.TextDocumentShowOptions) {
     const doc = await vscode.workspace.openTextDocument(file);
     const editor = await vscode.window.showTextDocument(doc, options);
 
