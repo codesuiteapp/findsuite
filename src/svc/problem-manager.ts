@@ -250,7 +250,6 @@ export class ProblemManager {
         editor.selection = new vscode.Selection(next.range.start, next.range.start);
 
         await vscode.commands.executeCommand("closeMarkersNavigation");
-
         if ((filter.length === 1 && filter[0] === vscode.DiagnosticSeverity.Error) ||
             vscode.workspace.getConfiguration("go-to-next-error").get<"marker" | "hover">("multiSeverityHandlingMethod") === "marker") {
             await vscode.commands.executeCommand("editor.action.marker.next");
@@ -291,12 +290,10 @@ export class ProblemManager {
         const next = direction === "next" ? sortedMarkers[0] : sortedMarkers[sortedMarkers.length - 1];
 
         this.lastPosition = { position: next.range.start, uri };
-
         const editor = await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(uri));
         editor.selection = new vscode.Selection(next.range.start, next.range.start);
 
         await vscode.commands.executeCommand("closeMarkersNavigation");
-
         if (direction === "next") {
             await vscode.commands.executeCommand("editor.action.marker.nextInFiles");
         } else {
@@ -308,7 +305,6 @@ export class ProblemManager {
         const currentDocumentUri = vscode.window.activeTextEditor?.document.uri.toString();
         const activeFileIndex = filesSorted.findIndex(([uri]) => uri.toString() === currentDocumentUri);
 
-        // Return the next/previous file
         return filesSorted[activeFileIndex === -1 ? 0 : ((activeFileIndex + 1) % filesSorted.length)];
     }
 
