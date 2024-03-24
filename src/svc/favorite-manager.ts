@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ExtensionContext } from 'vscode';
 import FindSuiteSettings from '../config/settings';
 import { FavoritesEntries } from '../model/favorites';
+import logger from '../utils/logger';
 import { notifyMessageWithTimeout } from '../utils/vsc';
 import { Constants } from './constants';
 
@@ -28,11 +29,12 @@ export class FavoriteManager {
 
     constructor(protected context: ExtensionContext) {
         let localPath = this.getPlatformPath();
-        if (!localPath) {
-            localPath = path.join(this.context.extensionPath, '.vscode');
-        }
+        // if (!localPath) {
+        //     localPath = path.join(this.context.extensionPath, '.vscode');
+        // }
+        logger.debug('FavoriteManager(): localpath <' + localPath + '>');
+
         this._filePath = path.join(localPath, Constants.FAVORITE_DATA_FILE);
-        console.log(`filePath <${this._filePath}> localPath <${localPath}>`);
         this._favoriteEntries = this.loadFromFile(this._filePath);
     }
 
@@ -117,20 +119,25 @@ export class FavoriteManager {
 
     public loadFromFile(fileName: string): FavoritesEntries {
         console.log(`loadFromFile(): fileName <${fileName}>`);
+        try {
+            if (!fs.existsSync(fileName)) {
+                console.log(`Created. File <${fileName}> does not exist.`);
+                this._favoriteEntries = this.makeEmptyFavorEntries();
+                this.saveToFile();
+                return this._favoriteEntries;
+            }
 
-        if (!fs.existsSync(fileName)) {
-            console.log(`Created. File <${fileName}> does not exist.`);
+            const data = fs.readFileSync(fileName, 'utf8');
+            if (data) {
+                return JSON.parse(data) as FavoritesEntries;
+            }
+        } catch (error: any) {
+            logger.error(`erroor <${error.message}`);
+            console.log(`erroor <${error.message}`);
             this._favoriteEntries = this.makeEmptyFavorEntries();
-            this.saveToFile();
-            return this._favoriteEntries;
         }
+        return this._favoriteEntries;
 
-        const data = fs.readFileSync(fileName, 'utf8');
-        if (data) {
-            return JSON.parse(data) as FavoritesEntries;
-        } else {
-            return this._favoriteEntries;
-        }
     }
 
     public async update(fileId: string, isDelete: boolean = false) {

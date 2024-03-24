@@ -14,29 +14,20 @@ import { notifyMessageWithTimeout } from "./utils/vsc";
 import { vscExtension } from "./vsc-ns";
 
 export function activate(context: ExtensionContext) {
-  logger.debug('activate(): start #1');
   vscExtension.favoriteManager = registerFavor(context);
-  logger.debug('activate(): start #2');
   const fd = new FdFind(context);
-  logger.debug('activate(): start #3');
   const rg = new RipgrepSearch(context);
-  logger.debug('activate(): start #4');
 
   registerProblem(context);
-  logger.debug('activate(): start #5');
   registerFd(context, fd);
-  logger.debug('activate(): start #6');
   registerRg(context, rg);
-  logger.debug('activate(): start #7');
   registerEditor(context);
-  logger.debug('activate(): start #8');
 
   let everything: Everything | undefined;
   if (platform === 'win32') {
     everything = new Everything();
     registerEverything(context, everything, rg);
   }
-  logger.debug('activate(): start #9');
 
   context.subscriptions.push(
     commands.registerCommand('findsuite.rgWithFd', async () => {
