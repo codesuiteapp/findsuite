@@ -723,17 +723,17 @@
       {
         "command": "findsuite.showErrorInFile",
         "key": "ctrl+alt+f12",
-        "mac": "cmd+option+f12"
+        "mac": "cmd+ctrl+f12"
       },
       {
         "command": "findsuite.showMarkerInFiles",
         "key": "ctrl+alt+]",
-        "mac": "cmd+option+]"
+        "mac": "cmd+ctrl+]"
       },
       {
         "command": "findsuite.showErrorInFiles",
         "key": "ctrl+alt+[",
-        "mac": "cmd+option+["
+        "mac": "cmd+ctrl+["
       },
       {
         "command": "findsuite.prevErrorInFiles",
@@ -753,13 +753,11 @@
       },
       {
         "command": "findsuite.reveal#top",
-        "key": "ctrl+k ctrl+h",
-        "mac": "cmd+k ctrl+h"
+        "key": "ctrl+k ctrl+h"
       },
       {
         "command": "findsuite.reveal#center",
-        "key": "ctrl+k ctrl+m",
-        "mac": "cmd+k ctrl+m"
+        "key": "ctrl+k ctrl+m"
       },
       {
         "command": "findsuite.rgWithEverything",
