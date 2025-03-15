@@ -142,9 +142,7 @@ export class FdFind {
                 title: `Fd:: ${fdQuery.title ?? 'Search name'}`,
                 placeHolder: 'Please enter filename to search',
                 prompt: fdQuery.fileType === 'file' ? 'Usage: [Filename] or [-g "**/*.txt"]' : ''
-            }).then(res => {
-                return res ?? '';
-            });
+            }).then(res => res ?? '');
         }
 
         if (!fdQuery.srchPath && !txt) {
@@ -167,7 +165,7 @@ export class FdFind {
             cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
 
-        const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => { return ` -E "${pattern}"`; }).join('');
+        const cmdOpt = cmd + FindSuiteSettings.fdExcludePatterns.filter(f => f).map(pattern => ` -E "${pattern}"`).join('');
         console.log(`cmd <${cmdOpt}>`);
 
         const result = await notifyWithProgress(`Searching ${mesg}`, async () => {
@@ -192,9 +190,9 @@ export class FdFind {
                 return;
             }
 
-            items.forEach(async (item) => {
+            for (const item of items) {
                 await this.openChoiceFile(item);
-            });
+            }
             quickPick.dispose();
         });
 
