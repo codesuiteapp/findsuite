@@ -52,7 +52,7 @@ Linux, Mac, Windows 모두에서 사용할 수 있는 빠르고 사용자 친화
 
 이 확장 프로그램을 100% 활용하기 위해 다음 도구들의 설치가 필요할 수 있습니다.
 
-1.  **Everything (Windows 사용자)**:
+1. **Everything (Windows 사용자)**:
 
     - [Everything 다운로드](https://www.voidtools.com/)
     - 설치 후 VS Code 설정에서 `Host`와 `Port`를 맞춰주세요. (기본값: 127.0.0.1:3380)
@@ -60,7 +60,7 @@ Linux, Mac, Windows 모두에서 사용할 수 있는 빠르고 사용자 친화
 
     ![Everything](images/everything1.png)
 
-2.  **Fd & Ripgrep**:
+2. **Fd & Ripgrep**:
 
     - 확장 프로그램에 내장된 바이너리를 사용할 수 있으나, 시스템에 설치된 버전을 사용하려면 설정에서 경로를 지정하세요.
     - **Fd 설정**: 자주 검색할 기본 경로들을 `Findsuite > Fd > Path` 설정에 등록해두면 편리합니다. (예: `C:\workspace;D:\projects`)
