@@ -75,22 +75,22 @@ Linux, Mac, Windows 모두에서 사용할 수 있는 빠르고 사용자 친화
 
 | 단축키                       | 명령어              | 설명                                        |
 | :--------------------------- | :------------------ | :------------------------------------------ | ----------------------------------------------------------- |
-| **Ctrl + Alt + F9**          | `Everything`        | 시스템 전체 파일 검색                       |
-| **Ctrl + F10**               | `Everything         | rg`                                         | Everything으로 파일 검색 후, 선택한 파일 내에서 텍스트 검색 |
-| **Ctrl + Shift + F10**       | `Everything Folder  | rg`                                         | Everything으로 폴더 검색 후, 해당 폴더 내에서 텍스트 검색   |
-| **Ctrl + Alt + 4**           | `Everything Folder` | 폴더를 검색하여 VS Code에서 열기            |
-| **Ctrl + Alt + Shift + w**   | `Code Workspace`    | `.code-workspace` 파일을 찾아 프로젝트 열기 |
-| **Ctrl + k, Ctrl + Alt + d** | `Everything Diff`   | 두 파일을 검색하여 비교(Diff) 하기          |
+| **Ctrl + Alt + F9**          | `Everything`        | 시스템 전체 파일 검색                       |                                                             |
+| **Ctrl + F10**               | `Everything`        | rg                                          | Everything으로 파일 검색 후, 선택한 파일 내에서 텍스트 검색 |
+| **Ctrl + Shift + F10**       | `Everything Folder` | rg                                          | Everything으로 폴더 검색 후, 해당 폴더 내에서 텍스트 검색   |
+| **Ctrl + Alt + 4**           | `Everything Folder` | 폴더를 검색하여 VS Code에서 열기            |                                                             |
+| **Ctrl + Alt + Shift + w**   | `Code Workspace`    | `.code-workspace` 파일을 찾아 프로젝트 열기 |                                                             |
+| **Ctrl + k, Ctrl + Alt + d** | `Everything Diff`   | 두 파일을 검색하여 비교(Diff) 하기          |                                                             |
 
 ### 📂 Fd (File Search)
 
 | 단축키                         | 명령어         | 설명                                                |
 | :----------------------------- | :------------- | :-------------------------------------------------- | ------------------------------------------------------- |
-| **Ctrl + Alt + 9**             | `Fd Workspace` | 현재 워크스페이스 내 모든 파일 검색                 |
-| **Ctrl + Alt + F7**            | `Fd File`      | 설정된 기본 경로 + 현재 프로젝트에서 파일 검색      |
-| **Ctrl + Alt + m**             | `Fd Folder`    | 디렉토리를 검색하고, 해당 디렉토리 내의 파일들 열기 |
-| **Ctrl + F7**                  | `Fd            | rg`                                                 | Fd로 파일 검색 후, 선택한 파일 내에서 텍스트 검색       |
-| **Ctrl + Shift + F7**          | `Fd Directory  | rg`                                                 | Fd로 디렉토리 검색 후, 해당 디렉토리 내에서 텍스트 검색 |
+| **Ctrl + Alt + 9**             | `Fd Workspace` | 현재 워크스페이스 내 모든 파일 검색                 |                                                         |
+| **Ctrl + Alt + F7**            | `Fd File`      | 설정된 기본 경로 + 현재 프로젝트에서 파일 검색      |                                                         |
+| **Ctrl + Alt + m**             | `Fd Folder`    | 디렉토리를 검색하고, 해당 디렉토리 내의 파일들 열기 |                                                         |
+| **Ctrl + F7**                  | `Fd`           | rg                                                  | Fd로 파일 검색 후, 선택한 파일 내에서 텍스트 검색       |
+| **Ctrl + Shift + F7**          | `Fd Directory` | rg                                                  | Fd로 디렉토리 검색 후, 해당 디렉토리 내에서 텍스트 검색 |
 | **Ctrl + k, Ctrl + Shift + d** | `Fd Diff`      | Fd로 파일을 찾아 비교(Diff) 하기                    |
 
 ### 📝 Ripgrep (Text Search)
