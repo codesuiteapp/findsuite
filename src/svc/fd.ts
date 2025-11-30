@@ -3,12 +3,12 @@ import * as fs from 'fs';
 import { platform } from "node:process";
 import * as os from 'os';
 import path from "path";
-import { quote } from "shell-quote";
 import * as vscode from "vscode";
 import FindSuiteSettings from "../config/settings";
 import { fdButtons, searchHeaderButtons, wsButtons } from "../model/button";
 import { FdQuery, QuickPickItemResults } from "../model/fd";
 import { notifyWithProgress } from "../ui/ui";
+import * as converter from '../utils/converter';
 import { copyClipboardFilePath, getIconByExt, getSelectionText, openWorkspace } from "../utils/editor";
 import logger from "../utils/logger";
 import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout, switchWindowByBtn } from "../utils/vsc";
@@ -32,7 +32,7 @@ export class FdFind {
     constructor(private context: vscode.ExtensionContext) {
         this.fdDefOption = FindSuiteSettings.fdDefaultOption;
         this.fdProgram = this.getFd(context.extensionUri.fsPath);
-        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath) || [];
+        this._workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).filter((path) => !path.includes(' ')) || [];
         if (this._workspaceFolders.length === 0) {
             this.projectRoot = [os.homedir()];
         } else {
@@ -68,13 +68,13 @@ export class FdFind {
         if (fdQuery.fileType === 'dir') {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
         } else if (fdQuery.fileType === 'diffWs') {
-            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${converter.quotePath(this._workspaceFolders)}`;
         } else if (fdQuery.fileType === 'fileWs') {
-            cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+            cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${converter.quotePath(this._workspaceFolders)}`;
             mesg = '<Files in Workspace>';
         } else {
             let command = [this.fdProgram, txt].join(' ');
-            let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
+            let path = fdQuery.srchPath ? `-g "**/*" --full-path ${converter.quotePath([fdQuery.srchPath])}` : this.getPlatformPath();
             cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
 
@@ -154,14 +154,14 @@ export class FdFind {
         if (fdQuery.fileType === 'dir') {
             cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} ${this.getPlatformPath()}`;
         } else if (fdQuery.fileType === 'diffWs') {
-            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+            cmd = `${this.fdProgram} -a ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${converter.quotePath(this._workspaceFolders)}`;
         } else if (fdQuery.fileType === 'fileWs') {
-            cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${quote(this._workspaceFolders)}`;
+            cmd = `${this.fdProgram} -a -g "**/*" ${fdQuery.opt} ${this.fdDefOption} ${txt} --full-path ${converter.quotePath(this._workspaceFolders)}`;
             mesg = '<Files in Workspace>';
             fdQuery.wsPath = this._workspaceFolders[0] ?? '';
         } else {
             let command = [this.fdProgram, txt].join(' ');
-            let path = fdQuery.srchPath ? `-g "**/*" --full-path ${quote([fdQuery.srchPath])}` : this.getPlatformPath();
+            let path = fdQuery.srchPath ? `-g "**/*" --full-path ${converter.quotePath([fdQuery.srchPath])}` : this.getPlatformPath();
             cmd = `${command} -a ${fdQuery.opt} ${this.fdDefOption} ${path}`;
         }
 
@@ -348,7 +348,7 @@ export class FdFind {
 
     private getPlatformPath() {
         let path = this.getPlatformFdPath();
-        return ['--full-path', quote(path), quote(this.projectRoot)].join(' ');
+        return ['--full-path', converter.quotePath(path), converter.quotePath(this.projectRoot)].join(' ');
     }
 
     private getPlatformFdPath() {

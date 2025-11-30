@@ -214,34 +214,28 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
             ??
-            '-H -s';
+            '-H';
     }
 
     public static get fdPathWin32(): string[] {
         const key = 'fd.path.win32';
-        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
-            ??
-            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
-            ??
-            [];
+        const value = vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ?? vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue;
+        return value?.split(';').filter(p => p.trim() !== '') ?? [];
     }
 
     public static get fdPathLinux(): string[] {
         const key = 'fd.path.linux';
-        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
-            ??
-            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
-            ??
-            [];
+        const value = vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ?? vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue;
+        return value?.split(';').filter(p => p.trim() !== '') ?? [];
     }
 
     public static get fdPathDarwin(): string[] {
         const key = 'fd.path.darwin';
-        return vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)?.split(';')
-            ??
-            vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue?.split(';')
-            ??
-            [];
+        const value = vscode.workspace.getConfiguration(FindSuiteSettings.rootName).get<string>(key)
+            ?? vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue;
+        return value?.split(';').filter(p => p.trim() !== '') ?? [];
     }
 
     public static get fdExcludePatterns(): string[] {
@@ -358,7 +352,7 @@ export default class FindSuiteSettings {
             ??
             vscode.workspace.getConfiguration(FindSuiteSettings.rootName).inspect<string>(key)?.defaultValue
             ??
-            '--hidden -S';
+            '--hidden';
     }
 
     public static get matchColorDarkTheme(): string {

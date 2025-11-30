@@ -1,3 +1,5 @@
+import * as os from 'os';
+
 export function formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -31,4 +33,20 @@ export function formatBytes(bytes: number, decimals = 2): string {
 
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+export function quotePath(paths: string | string[]): string {
+    const pathArray = Array.isArray(paths) ? paths : [paths];
+
+    if (os.platform() === 'win32') {
+        return pathArray.map(p => {
+            const trimmed = p.endsWith('\\') ? p.slice(0, -1) : p;
+            return `"${trimmed.replace(/"/g, '\\"')}"`;
+        }).join(' ');
+    } else {
+        return pathArray.map(p => {
+            const trimmed = p.endsWith('\\') ? p.slice(0, -1) : p;
+            return `'${trimmed.replace(/'/g, "'\\''")}'`;
+        }).join(' ');
+    }
 }

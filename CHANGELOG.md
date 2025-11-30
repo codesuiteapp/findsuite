@@ -1,5 +1,9 @@
 # Change Log
 
+### [0.3.7] - 2025-11-30
+
+- A few bug fixes
+
 ### [0.3.6] - 2025-11-27
 
 - Fd & Ripgrep update

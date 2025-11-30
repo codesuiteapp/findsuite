@@ -32,7 +32,7 @@
     "problems matcher",
     "problems window"
   ],
-  "version": "0.3.6",
+  "version": "0.3.7",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -123,7 +123,7 @@
         },
         "findsuite.fd.defaultOption": {
           "type": "string",
-          "default": "-H -s",
+          "default": "-H",
           "description": "%fd.default.option.description%"
         },
         "findsuite.fd.excludePatterns": {
