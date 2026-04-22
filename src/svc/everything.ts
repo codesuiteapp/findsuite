@@ -8,7 +8,7 @@ import { notifyWithProgress } from '../ui/ui';
 import { formatBytes } from '../utils/converter';
 import { copyClipboardWithFile, getSelectionText, openWorkspace } from '../utils/editor';
 import logger from '../utils/logger';
-import { executeFavoriteWindow, executeHistoryWindow, notifyMessageWithTimeout, showConfirmMessage, switchWindowByBtn } from '../utils/vsc';
+import { executeFavoriteWindow, notifyMessageWithTimeout, showConfirmMessage, switchWindowByBtn } from '../utils/vsc';
 import { vscExtension } from '../vsc-ns';
 import { Constants } from './constants';
 
@@ -68,8 +68,8 @@ export class Everything {
           return;
         }
         quickPick.items = result;
-        quickPick.title = `Everything <${item}> (${option.description}) :: Results <${quickPick.items.length}>`;
-        console.log(`items <${quickPick.items.length}>`);
+        quickPick.title = `Everything <${item}> (${option.description}) :: Results <${result.length}>`;
+        console.log(`item <${item}> items <${quickPick.items.length}>`);
       });
 
       quickPick.onDidAccept(async () => {
