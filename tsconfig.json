@@ -1,10 +1,13 @@
 {
 	"compilerOptions": {
-		"module": "Node16",
+		"module": "Node20",
 		"target": "ES2022",
 		"outDir": "dist",
 		"lib": [
 			"ES2022"
+		],
+		"types": [
+			"node"
 		],
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
