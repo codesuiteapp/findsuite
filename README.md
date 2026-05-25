@@ -1,99 +1,102 @@
-# FindSuite (RipGrep, Fd, Everything [Windows])
+# FindSuite
 
 [![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/utocode.findsuite?style=for-the-badge&label=VS%20Marketplace&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=utocode.findsuite)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/utocode.findsuite?style=for-the-badge)](https://marketplace.visualstudio.com/items?itemName=utocode.findsuite)
-[![License](https://img.shields.io/github/license/codesuiteapp/findsuite?style=for-the-badge&logo=)](https://github.com/codesuiteapp/findsuite/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/codesuiteapp/findsuite?style=for-the-badge)](https://github.com/codesuiteapp/findsuite/blob/master/LICENSE)
 
-## Overview
+FindSuite는 VS Code 안에서 파일 검색, 텍스트 검색, 즐겨찾기, 비교, 문제 탐색을 빠르게 수행하도록 돕는 검색 보강 확장입니다. Ripgrep(`rg`), Fd(`fd`), Everything(Windows)을 VS Code Quick Pick 흐름에 연결해 워크스페이스 안팎의 파일과 문자열을 더 빠르게 찾을 수 있게 합니다.
 
-VS Code already provides excellent file and text search capabilities, but it offers some minor inconvenience when searching for folders (directories) or text that exist beyond the workspace folder.
+## 주요 기능
 
-It helps you quickly and easily find files by integrating with the powerful Everything program to search for all folders or files existing in the system, including the workspace. (This is because it is a program for Windows.)
+- **Ripgrep 텍스트 검색**: 현재 파일, 현재 폴더, 워크스페이스, 즐겨찾기 경로, Fd/Everything 검색 결과 안에서 문자열 또는 정규식을 검색합니다.
+- **Fd 파일/폴더 검색**: 워크스페이스와 사용자 지정 기본 경로에서 파일, 폴더, `.code-workspace` 파일을 찾고 바로 엽니다.
+- **Everything 통합**: Windows에서 Everything HTTP 서버를 통해 시스템 전체 파일/폴더를 검색하고, 선택 결과를 열거나 Ripgrep 검색 대상으로 넘깁니다.
+- **검색 파이프라인**: `fd | rg`, `everything | rg`처럼 먼저 파일/폴더 후보를 고른 뒤 그 안에서 텍스트를 검색합니다.
+- **즐겨찾기**: 자주 여는 파일과 폴더를 저장하고, 즐겨찾기 안에서 검색하거나 파일을 빠르게 엽니다.
+- **검색 히스토리**: Ripgrep 검색 결과를 세션 안에서 다시 열어 이전 검색 결과로 돌아갑니다.
+- **비교와 문제 탐색**: 검색 결과 또는 열린 에디터 목록에서 파일 비교를 실행하고, VS Code Problems의 오류/경고를 Quick Pick으로 탐색합니다.
 
-On Linux/Mac, you can use fd as an alternative to alleviate some of the inconvenience.
+## 지원 도구
 
-It provides easy and fast search within VS Code by integrating with the powerful and convenient Ripgrep program for handling text in files.
+| 도구 | 용도 | 비고 |
+| --- | --- | --- |
+| Ripgrep | 파일 내용 텍스트 검색 | 내장 바이너리 사용 가능, 외부 프로그램 경로 설정 가능 |
+| Fd | 파일/폴더 이름 검색 | 내장 바이너리 사용 가능, 외부 프로그램 경로 설정 가능 |
+| Everything | Windows 시스템 전체 파일/폴더 검색 | Windows 전용, Everything HTTP 서버 필요 |
 
-While it cannot replace the powerful pipes of Linux/Mac, it allows you to use similar functionality to "fd | rg" (Ctrl+F7) or "everything | rg" (Ctrl+Alt+F10).
+## 설치 및 준비
 
-To search, press the shortcut key (e.g., Ctrl+Alt+F7 or Ctrl+F7) in the blank space or on the word you want to search. If on Windows, press Ctrl+Alt+F9 or Ctrl+F10.
+1. VS Code Marketplace에서 `FindSuite`를 설치합니다.
+2. Windows에서 Everything 기능을 사용하려면 [Everything](https://www.voidtools.com/)을 설치하고 HTTP 서버를 활성화합니다.
+3. VS Code 설정에서 `FindSuite`를 검색해 필요한 경로와 옵션을 조정합니다.
 
-[Korean_한국어](README_KO.md)
+기본 설정값은 Everything 서버를 `127.0.0.1:3380`으로 가정합니다. Fd 기본 검색 경로는 플랫폼별 `findsuite.fd.path.*` 설정에 세미콜론(`;`)으로 구분해 등록할 수 있습니다.
 
-## Prerequisites
+![Everything 설정 예시](images/everything1.png)
+![FindSuite 설정 예시](images/setting.png)
+![Fd 설정 예시](images/fd1.png)
 
-Before using this extension, ensure that you have the following prerequisites installed:
+## 주요 명령과 단축키
 
-- **Everything program**: The extension relies on the Everything program for fast file searches. Make sure it is installed on your system.
+| 기능 | 명령 | 기본 단축키 |
+| --- | --- | --- |
+| 워크스페이스 텍스트 검색 | `FindSuite: Ripgrep in Workspace` | `Ctrl+Alt+F` |
+| 현재 파일 텍스트 검색 | `FindSuite: Ripgrep in Current File` | `Ctrl+Alt+0` |
+| 정규식 텍스트 검색 | `FindSuite: Ripgrep Using Regex` | 명령 팔레트 |
+| 검색 히스토리 열기 | `FindSuite: Ripgrep in History List` | `Ctrl+Alt+Y` |
+| Fd 파일 검색 | `FindSuite: Fd File` | `Ctrl+Alt+F7` |
+| Fd 워크스페이스 파일 검색 | `FindSuite: Open files via Fd Workspace` | `Ctrl+Alt+9` |
+| Fd 폴더 선택 후 파일 열기 | `FindSuite: Open files in Directory via Fd` | `Ctrl+Alt+M` |
+| Fd 결과 안에서 Ripgrep | `FindSuite: Ripgrep via Fd` | `Ctrl+F7` |
+| Fd 폴더 결과 안에서 Ripgrep | `FindSuite: Ripgrep via Fd Directory` | `Ctrl+Shift+F7` |
+| 즐겨찾기 열기 | `FindSuite: Favorites List` | `Shift+F11` |
+| 즐겨찾기 안에서 Ripgrep | `FindSuite: Ripgrep in Favorites` | `Ctrl+Shift+F11` |
+| Everything 파일 검색 | `FindSuite: Everything` | `Ctrl+Alt+F9` |
+| Everything 결과 안에서 Ripgrep | `FindSuite: Ripgrep via Everything` | `Ctrl+F10` |
+| Everything 폴더 결과 안에서 Ripgrep | `FindSuite: Ripgrep via Everything Folder` | `Ctrl+Shift+F10` |
+| Everything 폴더 열기 | `FindSuite: Open folder via Everything` | `Ctrl+Alt+4` |
+| 파일 비교 | `FindSuite: Diff files via Fd` | `Ctrl+K Ctrl+Shift+D` |
+| 문제 목록 보기 | `FindSuite: Show Problems in Files` | `Ctrl+Alt+]` |
+| 다음/이전 문제 이동 | `FindSuite: Go to Next/Previous Problems` | `Ctrl+Alt+.` / `Ctrl+Alt+,` |
 
-![Everything](images/everything1.png)
+Everything 관련 명령은 Windows에서만 표시됩니다.
 
-- **VSCode Settings**: Please enter the Host and Port configured in the Everything program. Also, configure the Everything Config.
+## 설정
 
-![Setting](images/setting.png)
+자주 조정하는 설정은 다음과 같습니다.
 
-- **VSCode Settings for Fd**: Please enter the default directories to search in the Fd program. The delimiter is ;. For example, in a Windows environment, enter like this in Fd > Path: Win32: C:\workspace;D:\my-project;.
+- `findsuite.rg.defaultOption`: Ripgrep 기본 옵션입니다. 기본값은 `--hidden -S`입니다.
+- `findsuite.rg.excludePatterns`: Ripgrep 검색에서 제외할 패턴 목록입니다.
+- `findsuite.rg.count`: Ripgrep 결과 파일 수 제한입니다.
+- `findsuite.fd.defaultOption`: Fd 기본 옵션입니다. 기본값은 `-H`입니다.
+- `findsuite.fd.path.win32`, `findsuite.fd.path.darwin`, `findsuite.fd.path.linux`: Fd가 기본으로 검색할 경로 목록입니다.
+- `findsuite.fd.excludePatterns`: Fd 검색에서 제외할 패턴 목록입니다.
+- `findsuite.everything.host`, `findsuite.everything.port`: Everything HTTP 서버 연결 정보입니다.
+- `findsuite.everything.count`: Everything 검색 결과 요청 수입니다.
+- `findsuite.everything.limitOpenFile`: 다중 선택 결과를 열 때의 최대 파일 수입니다.
+- `findsuite.everythingConfig`: Everything 커스텀 필터 정의입니다.
+- `findsuite.category.favorites`: 즐겨찾기 파일 카테고리 목록입니다.
+- `findsuite.compare.external.*`: 외부 비교 프로그램 사용 여부, 실행 파일, 옵션입니다.
 
-![Fd](images/fd1.png)
+## 개발
 
-## Features
+```bash
+npm install
+npm run compile
+```
 
-### FindSuite Program
+개발 중에는 다음 명령을 사용할 수 있습니다.
 
-It provides easy and fast searching in VS Code by integrating the powerful and convenient Ripgrep program for manipulating text in files. It helps you find files quickly and easily by linking with Everything, which is more powerful than anything else when it comes to finding fold
+```bash
+npm run watch
+npm run lint
+npm test
+```
 
-## Fd Integration
+배포용 번들은 `npm run vscode:prepublish` 또는 `vsce package`로 준비합니다.
 
-The extension seamlessly integrates with fd, allowing users to search for specific filename efficiently.
+## 문서
 
-### Shortcuts for Fd
-
-- **Ctrl + Alt + 9**: It searches and displays all files within the current project's directory, allowing you to select and open multiple files.
-- **Ctrl + Alt + F7**: Search for files in both the directory designated as default and the directory of the current project
-- **Ctrl + Alt + m**: Open multiple files within a directory searched using Fd.
-- **Ctrl + Shift + F7**: It searches directories using Fd, then uses Ripgrep to search within the selected directory. (Like 'fd -d | rg')
-- **Ctrl + k Ctrl + Shift + d**: Use Fd to search for files and compare the selected files (diff).
-
-## Ripgrep Integration
-
-The extension seamlessly integrates with ripgrep, allowing users to search for files containing specific strings efficiently.
-
-### Shortcuts for Ripgrep
-
-- **Ctrl + Alt + f**: Search for strings within the files in the current workspace using ripgrep.
-- **Ctrl + Alt + 0**: Search for strings within the currently open file using ripgrep.
-
-## Everything integration
-
-Ultra-fast file search by indexing every file and folder on your system. Works with Everything to handle large numbers of files quickly and easily in VS Code.
-
-### Shortcuts Keys (Requires Everything)
-
-- **Ctrl + F10**: It uses Everything to search for files, then uses Ripgrep to search for strings within the selected files
-- **Ctrl + Shift + F10**: It uses Everything to search for folders, then uses Ripgrep to search for strings within the selected folders
-- **Ctrl + Alt + F9**: Search for files using Everything.
-- **Ctrl + Alt + 4**: Search using Everything and open the selected folder(s).
-- **Ctrl + Alt + Shift+ m**: Open multiple files within a directory searched using Everything.
-- **Ctrl + Alt + Shift + w**: Use Everything to search for code-workspace files and open Workspace.
-- **Ctrl + k Ctrl + Alt + d**: Use Everything to search for files and compare the selected files (diff).
-
-## Usage
-
-1. **Install Everything Program**: Ensure that the Everything program is installed on your system.
-2. **Activate Extension**: Launch VS Code and activate the FindSuite extension.
-3. **Perform File Search**:
-   - Use the provided commands, shortcuts, or the VS Code command palette to initiate file searches.
-   - Enter the desired search criteria such as file name, file path, or regular expression.
-   - View search results directly within VS Code.
-
-## Issues
-
-Please let me know of any bugs via the issues page
-
-## Release Notes
-
-See [CHANGELOG.md](CHANGELOG.md)
-
-## License
-
-See [LICENSE](LICENSE) for more information.
+- [역기획 PRD](docs/PRD.md)
+- [변경 이력](CHANGELOG.md)
+- [라이선스](LICENSE)
